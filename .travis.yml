@@ -4,37 +4,60 @@ git:
 os: linux
 dist: xenial
 env:
-- JDK="bellsoft-jdk8u265+1-linux-amd64-full"
+  - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
 stages:
-- check
-- telegram
+  - check
+  - telegram
 jobs:
   include:
-  - stage: check
-    name: Gradle check on Linux OS and JDK8
-    os: linux
-    before_script:
-    - echo "Downloading jdk"
-    - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-    - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
-    - java -version
-    script:
-    - "./gradlew check --scan --parallel"
-    after_script:
-    - echo "Preparing for deploy"
-    - mkdir -p report
-    - cp --parent */build/reports build/reports report -R
-before_deploy:
-- "./gradlew build fatjar --scan --parallel"
-deploy:
-  provider: releases
-  api_key:
-    secure: lcO4ovqtqQfseALJN4J8MoctswhSXiAuIuGRKnzf+YwHiGMtiiv828gwk9MYOi0KtFJ9kx2ryTS/izzq7UuptcGjt5uYxRuHla3b0PL+uzYLHMdGY7lgMunRVHWOAXfQXSOdIXdeol5bO8ZoK4k4WCFj5JNsPY67jbmObu7wbwpQ+962XrOzRw0vRsNUDSE5x/bbYG2/aB0zWBfWc5H5lWq4UgCjeXh+pCRBm5xeSkshshaClfN9sHJ2Ec/5Ao4xAsCsg3nF8DoWaD2rM8HQJnKrYW/8pjTOS1/YCeCsNwHEZ3We4UKCaVWLPFhQqa0M+GKsSsTgxYChutxNo2PCQ93KLa++08BaQH9DUKELCzelz9E+4DbYuf1pIHsjHoIfGYtAjmprrju8JBw3BTmVMtNNfTv/CNQlzSCn6TpdK0aZLUxxEJYb8kpkzxO2zAOAhD83SjwnQcJz7RoyadcUvC0n41Q3PnMwj0iICKVlYuYOX/avhUimdS2uP/etupq7/ih+PtMLftnELpDe8UvUBSL+z9lti0qxzv2pwhoYLPQn3JGVd0Rbpkh7a5HQzpPDga9AHJ6YKcf5qlaDS8P6h6H/7unhaL2Q21F38VUq/xQBqwTcQGi4Ze6j/1PEzAFkR14vTjwapm7KdmiCe9BY4Xk7rJhdXrUEYNrPTIP1wLY=
-  file: '"${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/build/libs/pps-19-motoScala-*.jar"'
-  on:
-    repo: Unibo-PPS-1920/pps-19-motoScala
-    branch: release
-  skip_cleanup: 'true'
-after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
-  -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
-  %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
+    - stage: check
+      name: "Gradle check on Linux OS and JDK8"
+      os: linux
+      before_script:
+        - echo "Downloading jdk"
+        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+        - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
+        - java -version
+      script:
+        - ./gradlew check --scan --parallel
+      after_script:
+        - echo "Preparing for deploy"
+        - mkdir -p report
+        - cp --parent */build/reports build/reports report -R
+      before_deploy:
+        - ./gradlew build fatjar --scan --parallel
+      deploy:
+        - provider: releases
+          api_key:
+            secure: lcO4ovqtqQfseALJN4J8MoctswhSXiAuIuGRKnzf+YwHiGMtiiv828gwk9MYOi0KtFJ9kx2ryTS/izzq7UuptcGjt5uYxRuHla3b0PL+uzYLHMdGY7lgMunRVHWOAXfQXSOdIXdeol5bO8ZoK4k4WCFj5JNsPY67jbmObu7wbwpQ+962XrOzRw0vRsNUDSE5x/bbYG2/aB0zWBfWc5H5lWq4UgCjeXh+pCRBm5xeSkshshaClfN9sHJ2Ec/5Ao4xAsCsg3nF8DoWaD2rM8HQJnKrYW/8pjTOS1/YCeCsNwHEZ3We4UKCaVWLPFhQqa0M+GKsSsTgxYChutxNo2PCQ93KLa++08BaQH9DUKELCzelz9E+4DbYuf1pIHsjHoIfGYtAjmprrju8JBw3BTmVMtNNfTv/CNQlzSCn6TpdK0aZLUxxEJYb8kpkzxO2zAOAhD83SjwnQcJz7RoyadcUvC0n41Q3PnMwj0iICKVlYuYOX/avhUimdS2uP/etupq7/ih+PtMLftnELpDe8UvUBSL+z9lti0qxzv2pwhoYLPQn3JGVd0Rbpkh7a5HQzpPDga9AHJ6YKcf5qlaDS8P6h6H/7unhaL2Q21F38VUq/xQBqwTcQGi4Ze6j/1PEzAFkR14vTjwapm7KdmiCe9BY4Xk7rJhdXrUEYNrPTIP1wLY=
+          file_glob: true
+          file: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/build/libs/pps-19-motoScala-*.jar"
+          skip_cleanup: 'true'
+          on:
+            os: linux
+            repo: Unibo-PPS-1920/pps-19-motoScala
+            branch: release
+            #tags: true
+        - provider: pages
+          github_token: $GITHUB_TOKEN
+          edge: true
+          skip_cleanup: 'true'
+          local_dir: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/report"
+          on:
+            os: linux
+            repo: Unibo-PPS-1920/pps-19-motoScala
+            branch: release
+            #tags: true
+      after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
+        -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
+        %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
+    - stage: telegram
+      name: Telegram notification
+      if: tag IS NOT present AND type != pull_request
+      os: linux
+      script:
+        - 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID
+      -d "text=$(dirname $TRAVIS_REPO_SLUG) pushed to $TRAVIS_BRANCH %0ACommit: $TRAVIS_COMMIT_MESSAGE%0ALink:
+      https://github.com/Unibo-PPS-1920/pps-19-motoScala/commits/$TRAVIS_BRANCH"'
+
+
