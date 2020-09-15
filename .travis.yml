@@ -49,7 +49,10 @@ deploy:
     github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
     keep_history: true
     on:
-      branch: master
+      os: linux
+      repo: Unibo-PPS-1920/pps-19-motoScala
+      branch: release
+      tags: true
 after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
   -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
   %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
