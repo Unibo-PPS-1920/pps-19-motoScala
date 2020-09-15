@@ -3,12 +3,14 @@ git:
   depth: false
 os: linux
 dist: xenial
+jdk: liberica_8 #oraclejdk8
 stages:
   stages:
     - check
     - telegram
     - deploy
 env:
+  JDK=liberica_8
   global:
     -OFFICIAL_REPO_SLUG="Unibo-PPS-1920/pps-19-motoScala"
 jobs:
@@ -17,8 +19,6 @@ jobs:
       name: "Gradle check on Linux OS and JDK8"
       os: linux
       script:
-        - mkdir "$TRAVIS_BUILD_DIR"/motoScala
-        - cd "$TRAVIS_BUILD_DIR"/motoScala
         - ./gradlew clean check fatjar --parallel
     - stage: telegram
       name: Telegram notification
@@ -28,7 +28,7 @@ jobs:
         - 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID
       -d "text=$(dirname $TRAVIS_REPO_SLUG) pushed to $TRAVIS_BRANCH %0ACommit: $TRAVIS_COMMIT_MESSAGE%0ALink:
       https://github.com/Unibo-PPS-1920/pps1920-motoScala-report/commits/$TRAVIS_BRANCH"'
-before_install:
+script:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
   - java -version
