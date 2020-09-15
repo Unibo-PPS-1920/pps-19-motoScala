@@ -3,11 +3,6 @@ git:
   depth: false
 os: linux
 dist: xenial
-before_script:
-  - echo "Downloading jdk"
-  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-  - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
-  - java -version
 env:
   - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
 stages:
@@ -18,6 +13,11 @@ jobs:
     - stage: check
       name: "Gradle check on Linux OS and JDK8"
       os: linux
+      before_script:
+        - echo "Downloading jdk"
+        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+        - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
+        - java -version
       script:
         - ./gradlew clean check fatjar --parallel
     - stage: telegram
