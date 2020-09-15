@@ -4,8 +4,11 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransfor
 plugins {
     java
     scala
+    jacoco
     `java-library`
     application
+    `project-report`
+    `build-dashboard`
     id(Libs.Plugins.scoverage) version Versions.scoverage
     id(Libs.Plugins.shadow) version Versions.shadow
 }
@@ -85,3 +88,12 @@ tasks.withType<Jar> {
         ))
     }
 }
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+
