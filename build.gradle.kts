@@ -66,6 +66,13 @@ application {
     mainClassName = Config.Project.mainClass
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
+}
+
 tasks.register<Jar>("fatjar") {
     archiveClassifier.set("fat")
     from(sourceSets.main.get().output)
@@ -95,5 +102,3 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
-
-
