@@ -28,8 +28,7 @@ jobs:
         - ./gradlew build fatjar --scan --parallel
       deploy:
         - provider: releases
-          api_key:
-            secure: lcO4ovqtqQfseALJN4J8MoctswhSXiAuIuGRKnzf+YwHiGMtiiv828gwk9MYOi0KtFJ9kx2ryTS/izzq7UuptcGjt5uYxRuHla3b0PL+uzYLHMdGY7lgMunRVHWOAXfQXSOdIXdeol5bO8ZoK4k4WCFj5JNsPY67jbmObu7wbwpQ+962XrOzRw0vRsNUDSE5x/bbYG2/aB0zWBfWc5H5lWq4UgCjeXh+pCRBm5xeSkshshaClfN9sHJ2Ec/5Ao4xAsCsg3nF8DoWaD2rM8HQJnKrYW/8pjTOS1/YCeCsNwHEZ3We4UKCaVWLPFhQqa0M+GKsSsTgxYChutxNo2PCQ93KLa++08BaQH9DUKELCzelz9E+4DbYuf1pIHsjHoIfGYtAjmprrju8JBw3BTmVMtNNfTv/CNQlzSCn6TpdK0aZLUxxEJYb8kpkzxO2zAOAhD83SjwnQcJz7RoyadcUvC0n41Q3PnMwj0iICKVlYuYOX/avhUimdS2uP/etupq7/ih+PtMLftnELpDe8UvUBSL+z9lti0qxzv2pwhoYLPQn3JGVd0Rbpkh7a5HQzpPDga9AHJ6YKcf5qlaDS8P6h6H/7unhaL2Q21F38VUq/xQBqwTcQGi4Ze6j/1PEzAFkR14vTjwapm7KdmiCe9BY4Xk7rJhdXrUEYNrPTIP1wLY=
+          api_key: $GITHUB_TOKEN
           file_glob: true
           file: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/build/libs/pps-19-motoScala-*.jar"
           skip_cleanup: 'true'
