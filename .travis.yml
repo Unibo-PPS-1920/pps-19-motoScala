@@ -47,6 +47,8 @@ deploy:
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true # opt in to dpl v2
+    on:
+      branch: release
     local_dir: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/report"
 after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
   -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
