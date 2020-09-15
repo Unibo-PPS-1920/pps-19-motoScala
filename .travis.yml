@@ -3,16 +3,13 @@ git:
   depth: false
 os: linux
 dist: xenial
-jdk: liberica_8 #oraclejdk8
 stages:
-  stages:
-    - check
-    - telegram
-    - deploy
+  - check
+  - telegram
 env:
-  JDK=liberica_8
-  global:
-    -OFFICIAL_REPO_SLUG="Unibo-PPS-1920/pps-19-motoScala"
+  - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
+  - global:
+      -OFFICIAL_REPO_SLUG="Unibo-PPS-1920/pps-19-motoScala"
 jobs:
   include:
     - stage: check
