@@ -1,4 +1,4 @@
-language: java
+language: bash
 git:
   depth: false
 os: linux
@@ -8,8 +8,6 @@ stages:
   - telegram
 env:
   - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
-  - global:
-      -OFFICIAL_REPO_SLUG="Unibo-PPS-1920/pps-19-motoScala"
 jobs:
   include:
     - stage: check
@@ -26,6 +24,7 @@ jobs:
       -d "text=$(dirname $TRAVIS_REPO_SLUG) pushed to $TRAVIS_BRANCH %0ACommit: $TRAVIS_COMMIT_MESSAGE%0ALink:
       https://github.com/Unibo-PPS-1920/pps1920-motoScala-report/commits/$TRAVIS_BRANCH"'
 script:
+  - echo "Downloading jdk"
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
   - java -version
