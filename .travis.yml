@@ -19,7 +19,7 @@ jobs:
         - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
         - java -version
       script:
-        - ./gradlew clean check fatjar --parallel
+        - ./gradlew clean build fatjar --parallel
     - stage: telegram
       name: Telegram notification
       if: tag IS NOT present AND type != pull_request
@@ -44,6 +44,10 @@ deploy:
       branch: release
       tags: true
     skip_cleanup: 'true'
+  - provider: pages
+    github_token: $GITHUB_TOKEN
+    edge: true # opt in to dpl v2
+    local_dir: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/report"
 after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
   -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
   %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
