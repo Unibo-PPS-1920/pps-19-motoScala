@@ -58,5 +58,3 @@ jobs:
         - 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID
       -d "text=$(dirname $TRAVIS_REPO_SLUG) pushed to $TRAVIS_BRANCH %0ACommit: $TRAVIS_COMMIT_MESSAGE%0ALink:
       https://github.com/Unibo-PPS-1920/pps-19-motoScala/commits/$TRAVIS_BRANCH"'
-
-
