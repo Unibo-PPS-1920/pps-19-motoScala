@@ -22,7 +22,6 @@ jobs:
       if: branch = release
       script:
         - TRAVIS_TAG=$(./gradlew -q printGitSemVer | cut -f 2 -d:)
-        - ./gradlew check --scan --parallel
       env:
         - PUBLISH="true"
 before_install:
@@ -32,7 +31,7 @@ before_install:
   - java -version
 before_deploy:
   - echo "Preparing for deploy"
-  - ./gradlew assemble scaladoc --scan --parallel
+  - ./gradlew check assemble scaladoc --scan --parallel
   - mkdir -p report
   - cp --parent */build/reports build/reports report -R
   - cp --parent */build/docs build/docs report -R
