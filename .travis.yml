@@ -21,8 +21,7 @@ jobs:
       #if: type != pull_request
       if: branch = release
       script:
-        - TRAVIS_TAG="./gradlew -q printGitSemVer | cut -f 2 -d:"
-        - eval $TRAVIS_TAG
+        - TRAVIS_TAG=$(./gradlew -q printGitSemVer | cut -f 2 -d:)
         - ./gradlew check --scan --parallel
       env:
         - PUBLISH="true"
@@ -47,6 +46,7 @@ deploy:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
       condition: $PUBLISH = "true"
+      all_branches: true
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true
@@ -56,4 +56,4 @@ deploy:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
       condition: $PUBLISH = "true"
-
+      all_branches: true
