@@ -33,8 +33,7 @@ before_deploy:
   - echo "Preparing for deploy"
   - ./gradlew check assemble scaladoc --scan --parallel
   - mkdir -p report
-  - cp --parent */build/reports build/reports report -R
-  - cp --parent */build/docs build/docs report -R
+  - cp --parent */build/reports build/reports */build/docs build/docs report -R
 deploy:
   - provider: releases
     api_key: $GITHUB_TOKEN
