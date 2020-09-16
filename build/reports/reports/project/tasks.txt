@@ -1,0 +1,95 @@
+
+------------------------------------------------------------
+Tasks runnable from root project
+------------------------------------------------------------
+
+Application tasks
+-----------------
+run - Runs this project as a JVM application
+runShadow - Runs this project as a JVM application using the shadow jar
+startShadowScripts - Creates OS specific scripts to run the project as a JVM application using the shadow jar
+
+Build tasks
+-----------
+assemble - Assembles the outputs of this project.
+build - Assembles and tests this project.
+buildDependents - Assembles and tests this project and all projects that depend on it.
+buildNeeded - Assembles and tests this project and all projects it depends on.
+classes - Assembles main classes.
+clean - Deletes the build directory.
+jar - Assembles a jar archive containing the main classes.
+javadocJar - Assembles a jar archive containing the main javadoc.
+scoverageClasses - Assembles scoverage classes.
+sourcesJar - Assembles a jar archive containing the main sources.
+testClasses - Assembles test classes.
+
+Build Setup tasks
+-----------------
+init - Initializes a new Gradle build.
+wrapper - Generates Gradle wrapper files.
+
+Distribution tasks
+------------------
+assembleDist - Assembles the main distributions
+assembleShadowDist - Assembles the shadow distributions
+distTar - Bundles the project as a distribution.
+distZip - Bundles the project as a distribution.
+installDist - Installs the project as a distribution as-is.
+installShadowDist - Installs the project as a distribution as-is.
+shadowDistTar - Bundles the project as a distribution.
+shadowDistZip - Bundles the project as a distribution.
+
+Documentation tasks
+-------------------
+javadoc - Generates Javadoc API documentation for the main source code.
+scaladoc - Generates Scaladoc for the main source code.
+
+Gradle Enterprise tasks
+-----------------------
+buildScanPublishPrevious - Publishes the data captured by the last build.
+provisionGradleEnterpriseAccessKey - Provisions a new access key for this build environment.
+
+Help tasks
+----------
+buildEnvironment - Displays all buildscript dependencies declared in root project 'pps-19-motoScala'.
+components - Displays the components produced by root project 'pps-19-motoScala'. [incubating]
+dependencies - Displays all dependencies declared in root project 'pps-19-motoScala'.
+dependencyInsight - Displays the insight into a specific dependency in root project 'pps-19-motoScala'.
+dependentComponents - Displays the dependent components of components in root project 'pps-19-motoScala'. [incubating]
+help - Displays a help message.
+kotlinDslAccessorsReport - Prints the Kotlin code for accessing the currently available project extensions and conventions.
+model - Displays the configuration model of root project 'pps-19-motoScala'. [incubating]
+outgoingVariants - Displays the outgoing variants of root project 'pps-19-motoScala'.
+projects - Displays the sub-projects of root project 'pps-19-motoScala'.
+properties - Displays the properties of root project 'pps-19-motoScala'.
+tasks - Displays the tasks runnable from root project 'pps-19-motoScala'.
+
+Reporting tasks
+---------------
+buildDashboard - Generates a dashboard of all the reports produced by this build.
+projectReport - Generates a report about your project.
+
+Shadow tasks
+------------
+knows - Do you know who knows?
+shadowJar - Create a combined JAR of project and runtime dependencies
+
+Verification tasks
+------------------
+check - Runs all checks.
+checkScoverage
+jacocoTestCoverageVerification - Verifies code coverage metrics based on specified rules for the test task.
+jacocoTestReport - Generates code coverage report for the test task.
+reportScoverage
+reportTestScoverage
+test - Runs the unit tests.
+
+Rules
+-----
+Pattern: clean<TaskName>: Cleans the output files of a task.
+Pattern: build<ConfigurationName>: Assembles the artifacts of a configuration.
+Pattern: upload<ConfigurationName>: Assembles and uploads the artifacts belonging to a configuration.
+
+To see all tasks and more detail, run gradlew tasks --all
+
+To see more detail about a task, run gradlew help --task <task>
