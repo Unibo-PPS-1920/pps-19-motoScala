@@ -51,7 +51,7 @@ deploy:
       repo: Unibo-PPS-1920/pps-19-motoScala
       condition: $PUBLISH = "true"
       all_branches: true
-      tags: true
+      #tags: true
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true
@@ -63,4 +63,4 @@ deploy:
       repo: Unibo-PPS-1920/pps-19-motoScala
       condition: $PUBLISH = "true"
       all_branches: true
-      tags: true
+      #tags: true
