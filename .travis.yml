@@ -7,18 +7,29 @@ env:
   - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
 stages:
   - check
+  - deploy
 jobs:
   include:
     - stage: check
       name: "Gradle check on Linux OS and JDK 8"
       os: linux
-      before_script:
-        - echo "Downloading jdk"
-        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-        - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
-        - java -version
       script:
         - ./gradlew check --scan --parallel
+    - stage: deploy
+      name: "Deploy on Linux OS and JDK 8"
+      os: linux
+      #if: type != pull_request
+      if: branch = release
+      script:
+        $TRAVIS_TAG=$(./gradlew -q printGitSemVer | cut -f 2 -d:)
+        $TRAVIS_TAG="${TRAVIS_TAG:1}"
+      env:
+        - PUBLISH="true"
+before_install:
+  - echo "Downloading jdk"
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
+  - java -version
 before_deploy:
   - echo "Preparing for deploy"
   - ./gradlew assemble scaladoc --scan --parallel
@@ -34,8 +45,7 @@ deploy:
     on:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
-      branch: release
-      tags: true
+      condition: $PUBLISH = "true"
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true
@@ -44,6 +54,5 @@ deploy:
     on:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
-      branch: release
-      tags: true
+      condition: $PUBLISH = "true"
 
