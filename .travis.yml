@@ -19,7 +19,7 @@ jobs:
       name: "Deploy on Linux OS and JDK 8"
       os: linux
       #if: type != pull_request
-      if: branch = release
+      if: tag IS present
       env:
         - PUBLISH="true"
 before_install:
