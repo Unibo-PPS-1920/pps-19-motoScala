@@ -11,10 +11,15 @@ plugins {
     `build-dashboard`
     id(Libs.Plugins.scoverage) version Versions.scoverage
     id(Libs.Plugins.shadow) version Versions.shadow
+    id(Libs.Plugins.sem_vers_pianini) version Versions.sem_vers_pianini
+}
+
+gitSemVer {
+    version = computeGitSemVer()
 }
 
 group = Config.Project.project_group
-version = Config.Project.project_version
+//version = Config.Project.project_version
 
 repositories {
     jcenter()
@@ -74,7 +79,7 @@ java {
 }
 
 tasks.register<Jar>("fatjar") {
-    archiveClassifier.set("fat")
+    archiveClassifier.set("-" + project.version.toString())
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
     from({
@@ -96,9 +101,9 @@ tasks.withType<Jar> {
     }
 }
 
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
 tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
+    dependsOn(tasks.test)
+}
+tasks.buildDashboard {
+    dependsOn(tasks.test, tasks.jacocoTestReport, tasks.projectReport)
 }

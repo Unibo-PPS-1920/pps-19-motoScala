@@ -2,7 +2,8 @@ object Versions {
     //PLUGINS
     const val scoverage = "4.0.2"
     const val shadow = "6.0.0"
-    
+    const val sem_vers_pianini = "0.2.2"
+
     //JAVAFX
     const val jfoenix = "8.0.8"
     const val ikonli = "2.4.0"

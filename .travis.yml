@@ -10,7 +10,7 @@ stages:
 jobs:
   include:
     - stage: check
-      name: "Gradle check on Linux OS and JDK8"
+      name: "Gradle check on Linux OS and JDK 8"
       os: linux
       before_script:
         - echo "Downloading jdk"
@@ -20,10 +20,11 @@ jobs:
       script:
         - ./gradlew check --scan --parallel
 before_deploy:
-  - ./gradlew build fatjar --scan --parallel
   - echo "Preparing for deploy"
+  - ./gradlew assemble scaladoc --scan --parallel
   - mkdir -p report
   - cp --parent */build/reports build/reports report -R
+  - cp --parent */build/docs build/docs report -R
 deploy:
   - provider: releases
     api_key: $GITHUB_TOKEN
@@ -34,7 +35,7 @@ deploy:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
       branch: release
-      #tags: true
+      tags: true
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true
@@ -44,8 +45,5 @@ deploy:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
       branch: release
-      #tags: true
-after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
-  -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
-  %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
+      tags: true
 
