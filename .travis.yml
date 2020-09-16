@@ -20,8 +20,6 @@ jobs:
       os: linux
       #if: type != pull_request
       if: branch = release
-      script:
-      #- RELEASE_NAME=$(./gradlew -q printGitSemVer | cut -f 2 -d:)
       env:
         - PUBLISH="true"
 before_install:
@@ -34,8 +32,8 @@ before_deploy:
   - ./gradlew check assemble scaladoc --scan --parallel
   #- mkdir -p report
   #- cp --parent */build/reports build/reports report -R
-  - mkdir -p report/build/reports
-  - mkdir -p report/build/docs
+  - mkdir -p build/reports/ report/build/reports
+  - mkdir -p build/docs/ report/build/docs
   - cp -r build/docs/ report/build/docs
   - cp -r build/reports/ report/build/reports
 deploy:
@@ -44,7 +42,6 @@ deploy:
     file_glob: true
     file: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/build/libs/pps-19-motoScala-*.jar"
     skip_cleanup: 'true'
-    name: $RELEASE_NAME
     on:
       os: linux
       repo: Unibo-PPS-1920/pps-19-motoScala
@@ -53,7 +50,6 @@ deploy:
   - provider: pages
     github_token: $GITHUB_TOKEN
     edge: true
-    name: $RELEASE_NAME
     skip_cleanup: 'true'
     local_dir: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/report"
     on:
