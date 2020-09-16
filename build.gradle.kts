@@ -4,14 +4,22 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransfor
 plugins {
     java
     scala
+    jacoco
     `java-library`
     application
+    `project-report`
+    `build-dashboard`
     id(Libs.Plugins.scoverage) version Versions.scoverage
     id(Libs.Plugins.shadow) version Versions.shadow
+    id(Libs.Plugins.sem_vers_pianini) version Versions.sem_vers_pianini
+}
+
+gitSemVer {
+    version = computeGitSemVer()
 }
 
 group = Config.Project.project_group
-version = Config.Project.project_version
+//version = Config.Project.project_version
 
 repositories {
     jcenter()
@@ -63,8 +71,15 @@ application {
     mainClassName = Config.Project.mainClass
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
+}
+
 tasks.register<Jar>("fatjar") {
-    archiveClassifier.set("fat")
+    archiveClassifier.set("-" + project.version.toString())
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
     from({
@@ -84,4 +99,11 @@ tasks.withType<Jar> {
                 "Main-Class" to "it.unibo.pps1920.motoscala.Main"
         ))
     }
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+}
+tasks.buildDashboard {
+    dependsOn(tasks.test, tasks.jacocoTestReport, tasks.projectReport)
 }
