@@ -32,8 +32,12 @@ before_install:
 before_deploy:
   - echo "Preparing for deploy"
   - ./gradlew check assemble scaladoc --scan --parallel
-  - mkdir -p report
-  - cp --parent */build/reports build/reports */build/docs build/docs report -R
+  #- mkdir -p report
+  #- cp --parent */build/reports build/reports report -R
+  - mkdir -p build/reports/ report/build/reports
+  - mkdir -p build/docs/ report/build/docs
+  - cp -r build/docs/ report/build/docs
+  - cp -r build/reports/ report/build/reports
 deploy:
   - provider: releases
     api_key: $GITHUB_TOKEN
