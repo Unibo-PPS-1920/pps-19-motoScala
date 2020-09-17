@@ -74,15 +74,6 @@ class SetSpec extends AnyWordSpec with Matchers {
       }
     }
   }
-
-  "A new Library class" when {
-    "created" should {
-      "Return always true" in {
-        val lib = new Library()
-        lib.someLibraryMethod() shouldBe true
-      }
-    }
-  }
 }
 
 
