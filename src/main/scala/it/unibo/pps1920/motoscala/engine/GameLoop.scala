@@ -16,6 +16,10 @@ class GameLoop private(
   val engine: UpdatableEngine
 ) extends GameCycle {
 
+  import org.slf4j.LoggerFactory
+
+  private val logger = LoggerFactory getLogger classOf[GameLoop]
+
   var _status: GameStatus = Stopped
 
   override def run(): Unit = {
@@ -26,12 +30,12 @@ class GameLoop private(
       engine.tick()
 
       val tickTime = System.currentTimeMillis() - start
-      val frameTime = getFrameMillis
-
-      if (tickTime < frameTime) {
-        Thread.sleep(frameTime - tickTime)
+      val remainderTime = getFrameMillis - tickTime
+      if (remainderTime > 0) {
+        logger debug "wasting " + remainderTime + "ms"
+        Thread.sleep(remainderTime)
       } else {
-
+        logger debug "overrun by " + remainderTime + "ms"
       }
     }
   }
@@ -39,13 +43,13 @@ class GameLoop private(
   def getFrameMillis: Long = 1000 / fps
 
   def pause: Unit = _status match {
-    case Running => _status = Paused; print("paused")
-    case Paused | Stopped => print("Not running, cant pause")
+    case Running => _status = Paused; logger debug "pausing"
+    case Paused | Stopped => logger error "Not running, can't pause"
   }
 
   def unPause: Unit = _status match {
-    case Paused => _status = Running; print("resumed")
-    case Running | Stopped => print("Not paused, cant unpause")
+    case Paused => _status = Running; logger debug "resumed"
+    case Running | Stopped => logger error "Not paused, can't unpause"
   }
 
   def status: GameStatus = _status
