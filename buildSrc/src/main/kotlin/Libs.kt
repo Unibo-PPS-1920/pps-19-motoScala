@@ -56,7 +56,7 @@ object Libs {
     }
 
     object Loggers {
-        const val logback = "ch.qos.logback:logback-parent:" + Versions.logback_classic
+        const val logback = "ch.qos.logback:logback-classic:" + Versions.logback_classic
     }
 
     object Serializers {
