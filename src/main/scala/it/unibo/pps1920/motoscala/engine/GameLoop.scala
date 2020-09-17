@@ -8,6 +8,7 @@ trait GameCycle extends Thread {
   def status: GameStatus
   def pause: Unit
   def unPause: Unit
+  def halt: Unit
 }
 
 
@@ -50,6 +51,11 @@ class GameLoop private(
   def unPause: Unit = _status match {
     case Paused => _status = Running; logger debug "resumed"
     case Running | Stopped => logger error "Not paused, can't unpause"
+  }
+
+  def halt: Unit = _status match {
+    case Running | Paused => _status = Stopped; logger debug "stopped"
+    case Stopped => logger error "Already stopped"
   }
 
   def status: GameStatus = _status
