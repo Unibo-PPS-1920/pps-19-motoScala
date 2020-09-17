@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.engine
 
 trait GameCycle {
   def fps_=(value: Int): Unit
-  def fps: Int = fps
+  def fps: Int
 }
 
 class GameLoop private(
