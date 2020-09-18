@@ -38,10 +38,10 @@ object GameLoop {
         val tickTime = System.currentTimeMillis() - start
         val deltaTime = getFrameMillis - tickTime
         if (deltaTime > 0) {
-          logger debug "wasting " + deltaTime + "ms"
+          //          logger debug "wasting " + deltaTime + "ms"
           Thread.sleep(deltaTime)
         } else {
-          logger debug "overrun by " + deltaTime + "ms"
+          //          logger debug "overrun by " + deltaTime + "ms"
         }
       }
     }
