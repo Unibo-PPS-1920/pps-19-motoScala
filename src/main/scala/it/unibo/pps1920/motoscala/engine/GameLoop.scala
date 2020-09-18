@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.engine
 
 import it.unibo.pps1920.motoscala.engine.GameStatus._
+import org.slf4j.LoggerFactory
 
 trait GameCycle extends Thread {
   def fps_=(value: Int): Unit
@@ -12,67 +13,67 @@ trait GameCycle extends Thread {
 }
 
 
-class GameLoop private(
-  override var fps: Int,
-  val engine: UpdatableEngine
-) extends GameCycle {
+object GameLoop {
+  def apply(fps: Int, engine: UpdatableEngine): GameCycle = new GameLoopImpl(fps, engine)
 
-  import org.slf4j.LoggerFactory
+  private class GameLoopImpl(
+    override var fps: Int,
+    val engine: UpdatableEngine
+  ) extends GameCycle {
 
-  private val Ms = 1000
-  private val logger = LoggerFactory getLogger classOf[GameLoop]
 
-  @volatile private var _status: GameStatus = Stopped
+    private val Ms = 1000
+    private val logger = LoggerFactory getLogger classOf[GameCycle]
 
-  override def run(): Unit = {
-    _status = Running
-    //noinspection LoopVariableNotUpdated
-    while (_status == Running) {
-      val start = System.currentTimeMillis()
+    @volatile private var _status: GameStatus = Stopped
 
-      engine.tick()
+    override def run(): Unit = {
+      _status = Running
+      //noinspection LoopVariableNotUpdated
+      while (_status == Running) {
+        val start = System.currentTimeMillis()
 
-      val tickTime = System.currentTimeMillis() - start
-      val deltaTime = getFrameMillis - tickTime
-      if (deltaTime > 0) {
-        logger debug "wasting " + deltaTime + "ms"
-        Thread.sleep(deltaTime)
-      } else {
-        logger debug "overrun by " + deltaTime + "ms"
+        engine.tick()
+
+        val tickTime = System.currentTimeMillis() - start
+        val deltaTime = getFrameMillis - tickTime
+        if (deltaTime > 0) {
+          logger debug "wasting " + deltaTime + "ms"
+          Thread.sleep(deltaTime)
+        } else {
+          logger debug "overrun by " + deltaTime + "ms"
+        }
       }
     }
-  }
 
-  private def getFrameMillis: Long = Ms / fps
+    private def getFrameMillis: Long = Ms / fps
 
-  override def pause(): GameStatus = this.synchronized {
-    _status match {
-      case Running => _status = Paused; logger debug "pausing"; _status
-      case Paused | Stopped => logger error "Not running, can't pause"; _status
+    override def pause(): GameStatus = this.synchronized {
+      _status match {
+        case Running => _status = Paused; logger debug "pausing"; _status
+        case Paused | Stopped => logger error "Not running, can't pause"; _status
+      }
+    }
+
+    override def unPause(): GameStatus = this.synchronized {
+      _status match {
+        case Paused => _status = Running; logger debug "resumed"; _status
+        case Running | Stopped => logger error "Not paused, can't unpause"; _status
+      }
+    }
+
+    override def halt(): GameStatus = this.synchronized {
+      _status match {
+        case Running | Paused => _status = Stopped; logger debug "stopped"; _status
+        case Stopped => logger error "Already stopped"; _status
+      }
+    }
+
+    def status: GameStatus = this.synchronized {
+      _status
     }
   }
 
-  override def unPause(): GameStatus = this.synchronized {
-    _status match {
-      case Paused => _status = Running; logger debug "resumed"; _status
-      case Running | Stopped => logger error "Not paused, can't unpause"; _status
-    }
-  }
-
-  override def halt(): GameStatus = this.synchronized {
-    _status match {
-      case Running | Paused => _status = Stopped; logger debug "stopped"; _status
-      case Stopped => logger error "Already stopped"; _status
-    }
-  }
-
-  def status: GameStatus = this.synchronized {
-    _status
-  }
-}
-
-object GameLoop {
-  def apply(fps: Int, engine: UpdatableEngine): GameCycle = new GameLoop(fps, engine)
 }
 
 
