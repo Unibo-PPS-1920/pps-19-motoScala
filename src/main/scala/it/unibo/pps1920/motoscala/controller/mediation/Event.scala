@@ -6,10 +6,10 @@ object Event {
   type LevelSetupData = String
   type LevelEndData = String
   type CommandData = String
-  trait DisplayableEvent extends Event
-  case class DrawEntityEvent(entity: Seq[Entity]) extends DisplayableEvent
-  case class LevelSetupEvent(data: LevelSetupData) extends DisplayableEvent
-  case class LevelEndEvent(data: LevelEndData) extends DisplayableEvent
-  trait CommandableEvent extends Event
-  case class CommandEvent(cmd: CommandData) extends CommandableEvent
+  sealed trait DisplayableEvent extends Event
+  final case class DrawEntityEvent(entity: Seq[Entity]) extends DisplayableEvent
+  final case class LevelSetupEvent(data: LevelSetupData) extends DisplayableEvent
+  final case class LevelEndEvent(data: LevelEndData) extends DisplayableEvent
+  sealed trait CommandableEvent extends Event
+  final case class CommandEvent(cmd: CommandData) extends CommandableEvent
 }
