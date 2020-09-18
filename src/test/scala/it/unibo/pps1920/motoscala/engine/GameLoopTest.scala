@@ -10,6 +10,11 @@ import org.scalatestplus.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Eventually {
 
+  import org.scalatest.time.{Millis, Span}
+
+
+  implicit override val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = scaled(Span(750, Millis)), interval = scaled(Span(5, Millis)))
   val engine: Engine = GameEngine()
   var loop: GameCycle = _
 
@@ -17,7 +22,7 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
     loop = GameLoop(60, engine)
   }
 
-  "A GameCycle" when {
+  "A GameLoop" when {
     "created" should {
       "be stopped" in {
         assert(loop.status == GameStatus.Stopped)
@@ -33,13 +38,14 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
       "be pausable" in {
         loop.start()
         eventually {
-          loop.pause()
-          assert(loop.status == GameStatus.Paused)
+
+          assert(loop.pause() == GameStatus.Paused)
         }
       }
       "be stoppable" in {
         loop.start()
         eventually {
+
           assert(loop.halt() == GameStatus.Stopped)
         }
       }
