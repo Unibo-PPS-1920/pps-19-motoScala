@@ -4,11 +4,11 @@ import it.unibo.pps1920.motoscala.engine.GameStatus._
 
 trait GameCycle extends Thread {
   def fps_=(value: Int): Unit
-  def fps: Int = fps
+  def fps: Int
   def status: GameStatus
-  def pause: Unit
-  def unPause: Unit
-  def halt: Unit
+  def pause(): GameStatus
+  def unPause(): GameStatus
+  def halt(): GameStatus
 }
 
 
@@ -19,46 +19,56 @@ class GameLoop private(
 
   import org.slf4j.LoggerFactory
 
+  private val Ms = 1000
   private val logger = LoggerFactory getLogger classOf[GameLoop]
 
-  var _status: GameStatus = Stopped
+  @volatile private var _status: GameStatus = Stopped
 
   override def run(): Unit = {
     _status = Running
+    //noinspection LoopVariableNotUpdated
     while (_status == Running) {
       val start = System.currentTimeMillis()
 
       engine.tick()
 
       val tickTime = System.currentTimeMillis() - start
-      val remainderTime = getFrameMillis - tickTime
-      if (remainderTime > 0) {
-        logger debug "wasting " + remainderTime + "ms"
-        Thread.sleep(remainderTime)
+      val deltaTime = getFrameMillis - tickTime
+      if (deltaTime > 0) {
+        logger debug "wasting " + deltaTime + "ms"
+        Thread.sleep(deltaTime)
       } else {
-        logger debug "overrun by " + remainderTime + "ms"
+        logger debug "overrun by " + deltaTime + "ms"
       }
     }
   }
 
-  def getFrameMillis: Long = 1000 / fps
+  private def getFrameMillis: Long = Ms / fps
 
-  def pause: Unit = _status match {
-    case Running => _status = Paused; logger debug "pausing"
-    case Paused | Stopped => logger error "Not running, can't pause"
+  override def pause(): GameStatus = this.synchronized {
+    _status match {
+      case Running => _status = Paused; logger debug "pausing"; _status
+      case Paused | Stopped => logger error "Not running, can't pause"; _status
+    }
   }
 
-  def unPause: Unit = _status match {
-    case Paused => _status = Running; logger debug "resumed"
-    case Running | Stopped => logger error "Not paused, can't unpause"
+  override def unPause(): GameStatus = this.synchronized {
+    _status match {
+      case Paused => _status = Running; logger debug "resumed"; _status
+      case Running | Stopped => logger error "Not paused, can't unpause"; _status
+    }
   }
 
-  def halt: Unit = _status match {
-    case Running | Paused => _status = Stopped; logger debug "stopped"
-    case Stopped => logger error "Already stopped"
+  override def halt(): GameStatus = this.synchronized {
+    _status match {
+      case Running | Paused => _status = Stopped; logger debug "stopped"; _status
+      case Stopped => logger error "Already stopped"; _status
+    }
   }
 
-  def status: GameStatus = _status
+  def status: GameStatus = this.synchronized {
+    _status
+  }
 }
 
 object GameLoop {
