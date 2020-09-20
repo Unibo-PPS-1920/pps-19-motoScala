@@ -12,9 +12,9 @@ object Mediator {
       observers.filter(o => o._2.isAssignableFrom(implicitly[ClassTag[T]].runtimeClass))
         .foreach(t => t._1.asInstanceOf[EventObserver[T]].notify(ev))
     }
-    override def subscribe[T: ClassTag](observer: EventObserver[T]): Unit =
-      observers = observers + (observer -> implicitly[ClassTag[T]].runtimeClass)
-    override def unsubscribe[T](observer: EventObserver[T]): Unit = observers = observers - observer
+    override def subscribe[T: ClassTag](observer: EventObserver[T]*): Unit =
+      observers = observers ++ observer.map(o => o -> implicitly[ClassTag[T]].runtimeClass).toSet
+    override def unsubscribe[T](observer: EventObserver[T]*): Unit = observers = observers -- observer
   }
 
   object Types {

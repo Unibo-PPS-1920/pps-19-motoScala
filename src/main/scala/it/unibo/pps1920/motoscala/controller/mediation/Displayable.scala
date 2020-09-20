@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.controller.mediation
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
 /**
- * Contract dedicated to listening for Displayable events
+ * This interfaced wraps an [[EventObserver]] for [[DisplayableEvent]].
  */
 trait Displayable extends EventObserver[DisplayableEvent] {
   def notifyDrawEntities(entities: Seq[Entity]): Unit
