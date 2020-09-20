@@ -6,21 +6,21 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import org.scalatestplus.junit.JUnitRunner
+import org.slf4j.LoggerFactory
 
 @RunWith(classOf[JUnitRunner])
 class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with BeforeAndAfterAll {
-  import org.slf4j.LoggerFactory
-  val logger = LoggerFactory.getLogger(classOf[MediatorTest])
-  var mediator: Mediator = _
-  var observerDrawable: DisplayableImpl = _
-  var observerCommand: CommandableImpl = _
+  private val logger = LoggerFactory.getLogger(classOf[MediatorTest])
+  private var mediator: Mediator = _
+  private var observerDrawable: DisplayableImpl = _
+  private var observerCommand: CommandableImpl = _
 
-  override def beforeAll: Unit = {
+  override def beforeAll(): Unit = {
     mediator = Mediator()
     observerDrawable = new DisplayableImpl()
     observerCommand = new CommandableImpl()
   }
-  override def afterAll: Unit = {
+  override def afterAll(): Unit = {
     logger info "Mediator test finished"
   }
 
@@ -55,17 +55,16 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       ToggleFlags.cmdFlag shouldBe true
     }
   }
-
-  class DisplayableImpl extends Displayable {
-    override def notifyDrawEntities(entities: Seq[Entity]): Unit = ToggleFlags.drawFlag = !ToggleFlags.drawFlag
-    override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
-    override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
-  }
-  class CommandableImpl extends Commandable {
-    override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
-  }
 }
 
+final class DisplayableImpl extends Displayable {
+  override def notifyDrawEntities(entities: Seq[Entity]): Unit = ToggleFlags.drawFlag = !ToggleFlags.drawFlag
+  override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
+  override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
+}
+final class CommandableImpl extends Commandable {
+  override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
+}
 object ToggleFlags {
   var drawFlag = false
   var setupFlag = false

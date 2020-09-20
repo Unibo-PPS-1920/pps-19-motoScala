@@ -8,6 +8,5 @@ trait Commandable extends EventObserver[CommandableEvent] {
   def notifyCommand(cmd: CommandData): Unit
   override def notify(event: CommandableEvent): Unit = event match {
     case CommandEvent(cmd) => notifyCommand(cmd)
-    case _ =>
   }
 }
