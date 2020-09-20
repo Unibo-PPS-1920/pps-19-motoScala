@@ -1,14 +1,28 @@
 package it.unibo.pps1920.motoscala.controller.mediation
 
-trait MediatorLike extends EventRegister {
+import scala.reflect.ClassTag
 
-}
-
-class Mediator private() extends MediatorLike {
-  override def registerHandler[T <: Event](handler: EventHandler[T]): Unit = ???
-  override def unRegisterHandler[T <: Event](handler: EventHandler[T]): Unit = ???
-}
-
+trait Mediator extends EventSubject
 object Mediator {
-  def apply(): Mediator = new Mediator()
+  import Types._
+  private class MediatorImpl extends Mediator {
+    private var observers: Map[Observer, EventType] = Map()
+
+    override def publishEvent[T: ClassTag](ev: T): Unit = {
+      observers.filter(o => o._2.isAssignableFrom(implicitly[ClassTag[T]].runtimeClass))
+        .foreach(t => t._1.asInstanceOf[EventObserver[T]].notify(ev))
+    }
+    override def subscribe[T: ClassTag](observer: EventObserver[T]*): Unit =
+      observers = observers ++ observer.map(o => o -> implicitly[ClassTag[T]].runtimeClass).toSet
+    override def unsubscribe[T](observer: EventObserver[T]*): Unit = observers = observers -- observer
+  }
+
+  object Types {
+    type EventType = Class[_]
+    type Observer = EventObserver[_]
+  }
+
+  def apply(): Mediator = new MediatorImpl()
 }
+
+

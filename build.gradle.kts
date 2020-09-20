@@ -38,6 +38,7 @@ dependencies {
     implementation(Libs.Scala.scalafx)
     implementation(Libs.Scala.scalafx_extras)
     //SCALA
+    implementation("org.scala-lang:scala-reflect:2.13.3")
     implementation(Libs.Scala.scala_library)
     implementation(Libs.Scala.scalatest_wordspec)
     implementation(Libs.Scala.scalatest_funspec)
