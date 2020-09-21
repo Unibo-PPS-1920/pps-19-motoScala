@@ -51,13 +51,3 @@ object GameEngine {
 
 }
 
-object Main extends App {
-  val engine = GameEngine()
-  engine.init()
-  engine.start()
-  Thread.sleep(5000)
-  engine.pause()
-  //  engine.resume()
-}
-
-
