@@ -9,8 +9,6 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
-import scala.util.{Failure, Success}
-
 @RunWith(classOf[JUnitRunner])
 class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   import ComponentManagerTestClasses._
@@ -46,24 +44,23 @@ class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Match
     }
     "a component is registered" should {
       "bind component to entity" in {
-        componentManager.bindComponentToEntity(entity, comp1) shouldBe Success(entity, comp1)
+        componentManager.bindComponentToEntity(entity, comp1) shouldBe ECSSignature(comp1.getClass)
       }
       "get component from entity" in {
         componentManager.getEntityComponent(entity, comp1.getClass).get shouldEqual comp1
       }
       "unbind component from entity" in {
-        componentManager.unbindComponentFromEntity(entity, comp1) shouldBe Success(entity, comp1)
+        componentManager.unbindComponentFromEntity(entity, comp1) shouldBe ECSSignature()
       }
       "unbind nothing from entity" in {
-        componentManager.unbindComponentFromEntity(entity, comp1) shouldBe Success(entity, comp1)
-      }
-      "unbind not existing entity" in {
-        componentManager.unbindComponentFromEntity(entityNotUsed, comp1) shouldBe Success(entityNotUsed, comp1)
+        componentManager.unbindComponentFromEntity(entity, comp1) shouldBe ECSSignature()
       }
     }
     "a component is not registered" should {
       "fail trying to bind component" in {
-        componentManager.bindComponentToEntity(entity, comp2).getClass shouldBe classOf[Failure[(Entity, Component)]]
+        assertThrows[IllegalArgumentException] {
+          componentManager.bindComponentToEntity(entity, comp2)
+        }
       }
     }
   }

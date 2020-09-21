@@ -1,16 +1,14 @@
 package it.unibo.pps1920.motoscala.ecs.managers
 
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
 import it.unibo.pps1920.motoscala.ecs.{Component, Entity, System}
 
-import scala.util.Try
-
 trait Coordinator {
-  import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
   def createEntity(entity: Entity): Unit
   def removeEntity(entity: Entity): Unit
   def registerComponentType(compType: ComponentType): Unit
-  def addEntityComponent(entity: Entity, component: Component): Try[(Entity, Component)]
-  def removeEntityComponent(entity: Entity, component: Component): Try[(Entity, Component)]
+  def addEntityComponent(entity: Entity, component: Component): Unit
+  def removeEntityComponent(entity: Entity, component: Component): Unit
   def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
   def registerSystem(sys: System): Unit
   def signSystem(sys: System, sysSignature: ECSSignature): Unit
@@ -23,12 +21,24 @@ object Coordinator {
     private val systemManager = SystemManager()
     private val entityManager = EntityManager()
 
-    override def createEntity(entity: Entity): Unit = entityManager.createEntity(entity)
-    override def removeEntity(entity: Entity): Unit = entityManager.removeEntity(entity)
+    import ImplicitConversions._
+    override def createEntity(entity: Entity): Unit = entityManager createEntity entity
+    override def removeEntity(entity: Entity): Unit = {
+      entityManager removeEntity entity
+      systemManager entityDestroyed entity
+    }
     override def registerComponentType(compType: ComponentType): Unit = componentManager.registerComponentType(compType)
-    override def addEntityComponent(entity: Entity, component: Component): Try[(Entity, Component)] = ???
-    override def removeEntityComponent(entity: Entity, component: Component): Try[(Entity, Component)] = {
-      componentManager.unbindComponentFromEntity(entity, component)
+    override def addEntityComponent(entity: Entity, component: Component): Unit = {
+      val signatureByEManger = entityManager.updateSignature(entity, _.signComponent(component))
+      val signatureByCManager = componentManager.bindComponentToEntity(entity, component)
+      require(signatureByEManger == signatureByCManager)
+      systemManager.entitySignatureChanged(entity, signatureByEManger)
+    }
+    override def removeEntityComponent(entity: Entity, component: Component): Unit = {
+      val signatureByEManger = entityManager.updateSignature(entity, _.repudiateComponent(component))
+      val signatureByCManager = componentManager.unbindComponentFromEntity(entity, component)
+      require(signatureByEManger == signatureByCManager)
+      systemManager.entitySignatureChanged(entity, signatureByEManger)
     }
     override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
       componentManager.getEntityComponent(entity, compType)
@@ -36,6 +46,10 @@ object Coordinator {
     override def signSystem(sys: System, sysSignature: ECSSignature): Unit = systemManager
       .setSignature(sys, sysSignature)
     override def updateSystems(): Unit = systemManager.updateAll()
+
+    object ImplicitConversions {
+      implicit def componentToComponentType(component: Component): ComponentType = component.getClass
+    }
   }
   type ComponentType = Class[_]
   def apply(): Coordinator = new CoordinatorImpl()
