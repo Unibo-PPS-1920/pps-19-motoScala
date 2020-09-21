@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 
 @RunWith(classOf[JUnitRunner])
 class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with BeforeAndAfterAll {
+  import MediatorTestClasses._
   private val logger = LoggerFactory.getLogger(classOf[MediatorTest])
   private var mediator: Mediator = _
   private var observerDrawable: DisplayableImpl = _
@@ -56,14 +57,15 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
     }
   }
 }
-
-final class DisplayableImpl extends Displayable {
-  override def notifyDrawEntities(entities: Seq[Entity]): Unit = ToggleFlags.drawFlag = !ToggleFlags.drawFlag
-  override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
-  override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
-}
-final class CommandableImpl extends Commandable {
-  override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
+object MediatorTestClasses {
+  final class DisplayableImpl extends Displayable {
+    override def notifyDrawEntities(entities: Seq[Entity]): Unit = ToggleFlags.drawFlag = !ToggleFlags.drawFlag
+    override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
+    override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
+  }
+  final class CommandableImpl extends Commandable {
+    override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
+  }
 }
 object ToggleFlags {
   var drawFlag = false

@@ -11,6 +11,7 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class EntityManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
+  import EntityManagerTestClasses._
   private var entityManager: EntityManager = _
   private var entity1: Entity = _
 
@@ -49,7 +50,9 @@ class EntityManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
       }
     }
   }
+}
 
+object EntityManagerTestClasses {
   final case class Comp1() extends Component
   final case class Comp2() extends Component
   final case class TestEntity(_uuid: UUID) extends Entity {

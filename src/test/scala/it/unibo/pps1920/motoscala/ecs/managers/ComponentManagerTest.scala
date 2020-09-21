@@ -13,6 +13,7 @@ import scala.util.{Failure, Success}
 
 @RunWith(classOf[JUnitRunner])
 class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
+  import ComponentManagerTestClasses._
   private var componentManager: ComponentManager = _
   private var entity: Entity = _
   private var entityNotUsed: Entity = _
@@ -67,8 +68,10 @@ class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Match
     }
   }
 }
-final case class Comp1() extends Component
-final case class Comp2() extends Component
-final case class TestEntity(_uuid: UUID) extends Entity {
-  override def uuid: UUID = _uuid
+object ComponentManagerTestClasses {
+  final case class Comp1() extends Component
+  final case class Comp2() extends Component
+  final case class TestEntity(_uuid: UUID) extends Entity {
+    override def uuid: UUID = _uuid
+  }
 }

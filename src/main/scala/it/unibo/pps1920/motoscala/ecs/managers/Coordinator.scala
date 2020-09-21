@@ -5,5 +5,5 @@ trait Coordinator {
 }
 
 object Coordinator {
-  type EntitySignature = Set[Class[_]]
+  type ECSSignature = Set[Class[_]]
 }
