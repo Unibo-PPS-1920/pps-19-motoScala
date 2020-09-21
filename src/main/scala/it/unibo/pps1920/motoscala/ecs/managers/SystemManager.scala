@@ -1,6 +1,5 @@
 package it.unibo.pps1920.motoscala.ecs.managers
 
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ECSSignature
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 
 trait SystemManager {

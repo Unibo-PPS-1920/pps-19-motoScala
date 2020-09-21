@@ -38,13 +38,13 @@ class SystemManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
       }
 
       "set a system signature" in {
-        sysManager.setSignature(sys1, Set(comp1.getClass, comp2.getClass))
-        sysManager.setSignature(sys2, Set(comp1.getClass))
+        sysManager.setSignature(sys1, ECSSignature(comp1.getClass, comp2.getClass))
+        sysManager.setSignature(sys2, ECSSignature(comp1.getClass))
       }
 
       "notify entity signature changed" in {
-        sysManager.entitySignatureChanged(entity, Set(comp1.getClass, comp2.getClass)) shouldBe Set(sys1)
-        sysManager.entitySignatureChanged(entity, Set(comp1.getClass)) shouldBe Set(sys2)
+        sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass, comp2.getClass)) shouldBe Set(sys1)
+        sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass)) shouldBe Set(sys2)
       }
 
       "update all systems" in {

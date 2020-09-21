@@ -43,10 +43,10 @@ class EntityManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
     }
     "entity registered" should {
       "sign an entity" in {
-        entityManager.signEntity(entity1, Set(classOf[Comp1], classOf[Comp2]))
+        entityManager.signEntity(entity1, ECSSignature(classOf[Comp1], classOf[Comp2]))
       }
       "signed entity must have 2 component signed" in {
-        entityManager.getEntitySignature(entity1).get shouldBe Set(classOf[Comp1], classOf[Comp2])
+        entityManager.getEntitySignature(entity1).get shouldBe ECSSignature(classOf[Comp1], classOf[Comp2])
       }
     }
   }

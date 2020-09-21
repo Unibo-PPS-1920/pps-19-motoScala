@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.ecs.managers
 
-import it.unibo.pps1920.motoscala.ecs.managers.ComponentManager.ComponentType
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
 import it.unibo.pps1920.motoscala.ecs.managers.exceptions.ComponentNotRegisteredException
 import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
 
@@ -48,6 +48,5 @@ object ComponentManager {
       implicit def componentToComponentType(component: Component): ComponentType = component.getClass
     }
   }
-  type ComponentType = Class[_]
   def apply(): ComponentManager = new ComponentManagerImpl()
 }
