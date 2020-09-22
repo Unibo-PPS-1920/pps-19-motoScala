@@ -4,7 +4,7 @@ import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
 import it.unibo.pps1920.motoscala.ecs.{Component, Entity, System}
 
 trait Coordinator {
-  def createEntity(entity: Entity): Unit
+  def addEntity(entity: Entity): Unit
   def removeEntity(entity: Entity): Unit
   def registerComponentType(compType: ComponentType): Unit
   def addEntityComponent(entity: Entity, component: Component): Unit
@@ -22,7 +22,7 @@ object Coordinator {
     private val entityManager = EntityManager()
 
     import ImplicitConversions._
-    override def createEntity(entity: Entity): Unit = entityManager createEntity entity
+    override def addEntity(entity: Entity): Unit = entityManager addEntity entity
     override def removeEntity(entity: Entity): Unit = {
       entityManager removeEntity entity
       systemManager entityDestroyed entity
@@ -31,13 +31,13 @@ object Coordinator {
     override def addEntityComponent(entity: Entity, component: Component): Unit = {
       val signatureByEManger = entityManager.updateSignature(entity, _.signComponent(component))
       val signatureByCManager = componentManager.bindComponentToEntity(entity, component)
-      require(signatureByEManger == signatureByCManager)
+      require(signatureByEManger == signatureByCManager, "Signature mismatch")
       systemManager.entitySignatureChanged(entity, signatureByEManger)
     }
     override def removeEntityComponent(entity: Entity, component: Component): Unit = {
       val signatureByEManger = entityManager.updateSignature(entity, _.repudiateComponent(component))
       val signatureByCManager = componentManager.unbindComponentFromEntity(entity, component)
-      require(signatureByEManger == signatureByCManager)
+      require(signatureByEManger == signatureByCManager, "Signature mismatch")
       systemManager.entitySignatureChanged(entity, signatureByEManger)
     }
     override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
