@@ -15,11 +15,18 @@ private[managers] object EntityManager {
     private var _entities: Set[Entity] = Set()
     private var signatures: Map[Entity, ECSSignature] = Map()
 
-    override def addEntity(entity: Entity): Unit = _entities += entity
-    override def removeEntity(entity: Entity): Unit = _entities = _entities filter (_ != entity)
+    override def addEntity(entity: Entity): Unit = {
+      _entities += entity
+      signatures += (entity -> ECSSignature())
+    }
+    override def removeEntity(entity: Entity): Unit = _entities = {
+      signatures -= entity
+      _entities filter (_ != entity)
+    }
     override def entities: Set[Entity] = _entities
     override def getEntitySignature(entity: Entity): Option[ECSSignature] = signatures get entity
     override def signEntity(entity: Entity, signature: ECSSignature): ECSSignature = {
+      _entities += entity
       signatures += (entity -> signature)
       signature
     }
