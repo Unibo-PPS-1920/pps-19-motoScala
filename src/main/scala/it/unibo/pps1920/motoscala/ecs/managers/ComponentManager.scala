@@ -9,6 +9,7 @@ private[managers] trait ComponentManager {
   def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
   def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
   def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
+  def entityDestroyed(entity: Entity): Unit
 }
 
 private[managers] object ComponentManager {
@@ -35,6 +36,7 @@ private[managers] object ComponentManager {
     }
     override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
       entityComponent.get(entity).flatMap(_.get(compType))
+    override def entityDestroyed(entity: Entity): Unit = entityComponent -= entity
 
     object ImplicitConversions {
       implicit def componentToComponentType(component: Component): ComponentType = component.getClass
