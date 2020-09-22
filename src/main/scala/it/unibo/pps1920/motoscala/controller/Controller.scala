@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.controller
 
 import it.unibo.pps1920.motoscala.engine.{Engine, GameEngine}
-import it.unibo.pps1920.motoscala.view.{ObserverUI, View}
+import it.unibo.pps1920.motoscala.view.ObserverUI
 import org.slf4j.LoggerFactory
 
 trait Controller extends ActorController with SoundController with UpdatableUI {
@@ -10,7 +10,7 @@ trait Controller extends ActorController with SoundController with UpdatableUI {
 
 object Controller {
   private class ControllerImpl private[Controller]() extends Controller {
-    private val logger = LoggerFactory getLogger classOf[View]
+    private val logger = LoggerFactory getLogger classOf[Controller]
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
 
