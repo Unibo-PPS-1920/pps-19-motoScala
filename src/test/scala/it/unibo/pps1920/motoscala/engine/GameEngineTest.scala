@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.engine
 
+import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.engine.EngineTestClasses._
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually
@@ -9,16 +11,17 @@ import org.scalatestplus.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   var engine: Engine = _
+  val mediator: Mediator = Mediator()
 
   override def beforeAll: Unit = {
-    engine = GameEngine()
+    engine = GameEngine(mediator)
   }
 
 
   "A GameEngine" when {
     "created" should {
       "init" in {
-        engine.init()
+        engine.init(Level())
       }
       "start" in {
         engine.start()
@@ -48,4 +51,12 @@ class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
       }
     }
   }
+}
+
+object EngineTestClasses {
+
+  import it.unibo.pps1920.motoscala.controller.LevelDescription
+
+  final case class Level() extends LevelDescription
+
 }

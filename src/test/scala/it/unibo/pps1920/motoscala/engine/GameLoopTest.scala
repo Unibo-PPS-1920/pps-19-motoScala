@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.engine
 
+import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.Eventually
@@ -13,9 +14,12 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
   import org.scalatest.time.{Millis, Span}
 
 
-  implicit override val patienceConfig: PatienceConfig =
+  implicit override val patienceConfig: PatienceConfig = {
     PatienceConfig(timeout = scaled(Span(750, Millis)), interval = scaled(Span(5, Millis)))
-  val engine: Engine = GameEngine()
+
+  }
+  val mediator = Mediator()
+  val engine: Engine = GameEngine(mediator)
   var loop: GameLoop = _
 
   before {
