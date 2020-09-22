@@ -2,22 +2,27 @@ package it.unibo.pps1920.motoscala.view
 
 import com.sun.javafx.application.PlatformImpl
 import it.unibo.pps1920.motoscala.controller.UpdatableUI
-import it.unibo.pps1920.motoscala.view.FXMLScreens.FXMLScreens
+import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.utilities.ViewStateMachine
 import javafx.application.Platform
 import javafx.scene.{Node, Scene}
 import javafx.stage.Stage
 import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
 
-trait ViewFacade extends ObserverUI {
+trait View extends ObserverUI {
   def start(): Unit
-  def changeScreen(screen: FXMLScreens): Unit
+}
+
+private[view] trait ViewFacade {
+  def changeScreen(screen: ScreenEvent): Unit
   def loadFXMLNode(screen: FXMLScreens, controller: Object): Node
 }
 
-object ViewFacade {
-  private class ViewFacadeImpl(controller: UpdatableUI) extends ViewFacade {
-    private val logger = LoggerFactory getLogger classOf[ViewFacade]
+object View {
+  private class ViewImpl(controller: UpdatableUI) extends View with ViewFacade {
+    private val logger = LoggerFactory getLogger classOf[View]
+    private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
 
     private var stage: Option[Stage] = None
@@ -33,14 +38,14 @@ object ViewFacade {
         logger info s"View started on ${Thread.currentThread()}"
       })
     }
-    override def changeScreen(screen: FXMLScreens): Unit = screenLoader.applyScreen(screen, root)
+    override def changeScreen(event: ScreenEvent): Unit = screenLoader.applyScreen(stateMachine.consume(event), root)
     override def loadFXMLNode(screen: FXMLScreens, controller: Object): Node = screenLoader
       .loadFXMLNode(screen, controller)
   }
-  def apply(controller: UpdatableUI): ViewFacade = {
+  def apply(controller: UpdatableUI): View = {
     require(controller != null)
     PlatformImpl.startup(() => {})
-    new ViewFacadeImpl(controller)
+    new ViewImpl(controller)
   }
 }
 

@@ -39,6 +39,9 @@ object Libs {
         const val scala_collection_contrib = "org.scala-lang.modules:scala-collection-contrib_2.13:" + Versions.scala_collection_contrib
         const val scala_parallel_collections = "org.scala-lang.modules:scala-parallel-collections_2.13:" + Versions.scala_parallel_collections
         const val scala_async = "org.scala-lang.modules:scala-async_2.13:" + Versions.scala_async
+
+        //FSA
+        const val fsa = "org.driangle:simple-state-machine_2.13:" + Versions.scala_fsa
     }
 
     object Akka {

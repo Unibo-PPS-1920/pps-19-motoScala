@@ -1,16 +1,16 @@
 package it.unibo.pps1920.motoscala.view
 
-import it.unibo.pps1920.motoscala.view.FXMLScreens.FXMLScreens
 import it.unibo.pps1920.motoscala.view.errors.ViewError.ScreenNotfound
+import it.unibo.pps1920.motoscala.view.screens.FXMLScreens
 import javafx.fxml.FXMLLoader
 import javafx.scene.Node
 import javafx.scene.layout.Pane
 
-trait ScreenLoader {
+private[view] trait ScreenLoader {
   def applyScreen(screen: FXMLScreens, root: Pane): Either[ScreenNotfound, Boolean]
   def loadFXMLNode(screen: FXMLScreens, controller: Object): Node
 }
-object ScreenLoader {
+private[view] object ScreenLoader {
   class ScreenLoaderImpl extends ScreenLoader {
     private var cache: Map[FXMLScreens, Node] = Map()
 
