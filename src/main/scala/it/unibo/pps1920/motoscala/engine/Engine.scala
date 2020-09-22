@@ -1,10 +1,14 @@
 package it.unibo.pps1920.motoscala.engine
 
+import it.unibo.pps1920.motoscala.controller.mediation.Commandable
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import org.slf4j.LoggerFactory
 
-trait Engine extends UpdatableEngine {
+import scala.collection.mutable
+
+trait Engine extends UpdatableEngine with Commandable {
   def init(): Unit
   def start(): Unit
   def pause(): Unit
@@ -20,37 +24,28 @@ object GameEngine {
 
 
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private var gameLoop: Option[GameLoop] = None
+    private val gameLoop = GameLoop(60, this)
     private val coordinator: Coordinator = Coordinator()
+    private var eventQueue: mutable.Queue[CommandableEvent] = mutable.Queue()
 
     override def tick(): Unit = coordinator.updateSystems()
 
     override def init(): Unit = {
-      gameLoop = Some(GameLoop(60, this))
-    }
-    override def start(): Unit = {
-      gameLoop match {
-        case Some(loop) =>
-          loop.status match {
-            case Stopped => loop.start()
-            case _ => logger error "GameLoop already started"
-          }
-        case None => logger error "Loop not initialized"
-      }
 
     }
-    override def pause(): Unit = gameLoop match {
-      case Some(loop) => loop.pause()
-      case None => logger error "Loop not initialized"
+    override def start(): Unit = {
+      gameLoop.status match {
+        case Stopped => gameLoop.start()
+        case _ => logger error "GameLoop already started"
+      }
     }
-    override def resume(): Unit = gameLoop match {
-      case Some(loop) => loop.unPause()
-      case None => logger error "Loop not initialized"
-    }
-    override def stop(): Unit = gameLoop match {
-      case Some(loop) => loop.halt()
-      case None => logger error "Loop not initialized"
-    }
+    override def pause(): Unit = gameLoop.pause()
+
+    override def resume(): Unit = gameLoop.unPause()
+
+    override def stop(): Unit = gameLoop.halt()
+
+    override def notifyCommand(cmd: CommandData): Unit = eventQueue.enqueue(CommandEvent(cmd))
   }
 
 }

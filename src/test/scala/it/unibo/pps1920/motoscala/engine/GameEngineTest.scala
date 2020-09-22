@@ -17,12 +17,6 @@ class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
 
   "A GameEngine" when {
     "created" should {
-      "not work unless inited" in {
-        engine.start()
-        engine.pause()
-        engine.resume()
-        engine.stop()
-      }
       "init" in {
         engine.init()
       }
