@@ -17,7 +17,7 @@ object GameEngine {
 
   private class GameEngineImpl extends Engine {
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private var gameLoop: Option[GameCycle] = None
+    private var gameLoop: Option[GameLoop] = None
 
     override def tick(): Unit = {Thread.sleep(16) }
 

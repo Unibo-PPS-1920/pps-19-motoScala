@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.engine
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import org.slf4j.LoggerFactory
 
-trait GameCycle extends Thread {
+trait GameLoop extends Thread {
   def fps_=(value: Int): Unit
   def fps: Int
   def status: GameStatus
@@ -14,16 +14,16 @@ trait GameCycle extends Thread {
 
 
 object GameLoop {
-  def apply(fps: Int, engine: UpdatableEngine): GameCycle = new GameLoopImpl(fps, engine)
+  def apply(fps: Int, engine: UpdatableEngine): GameLoop = new GameLoopImpl(fps, engine)
 
   private class GameLoopImpl(
     override var fps: Int,
     val engine: UpdatableEngine
-  ) extends GameCycle {
+  ) extends GameLoop {
 
 
     private val Ms = 1000
-    private val logger = LoggerFactory getLogger classOf[GameCycle]
+    private val logger = LoggerFactory getLogger classOf[GameLoop]
 
     @volatile private var _status: GameStatus = Stopped
 
