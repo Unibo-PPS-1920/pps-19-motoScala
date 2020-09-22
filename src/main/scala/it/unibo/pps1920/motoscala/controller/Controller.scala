@@ -17,7 +17,7 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def startGame(level: Level): Unit = engine = Option(GameEngine())
-    override def start(): Unit = logger info "Controller started"
+    override def start(): Unit = logger info s"Controller started on ${Thread.currentThread()}"
   }
   def apply(): Controller = new ControllerImpl()
 }
