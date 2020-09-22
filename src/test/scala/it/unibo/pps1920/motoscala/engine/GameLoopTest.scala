@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.engine
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.Eventually
-import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
@@ -16,7 +16,7 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
   implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(Span(750, Millis)), interval = scaled(Span(5, Millis)))
   val engine: Engine = GameEngine()
-  var loop: GameCycle = _
+  var loop: GameLoop = _
 
   before {
     loop = GameLoop(60, engine)
@@ -25,37 +25,52 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
   "A GameLoop" when {
     "created" should {
       "be stopped" in {
-        assert(loop.status == GameStatus.Stopped)
+        loop.status shouldBe GameStatus.Stopped
+      }
+      "not be pausable" in {
+        loop.pause() shouldBe GameStatus.Stopped
+      }
+      "not be unpausable" in {
+        loop.unPause() shouldBe GameStatus.Stopped
+      }
+      "not be stoppable" in {
+        loop.halt() shouldBe GameStatus.Stopped
       }
     }
     "started" should {
       "be running" in {
         loop.start()
         eventually {
-          assert(loop.status == GameStatus.Running)
+          loop.status shouldBe GameStatus.Running
         }
       }
       "be pausable" in {
         loop.start()
         eventually {
-
-          assert(loop.pause() == GameStatus.Paused)
+          loop.pause() shouldBe GameStatus.Paused
+        }
+        eventually {
+          loop.pause() shouldBe GameStatus.Paused
         }
       }
       "be stoppable" in {
         loop.start()
         eventually {
-
-          assert(loop.halt() == GameStatus.Stopped)
+          loop.halt() shouldBe GameStatus.Stopped
+        }
+        eventually {
+          loop.pause() shouldBe GameStatus.Stopped
         }
       }
     }
     "paused" should {
       "be resumable" in {
         loop.start()
-        loop.pause()
         eventually {
-          assert(loop.unPause() == GameStatus.Running)
+          loop.pause() shouldBe GameStatus.Paused
+        }
+        eventually {
+          loop.unPause() shouldBe GameStatus.Running
         }
       }
     }

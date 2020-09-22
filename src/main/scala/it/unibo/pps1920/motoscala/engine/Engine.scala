@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.engine
 
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import org.slf4j.LoggerFactory
 
@@ -16,10 +17,13 @@ object GameEngine {
   def apply(): Engine = new GameEngineImpl()
 
   private class GameEngineImpl extends Engine {
-    private val logger = LoggerFactory getLogger classOf[Engine]
-    private var gameLoop: Option[GameCycle] = None
 
-    override def tick(): Unit = {Thread.sleep(16) }
+
+    private val logger = LoggerFactory getLogger classOf[Engine]
+    private var gameLoop: Option[GameLoop] = None
+    private val coordinator: Coordinator = Coordinator()
+
+    override def tick(): Unit = coordinator.updateSystems()
 
     override def init(): Unit = {
       gameLoop = Some(GameLoop(60, this))
@@ -50,14 +54,4 @@ object GameEngine {
   }
 
 }
-
-object Main extends App {
-  val engine = GameEngine()
-  engine.init()
-  engine.start()
-  Thread.sleep(5000)
-  engine.pause()
-  //  engine.resume()
-}
-
 
