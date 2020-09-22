@@ -13,7 +13,7 @@ object ECSSignature {
   private case class ECSSignatureImpl() extends ECSSignature {
     private var signature: Set[ComponentType] = Set()
 
-    def signComponent(componentType: ComponentType*): ECSSignature = {
+    override def signComponent(componentType: ComponentType*): ECSSignature = {
       signature = signature ++ componentType
       this
     }
@@ -21,11 +21,11 @@ object ECSSignature {
       componentTypes.foreach(signComponent(_))
       this
     }
-    def repudiateComponent(componentType: ComponentType*): ECSSignature = {
+    override def repudiateComponent(componentType: ComponentType*): ECSSignature = {
       signature = signature -- componentType
       this
     }
-    def signatureSet: Set[ComponentType] = signature
+    override def signatureSet: Set[ComponentType] = signature
     override def repudiateComponent(componentTypes: Iterable[ComponentType]): ECSSignature = {
       componentTypes.foreach(signComponent(_))
       this

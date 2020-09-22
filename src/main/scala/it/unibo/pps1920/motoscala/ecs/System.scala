@@ -13,5 +13,5 @@ abstract class AbstractSystem() extends System {
   override def entitiesRef(): Set[Entity] = _entitiesRef
   override def addEntityRef(entity: Entity): Unit = _entitiesRef += entity
   override def removeEntityRef(entity: Entity): Unit = _entitiesRef -= entity
-  def update(): Unit
+  override def update(): Unit
 }

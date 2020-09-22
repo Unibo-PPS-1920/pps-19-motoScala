@@ -19,8 +19,8 @@ private[managers] object SystemManager {
     override def entitySignatureChanged(entity: Entity, enSignature: ECSSignature): Set[System] = {
       val partition = systemSignature.partition(_._2.signatureSet.intersect(enSignature.signatureSet)
                                                   == enSignature.signatureSet)
-      partition._1.keys.foreach(s => s.addEntityRef(entity))
-      partition._2.keys.foreach(s => s.removeEntityRef(entity))
+      partition._1.keys.foreach(_.addEntityRef(entity))
+      partition._2.keys.foreach(_.removeEntityRef(entity))
       partition._1.keySet
     }
     override def entityDestroyed(entity: Entity): Unit = systemSignature.keys.foreach(_.removeEntityRef(entity))

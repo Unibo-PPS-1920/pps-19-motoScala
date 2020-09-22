@@ -29,7 +29,7 @@ class EntityManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
         entityManager.entities.isEmpty shouldBe true
       }
       "create an entity" in {
-        entityManager.createEntity(entity1)
+        entityManager.addEntity(entity1)
         entityManager.entities.size shouldBe 1
       }
       "remove an entity" in {
