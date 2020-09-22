@@ -12,6 +12,5 @@ trait Displayable extends EventObserver[DisplayableEvent] {
     case DrawEntityEvent(entities) => notifyDrawEntities(entities)
     case LevelSetupEvent(data) => notifyLevelSetup(data)
     case LevelEndEvent(data) => notifyLevelEnd(data)
-    case _ =>
   }
 }
