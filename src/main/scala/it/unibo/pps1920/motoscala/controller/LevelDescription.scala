@@ -1,3 +1,5 @@
-package it.unibo.pps1920.motoscala.engine trait LevelDescription {
+package it.unibo.pps1920.motoscala.controller
+
+trait LevelDescription {
 
 }
