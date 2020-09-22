@@ -4,8 +4,8 @@ object Shape {
 
   sealed trait Shape
 
-  case object Square extends Shape
+  case class Rectangle(center: (Float, Float), dimX: Float, dimY: Float) extends Shape
 
-  case object Circle extends Shape
+  case class Circle(center: (Float, Float), radius: Float) extends Shape
 
 }
