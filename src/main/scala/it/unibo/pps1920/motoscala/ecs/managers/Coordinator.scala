@@ -28,6 +28,7 @@ object Coordinator {
     override def removeEntity(entity: Entity): Unit = {
       entityManager removeEntity entity
       systemManager entityDestroyed entity
+      componentManager entityDestroyed entity
     }
     override def registerComponentType(compType: ComponentType): Unit = componentManager.registerComponentType(compType)
     override def addEntityComponent(entity: Entity, component: Component): Unit = {
