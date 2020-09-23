@@ -10,10 +10,7 @@ trait Controller extends ActorController with SoundController with UpdatableUI {
 }
 
 object Controller {
-
   private class ControllerImpl private[Controller]() extends Controller {
-
-
     private val logger = LoggerFactory getLogger classOf[View]
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
@@ -22,9 +19,8 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def startGame(level: Level): Unit = engine = Option(GameEngine(mediator))
-    override def start(): Unit = logger info "Controller started"
+    override def start(): Unit = logger info s"Controller started on ${Thread.currentThread()}"
   }
-
   def apply(): Controller = new ControllerImpl()
 }
 
