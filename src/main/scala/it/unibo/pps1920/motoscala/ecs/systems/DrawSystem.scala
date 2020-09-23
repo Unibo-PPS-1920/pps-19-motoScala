@@ -12,7 +12,9 @@ trait DrawSystem extends AbstractSystem {
 
 object DrawSystem {
 
+  import org.slf4j.LoggerFactory
 
+  private val logger = LoggerFactory.getLogger(classOf[DrawSystem])
   def apply(mediator: Mediator, coordinator: Coordinator): DrawSystem = new DrawSystemImpl(mediator, coordinator)
 
   private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator) extends DrawSystem {
@@ -20,9 +22,9 @@ object DrawSystem {
       val entitiesToView = entitiesRef()
         .collect(e => {
           val p = coordinator
-            .getEntityComponent(e, PositionComponent.getClass).asInstanceOf[PositionComponent]
+            .getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
           val s = coordinator
-            .getEntityComponent(e, ShapeComponent.getClass).asInstanceOf[ShapeComponent]
+            .getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]
           ((p.x, p.y, p.z), s.shape, s.color)
         }).toSeq
       mediator.publishEvent(DrawEntityEvent(entitiesToView))
