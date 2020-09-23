@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.view
 
 import com.sun.javafx.application.PlatformImpl
 import it.unibo.pps1920.motoscala.controller.UpdatableUI
-import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenControllerHome, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.utilities.ViewStateMachine
 import javafx.application.Platform
 import javafx.scene.{Node, Scene}
@@ -33,6 +33,7 @@ object View {
       Platform.runLater(() => {
         stage = Some(new Stage())
         stage.get setScene scene
+        new ScreenControllerHome(this)
         stage.get.show()
         stage.get setOnCloseRequest (_ => System.exit(0))
         logger info s"View started on ${Thread.currentThread()}"

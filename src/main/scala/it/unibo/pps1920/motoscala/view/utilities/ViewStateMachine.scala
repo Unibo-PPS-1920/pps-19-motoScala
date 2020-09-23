@@ -20,6 +20,5 @@ private[view] object ViewStateMachine {
       case (LOBBY, GoBack) => HOME
       case (STATS, GoBack) => HOME
       case (SETTINGS, GoBack) => HOME
-    })
-    .build()
+    }).build()
 }
