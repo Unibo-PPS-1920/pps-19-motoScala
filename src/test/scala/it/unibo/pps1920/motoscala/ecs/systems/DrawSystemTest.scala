@@ -29,11 +29,11 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     drawSystem = DrawSystem(mediator,coordinator)
     val pos: PositionComponent = PositionComponent(1, 2, 3)
     val shape = ShapeComponent(Circle((0, 0), 3), Color(1, 1, 1, 1))
-    val entity = TestEntity(UUID.randomUUID())
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
     coordinator.registerSystem(drawSystem)
     coordinator.signSystem(drawSystem,ECSSignature.apply().signComponent(classOf[PositionComponent],classOf[ShapeComponent]))
+    val entity = TestEntity(UUID.randomUUID())
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity,pos)
     coordinator.addEntityComponent(entity,shape)
@@ -48,6 +48,16 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
       "emit the correct event" in {
         drawSystem.update()
         result.event shouldBe DrawEntityEvent(Seq(((1, 2, 3), Circle((0, 0), 3), Color(1, 1, 1, 1))))
+      }
+      "emit the correct event for multiple entities" in {
+        val entity2 = TestEntity(UUID.randomUUID())
+        coordinator.addEntity(entity2)
+        val pos2: PositionComponent = PositionComponent(3, 2, 1)
+        val shape2 = ShapeComponent(Circle((1, 1), 2), Color(0, 0, 0, 0))
+        coordinator.addEntityComponent(entity2,pos2)
+        coordinator.addEntityComponent(entity2,shape2)
+        drawSystem.update()
+        result.event shouldBe DrawEntityEvent(Seq(((1, 2, 3), Circle((0, 0), 3), Color(1, 1, 1, 1)),((3,2,1),Circle((1, 1), 2), Color(0, 0, 0, 0))))
       }
     }
   }
