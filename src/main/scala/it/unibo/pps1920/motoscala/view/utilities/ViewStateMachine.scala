@@ -14,6 +14,7 @@ private[view] object ViewStateMachine {
       case (HOME, GotoLobby) => LOBBY
       case (HOME, GotoSettings) => SETTINGS
       case (HOME, GotoStats) => STATS
+      case (HOME, GotoHome) => HOME
       case (LEVELS, GoNext) => GAME
       case (GAME, GoBack) => LEVELS
       case (LEVELS, GoBack) => HOME
