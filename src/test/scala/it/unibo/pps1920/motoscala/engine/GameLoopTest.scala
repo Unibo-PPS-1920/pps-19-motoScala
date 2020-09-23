@@ -15,10 +15,10 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
 
 
   implicit override val patienceConfig: PatienceConfig = {
-    PatienceConfig(timeout = scaled(Span(750, Millis)), interval = scaled(Span(5, Millis)))
+    PatienceConfig(timeout = scaled(Span(1000, Millis)), interval = scaled(Span(5, Millis)))
 
   }
-  val mediator = Mediator()
+  val mediator: Mediator = Mediator()
   val engine: Engine = GameEngine(mediator)
   var loop: GameLoop = _
 
