@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.view
 
 import com.sun.javafx.application.PlatformImpl
-import it.unibo.pps1920.motoscala.controller.UpdatableUI
+import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController, ScreenControllerHome, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.utilities.ViewStateMachine
@@ -11,17 +11,17 @@ import javafx.stage.Stage
 import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
 
-trait View extends ObserverUI {
-  def start(): Unit
-}
-
 private[view] trait ViewFacade {
   def changeScreen(screen: ScreenEvent): Unit
   def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
 
+trait View extends ObserverUI {
+  def start(): Unit
+}
+
 object View {
-  private class ViewImpl(controller: UpdatableUI) extends View with ViewFacade {
+  private class ViewImpl(controller: ObservableUI) extends View with ViewFacade {
     private val logger = LoggerFactory getLogger classOf[View]
     private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
@@ -54,7 +54,7 @@ object View {
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
   }
-  def apply(controller: UpdatableUI): View = {
+  def apply(controller: ObservableUI): View = {
     require(controller != null)
     PlatformImpl.startup(() => {})
     new ViewImpl(controller)
