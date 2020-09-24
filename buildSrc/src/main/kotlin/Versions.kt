@@ -27,6 +27,10 @@ object Versions {
     const val scala_async = "1.0.0-M1"
     const val scala_xml = "1.2.0"
 
+    //SCALA_LIBS
+    const val scala_fsa = "0.1.0"
+    const val scala_refined = "0.9.16"
+
     //AKKA
     const val akka = "2.6.9"
 
