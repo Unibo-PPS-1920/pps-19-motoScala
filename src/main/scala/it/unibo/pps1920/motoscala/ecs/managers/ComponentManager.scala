@@ -8,6 +8,7 @@ private[managers] trait ComponentManager {
   def checkRegisteredComponent(compType: ComponentType): Boolean
   def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
   def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
+  def getEntitySignature(entity: Entity): ECSSignature
   def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
   def entityDestroyed(entity: Entity): Unit
 }
@@ -22,17 +23,19 @@ private[managers] object ComponentManager {
     override def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
     override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
       require(checkRegisteredComponent(component), "Cannot use an unregistered component")
-      entityComponent = entityComponent.updatedWith(entity)(_.fold[Option[Map[ComponentType, Component]]]
-        (Option(Map((component, component))))
-        (map => Option(map + ((component, component)))))
-      ECSSignature(entityComponent(entity).keySet)
+      entityComponent = entityComponent.updatedWith(entity)({
+        case None => Option(Map((component, component)))
+        case Some(map) => Option(map + ((component, component)))
+      })
+      getEntitySignature(entity)
     }
     override def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature = {
       require(checkRegisteredComponent(component), "Cannot use an unregistered component")
-      entityComponent = entityComponent.updatedWith(entity)(_.fold[Option[Map[ComponentType, Component]]]
-        (Option(Map()))
-        (map => Option(map - component)))
-      ECSSignature(entityComponent(entity).keySet)
+      entityComponent = entityComponent.updatedWith(entity)({
+        case None => Option(Map())
+        case Some(map) => Option(map - component)
+      })
+      getEntitySignature(entity)
     }
     override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
       entityComponent.get(entity).flatMap(_.get(compType))
@@ -41,6 +44,7 @@ private[managers] object ComponentManager {
     object ImplicitConversions {
       implicit def componentToComponentType(component: Component): ComponentType = component.getClass
     }
+    override def getEntitySignature(entity: Entity): ECSSignature = ECSSignature(entityComponent(entity).keySet)
   }
   def apply(): ComponentManager = new ComponentManagerImpl()
 }

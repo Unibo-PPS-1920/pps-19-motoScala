@@ -6,7 +6,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController, ScreenControllerHome, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.utilities.ViewStateMachine
 import javafx.application.Platform
-import javafx.scene.{Node, Scene}
+import javafx.scene.Scene
 import javafx.stage.Stage
 import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
@@ -17,7 +17,7 @@ trait View extends ObserverUI {
 
 private[view] trait ViewFacade {
   def changeScreen(screen: ScreenEvent): Unit
-  def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Node
+  def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
 
 object View {
@@ -29,7 +29,6 @@ object View {
     private var stage: Option[Stage] = None
     private val root = new StackPane()
     private val scene = new Scene(root, 200, 200)
-
 
     controller attachUI this
     loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
@@ -45,7 +44,7 @@ object View {
       })
     }
     override def changeScreen(event: ScreenEvent): Unit = screenLoader.applyScreen(stateMachine.consume(event), root)
-    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Node = screenLoader
+    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
       .loadFXMLNode(screen, controller)
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
