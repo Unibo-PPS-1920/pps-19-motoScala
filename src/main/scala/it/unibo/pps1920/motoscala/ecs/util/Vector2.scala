@@ -9,7 +9,11 @@ trait Vector2 {
 
   def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)
 
+  def versor(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)
+
   def mul(scalar: Double): Vector2 = Vector2(x * scalar, y * scalar)
+
+  def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)
 }
 
 object Vector2 {

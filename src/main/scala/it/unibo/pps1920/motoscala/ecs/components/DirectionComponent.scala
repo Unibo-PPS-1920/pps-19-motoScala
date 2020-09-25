@@ -1,20 +1,12 @@
 package it.unibo.pps1920.motoscala.ecs.components
 
 import it.unibo.pps1920.motoscala.ecs.Component
+import it.unibo.pps1920.motoscala.ecs.util.Direction.Direction
 
-
+/**
+ * Component for direction
+ *
+ * @param dir direction the entity is pointing to *
+ */
 case class DirectionComponent(var dir: Direction) extends Component {
-
-}
-
-object Direction {
-
-  sealed trait Direction
-
-  case object Running extends Direction
-
-  case object Paused extends Direction
-
-  case object Stopped extends Direction
-
 }
