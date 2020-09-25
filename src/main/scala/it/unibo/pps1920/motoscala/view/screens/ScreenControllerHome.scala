@@ -1,11 +1,11 @@
 package it.unibo.pps1920.motoscala.view.screens
 
-import it.unibo.pps1920.motoscala.controller.UpdatableUI
+import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 
 final class ScreenControllerHome(protected override val viewFacade: ViewFacade,
-                                 protected override val controller: UpdatableUI) extends AbstractScreenControllerHome(viewFacade, controller) {
+                                 protected override val controller: ObservableUI) extends AbstractScreenControllerHome(viewFacade, controller) {
   viewFacade.loadFXMLNode(FXMLScreens.HOME, this)
   logger info "Home Screen"
 

@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.controller
 
 import it.unibo.pps1920.motoscala.view.ObserverUI
 
-trait UpdatableUI extends SoundController {
+trait ObservableUI extends SoundController {
   type Level = Int
   def attachUI(obs: ObserverUI*): Unit
   def detachUI(obs: ObserverUI*): Unit

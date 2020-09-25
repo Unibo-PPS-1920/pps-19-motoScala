@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.engine.{Engine, GameEngine}
 import it.unibo.pps1920.motoscala.view.{ObserverUI, View}
 import org.slf4j.LoggerFactory
 
-trait Controller extends ActorController with SoundController with UpdatableUI {
+trait Controller extends ActorController with SoundController with ObservableUI {
   def start(): Unit
 }
 
