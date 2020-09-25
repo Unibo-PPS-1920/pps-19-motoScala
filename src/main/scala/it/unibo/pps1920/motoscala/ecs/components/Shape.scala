@@ -2,6 +2,9 @@ package it.unibo.pps1920.motoscala.ecs.components
 
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 
+/**
+ * Possible shapes
+ */
 object Shape {
 
 
