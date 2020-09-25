@@ -39,7 +39,7 @@ object GameEngine {
       import it.unibo.pps1920.motoscala.ecs.util.Vector2
       import scalafx.scene.paint.Color
       val pos: PositionComponent = PositionComponent(Vector2(1, 2))
-      var shape = ShapeComponent(Circle(Vector2(0, 0), 3), Color(1, 1, 1, 1))
+      var shape = ShapeComponent(Circle(3), Color(1, 1, 1, 1))
 
     }
     override def start(): Unit = {

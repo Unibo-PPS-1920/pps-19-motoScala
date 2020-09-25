@@ -29,7 +29,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     mediator = new MediatorImpl()
     drawSystem = DrawSystem(mediator, coordinator)
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
-    val shape = ShapeComponent(Circle(Vector2(0, 0), 3), Color(1, 1, 1, 1))
+    val shape = ShapeComponent(Circle(3), Color(1, 1, 1, 1))
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
     coordinator.registerSystem(drawSystem)
@@ -49,19 +49,19 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        result.event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(Vector2(0, 0), 3), Color(1, 1, 1, 1)))
+        result.event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)))
                                               )
       }
       "emit the correct event for multiple entities" in {
         val entity2 = TestEntity(UUID.randomUUID())
         coordinator.addEntity(entity2)
         val pos2: PositionComponent = PositionComponent(Vector2(3, 2))
-        val shape2 = ShapeComponent(Circle(Vector2(1, 1), 2), Color(0, 0, 0, 0))
+        val shape2 = ShapeComponent(Circle(2), Color(0, 0, 0, 0))
         coordinator.addEntityComponent(entity2, pos2)
         coordinator.addEntityComponent(entity2, shape2)
         drawSystem.update()
         result
-          .event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(Vector2(0, 0), 3), Color(1, 1, 1, 1)), (Vector2(3, 2), Circle(Vector2(1, 1), 2), Color(0, 0, 0, 0))))
+          .event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)), (Vector2(3, 2), Circle(2), Color(0, 0, 0, 0))))
       }
     }
   }
