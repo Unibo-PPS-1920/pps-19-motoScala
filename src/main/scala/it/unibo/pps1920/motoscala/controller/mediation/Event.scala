@@ -1,14 +1,15 @@
 package it.unibo.pps1920.motoscala.controller.mediation
 
+import it.unibo.pps1920.motoscala.ecs.components.Shape.Shape
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import scalafx.scene.paint.Color
+
 sealed trait Event
 
 object Event {
 
-  import it.unibo.pps1920.motoscala.ecs.components.Shape.Shape
-  import scalafx.scene.paint.Color
 
-  type Position = (Float, Float, Float)
-  type Entity = (Position, Shape, Color)
+  type Entity = (Vector2, Shape, Color)
   type LevelSetupData = String
   type LevelEndData = String
   type CommandData = String
