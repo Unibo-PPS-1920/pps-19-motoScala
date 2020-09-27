@@ -41,7 +41,10 @@ object View {
     loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
     override def start(): Unit = {
       Platform.runLater(() => {
+        import javafx.scene.image.Image
         stage = Some(new Stage())
+        stage.get.getIcons.add(new Image("/images/Icon.png"));
+
         stage.get setMaximized true
         stage.get setMinHeight 500
         stage.get setMinWidth 750
