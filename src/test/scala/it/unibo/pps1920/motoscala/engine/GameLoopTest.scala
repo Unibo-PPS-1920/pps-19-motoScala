@@ -5,20 +5,16 @@ import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.Eventually
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.time.{Millis, Span}
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Eventually {
-
-  import org.scalatest.time.{Millis, Span}
-
-
   implicit override val patienceConfig: PatienceConfig = {
-    PatienceConfig(timeout = scaled(Span(750, Millis)), interval = scaled(Span(5, Millis)))
-
+    PatienceConfig(timeout = scaled(Span(1000, Millis)), interval = scaled(Span(5, Millis)))
   }
-  val mediator = Mediator()
+  val mediator: Mediator = Mediator()
   val engine: Engine = GameEngine(mediator)
   var loop: GameLoop = _
 
@@ -78,7 +74,5 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
         }
       }
     }
-
-
   }
 }

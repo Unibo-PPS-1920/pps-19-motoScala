@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.view.screens
 
-import it.unibo.pps1920.motoscala.controller.UpdatableUI
+import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import javafx.fxml.FXML
 import javafx.scene.control.Button
@@ -15,7 +15,7 @@ import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
 
 abstract class AbstractScreenControllerHome(protected override val viewFacade: ViewFacade,
-                                            protected override val controller: UpdatableUI) extends ScreenController(viewFacade, controller) {
+                                            protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   import javafx.scene.layout.{AnchorPane, GridPane}
 
   private final val lineDuration = 5000
@@ -76,10 +76,10 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     })
 
     //Background setup
-    val background: Rectangle = new Rectangle();
+    val background: Rectangle = new Rectangle()
     background.width = screenWidth
     background.height = screenHeight
-    background.setFill(backgroundColor);
+    background.setFill(backgroundColor)
     this.root.getChildren.add(0, background)
 
   }

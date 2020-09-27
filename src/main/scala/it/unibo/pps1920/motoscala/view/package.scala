@@ -1,8 +1,8 @@
-package it.unibo.pps1920.motoscala.view
+package it.unibo.pps1920.motoscala
 
 import com.jfoenix.controls.{JFXDialog, JFXDialogLayout}
 import eu.hansolo.enzo.notification.{Notification, NotificationEvent}
-import it.unibo.pps1920.motoscala.view.screens.FXMLScreens
+import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController}
 import javafx.event.EventHandler
 import javafx.fxml.FXMLLoader
 import javafx.scene.input.MouseEvent
@@ -14,7 +14,7 @@ import org.kordamp.ikonli.Ikon
 import org.kordamp.ikonli.javafx.FontIcon
 
 package object view {
-  def loadFxml(controller: Any, fxml: FXMLScreens): Node = {
+  def loadFxml(fxml: FXMLScreens, controller: ScreenController): Node = {
     val loader = new FXMLLoader(View.getClass.getResource(fxml.resourcePath))
     loader.setController(controller)
     loader.load()

@@ -50,7 +50,9 @@ dependencies {
     implementation(Libs.Scala.scala_collection_contrib)
     implementation(Libs.Scala.scala_parallel_collections)
     implementation(Libs.Scala.scala_async)
-    implementation(Libs.Scala.fsa)
+    //SCALA LIBS
+    implementation(Libs.Scala.scala_fsa)
+    implementation(Libs.Scala.scala_refined)
     //AKKA
     implementation(Libs.Akka.akka_actor)
     implementation(Libs.Akka.akka_remote)
