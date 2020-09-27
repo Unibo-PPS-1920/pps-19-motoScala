@@ -1,33 +1,7 @@
 
-.menu-item {
-    -fx-font-smoothing-type: lcd;
-    -fx-fill: white;
-    -fx-font-size: 11pt;
-
+#gridPane {
+    -fx-background-color: #031B31;
 }
-
-
-.menu-line {
-    -fx-border-radius: 10px;
-}
-
-#root {
-
-/ / -fx-background-image: url('Background.jpg');
-
-
-}
-
-
-#mainHbox {
-/ / -fx-background-image: url('Background.jpg');
-    -fx-background-size: 100% 100%;
-}
-
-#mainVbox {
-    -fx-background-color: #1b1e39;
-}
-
 
 #Button {
     -fx-padding: 8 15 15 15;
@@ -38,8 +12,6 @@
     #d86e3a,
     radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 4, 0, 0, 1);
-    -fx-font-weight: bold;
-    -fx-font-size: 1.1em;
 }
 
 #Button:hover {
@@ -59,4 +31,7 @@
     -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);
 }
 
+.root * {
+    -fx-font-size: 35px;
+}
 
