@@ -11,15 +11,19 @@ final class ScreenControllerHome(protected override val viewFacade: ViewFacade,
   logger info "Home Screen"
 
   this.textPlay.setOnAction(_ => {
+    viewFacade.changeScreen(ScreenEvent.GotoGame)
   })
 
   this.textPlayMultiplayer.setOnAction(_ => {
+    viewFacade.changeScreen(ScreenEvent.GotoLobby)
   })
 
   this.textSettings.setOnAction(_ => {
+    viewFacade.changeScreen(ScreenEvent.GotoSettings)
   })
 
   this.textStats.setOnAction(_ => {
+    viewFacade.changeScreen(ScreenEvent.GotoStats)
   })
 
 
