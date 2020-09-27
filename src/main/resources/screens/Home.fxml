@@ -28,7 +28,7 @@
                   <RowConstraints maxHeight="1.7976931348623157E308" percentHeight="25.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                        <Button id="Button" fx:id="textPlay" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Multiplayer" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                        <Button id="Button" fx:id="textPlayMultiplayer" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Multiplayer" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin></Button>
@@ -38,7 +38,7 @@
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin></Button>
-                  <Button id="Button" fx:id="textPlay1" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Gioca" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" />
+                  <Button id="Button" fx:id="textPlay" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Gioca" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             </children>
