@@ -6,51 +6,53 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane fx:id="root" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="673.0" stylesheets="@./style/Home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-    <top>
-        <ImageView fitHeight="281.0" fitWidth="341.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-            <image>
-                <Image url="@../images/Logo.png" />
-            </image>
-            <BorderPane.margin>
-                <Insets bottom="50.0" top="50.0" />
-            </BorderPane.margin>
-        </ImageView>
-    </top>
+<BorderPane fx:id="root" nodeOrientation="LEFT_TO_RIGHT" prefHeight="484.0" prefWidth="1000.0" stylesheets="@style/Home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <center>
-        <AnchorPane prefHeight="264.0" prefWidth="673.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="mainAnchorPane" prefHeight="485.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox id="mainVbox" fx:id="mainVbox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="25.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
-                    <children>
-                        <Button id="Button" fx:id="textPlay" mnemonicParsing="false" text="Gioca">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin>
-                        </Button>
-                        <Button id="Button" fx:id="textSettings" mnemonicParsing="false" text="Impostazioni">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin>
-                        </Button>
-                        <Button id="Button" fx:id="textStats" mnemonicParsing="false" text="Statistiche">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin>
-                        </Button>
-                        <Button id="Button" fx:id="textExit" mnemonicParsing="false" text="Esci">
-                            <VBox.margin>
-                                <Insets bottom="25.0" />
-                            </VBox.margin>
-                        </Button>
-                    </children>
-                    <padding>
-                        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
-                    </padding>
-                </VBox>
+            <GridPane id="gridPane" fx:id="mainGridPane" hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="10.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="80.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" percentWidth="10.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" percentHeight="25.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints percentHeight="25.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="1.7976931348623157E308" percentHeight="25.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="1.7976931348623157E308" percentHeight="25.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="1.7976931348623157E308" percentHeight="25.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                        <Button id="Button" fx:id="textPlay" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Multiplayer" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></Button>
+                        <Button id="Button" fx:id="textSettings" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Impostazioni" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <Button id="Button" fx:id="textStats" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Statistiche" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <Button id="Button" fx:id="textExit" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Esci" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></Button>
+                  <Button id="Button" fx:id="textPlay1" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Gioca" textOverrun="WORD_ELLIPSIS" GridPane.columnIndex="1" />
+               </children>
+            </GridPane>
             </children>
         </AnchorPane>
     </center>
+   <top>
+        <ImageView fitHeight="193.0" fitWidth="424.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+            <image>
+                <Image url="@../images/Logo.png" />
+            </image>
+         <BorderPane.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </BorderPane.margin>
+        </ImageView>
+   </top>
 
 </BorderPane>
