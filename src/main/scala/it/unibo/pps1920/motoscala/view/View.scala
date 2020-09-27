@@ -21,22 +21,30 @@ private[view] trait ViewFacade {
 }
 
 object View {
+
+  def apply(controller: UpdatableUI): View = {
+    require(controller != null)
+    PlatformImpl.startup(() => {})
+    new ViewImpl(controller)
+  }
+
   private class ViewImpl(controller: UpdatableUI) extends View with ViewFacade {
     private val logger = LoggerFactory getLogger classOf[View]
     private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
-
-    private var stage: Option[Stage] = None
     private val root = new StackPane()
     private val scene = new Scene(root, 200, 200)
+    private var stage: Option[Stage] = None
 
 
     controller attachUI this
     loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
-
     override def start(): Unit = {
       Platform.runLater(() => {
         stage = Some(new Stage())
+        stage.get setMaximized true
+        stage.get setMinHeight 500
+        stage.get setMinWidth 750
         stage.get setScene scene
         stage.get.show()
         changeScreen(ScreenEvent.GotoHome)
@@ -55,11 +63,7 @@ object View {
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
   }
-  def apply(controller: UpdatableUI): View = {
-    require(controller != null)
-    PlatformImpl.startup(() => {})
-    new ViewImpl(controller)
-  }
+
 }
 
 
