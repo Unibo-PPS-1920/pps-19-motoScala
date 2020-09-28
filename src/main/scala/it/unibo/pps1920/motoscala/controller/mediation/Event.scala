@@ -7,12 +7,14 @@ import scalafx.scene.paint.Color
 sealed trait Event
 
 object Event {
+  import it.unibo.pps1920.motoscala.ecs
+  import it.unibo.pps1920.motoscala.ecs.util.Direction.Direction
 
 
   type Entity = (Vector2, Shape, Color)
   type LevelSetupData = String
   type LevelEndData = String
-  type CommandData = String
+  type CommandData = (Direction, ecs.Entity)
 
   sealed trait DisplayableEvent extends Event
 
