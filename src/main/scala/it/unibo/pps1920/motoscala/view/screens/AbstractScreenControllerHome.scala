@@ -70,27 +70,27 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.GlobalViewConstants
     //Background setup
     val background: Rectangle = new Rectangle()
-    background.width = GlobalViewConstants.screenWidth
-    background.height = GlobalViewConstants.screenHeight
+    background.width = GlobalViewConstants.SCREEN_WIDTH
+    background.height = GlobalViewConstants.SCREEN_HEIGHT
     background.setCache(true)
     background.setCacheHint(CacheHint.SPEED)
-    background.setId(Constant.cssBackgroundID)
+    background.setId(Constant.CSS_BACKGROUND_ID)
     pane.getChildren.add(0, background)
   }
   private def initializeGrid(pane: Pane): Unit = {
     import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.GlobalViewConstants
 
     //Vertical line setup
-    Constant.xLineDividerBound._1 to Constant.xLineDividerBound._2 foreach (multiplayer => {
+    Constant.X_LINE_NUMBER._1 to Constant.X_LINE_NUMBER._2 foreach (multiplayer => {
       import scalafx.animation.Timeline
-      val xLine = new Line(0, Constant.xPortions * multiplayer, Constant.pixelLineBound, Constant
-        .xPortions * multiplayer)
+      val xLine = new Line(0, Constant.X_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH, Constant
+        .X_LINE_PORTION * multiplayer)
       xLine.setCache(true)
       xLine.setCacheHint(CacheHint.SPEED)
-      xLine.setId(Constant.cssGridLineID)
+      xLine.setId(Constant.CSS_LINE_ID)
       val translate: TranslateTransition = new TranslateTransition
-      translate.setDuration(Duration.apply(Constant.animationLineDuration * 2))
-      translate.setToY((GlobalViewConstants.screenHeight + Constant.yPortions * multiplayer) / 2)
+      translate.setDuration(Duration.apply(Constant.ANIMATION_DURATION * 2))
+      translate.setToY((GlobalViewConstants.SCREEN_HEIGHT + Constant.Y_LINE_PORTION * multiplayer) / 2)
       translate.setCycleCount(Timeline.Indefinite)
       translate.setNode(xLine)
       translate.setAutoReverse(true)
@@ -100,27 +100,27 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
 
 
     //Horizontal line setup
-    Constant.yLineDividerBound._1 to Constant.yLineDividerBound._2 foreach (multiplayer => {
-      val yLine = new Line(Constant.yPortions * multiplayer, -Constant.pixelLineBound, Constant
-        .yPortions * multiplayer, Constant.pixelLineBound)
+    Constant.Y_LINE_NUMBER._1 to Constant.Y_LINE_NUMBER._2 foreach (multiplayer => {
+      val yLine = new Line(Constant.Y_LINE_PORTION * multiplayer, -Constant.PIXEL_LINE_LENGTH, Constant
+        .Y_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH)
       yLine.setCache(true)
       yLine.setCacheHint(CacheHint.SPEED)
-      yLine.setId(Constant.cssGridLineID)
+      yLine.setId(Constant.CSS_LINE_ID)
       pane.getChildren.add(0, yLine)
     })
   }
 
   private[this] final object Constant {
     import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.GlobalViewConstants
-    final val animationLineDuration = 5000
-    final val pixelLineBound = 5000
-    final val screenLineDivider = 10
-    final val xLineDividerBound = (-2, 10)
-    final val yLineDividerBound = (1, 10)
-    final val xPortions = GlobalViewConstants.screenHeight / screenLineDivider
-    final val yPortions = GlobalViewConstants.screenWidth / screenLineDivider
-    final val cssGridLineID = "Line"
-    final val cssBackgroundID = "Background"
+    final val ANIMATION_DURATION = 5000
+    final val PIXEL_LINE_LENGTH = 5000
+    final val SCREEN_LINE_DIVIDER = 10
+    final val X_LINE_NUMBER = (-2, 10)
+    final val Y_LINE_NUMBER = (1, 10)
+    final val X_LINE_PORTION = GlobalViewConstants.SCREEN_HEIGHT / SCREEN_LINE_DIVIDER
+    final val Y_LINE_PORTION = GlobalViewConstants.SCREEN_WIDTH / SCREEN_LINE_DIVIDER
+    final val CSS_LINE_ID = "Line"
+    final val CSS_BACKGROUND_ID = "Background"
 
   }
 
