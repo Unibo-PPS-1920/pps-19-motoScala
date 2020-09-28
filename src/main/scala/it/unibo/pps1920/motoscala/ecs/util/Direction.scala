@@ -10,7 +10,7 @@ object Direction {
 
   sealed case class Direction(value: Vector2) {
     def +(dir: Direction): Direction = {
-      Direction((dir.value add value).versor())
+      Direction((dir.value add value).unit())
     }
   }
 
