@@ -1,6 +1,10 @@
 
 #gridPane {
-    -fx-background-color: #031B31;
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 1), 50, 0, 0, 0);*/
+}
+
+#Background {
+    -fx-fill: #0c2d4a;
 }
 
 #Button {
@@ -11,7 +15,7 @@
     #9d4024,
     #d86e3a,
     radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 4, 0, 0, 1);
+    /* -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 4, 0, 0, 1);*/
 }
 
 #Button:hover {
@@ -28,10 +32,14 @@
 
 #Button Text {
     -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);
+    /* -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);*/
 }
 
 .root * {
     -fx-font-size: 35px;
 }
 
+#Line {
+    -fx-stroke-width: 3;
+    -fx-stroke: #ffffff;
+}
