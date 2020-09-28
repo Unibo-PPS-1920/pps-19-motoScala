@@ -25,11 +25,12 @@ object Versions {
     const val scala_collection_contrib = "0.2.1"
     const val scala_parallel_collections = "0.2.0"
     const val scala_async = "1.0.0-M1"
-    const val scala_xml = "1.2.0"
 
     //SCALA_LIBS
     const val scala_fsa = "0.1.0"
     const val scala_refined = "0.9.16"
+    const val scala_cats_core = "2.2.0"
+    const val scala_monix = "3.2.2"
 
     //AKKA
     const val akka = "2.6.9"

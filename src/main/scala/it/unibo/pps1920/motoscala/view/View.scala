@@ -21,7 +21,6 @@ trait View extends ObserverUI {
 }
 
 object View {
-
   def apply(controller: ObservableUI): View = {
     require(controller != null)
     PlatformImpl.startup(() => {})
@@ -29,7 +28,6 @@ object View {
   }
 
   private class ViewImpl(controller: ObservableUI) extends View with ViewFacade {
-
     private val logger = LoggerFactory getLogger classOf[View]
     private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
@@ -43,7 +41,7 @@ object View {
       Platform.runLater(() => {
         import javafx.scene.image.Image
         stage = Some(new Stage())
-        stage.get.getIcons.add(new Image("/images/Icon.png"));
+        stage.get.getIcons.add(new Image("/images/Icon.png"))
 
         stage.get setMaximized true
         stage.get setMinHeight 500
