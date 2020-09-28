@@ -41,14 +41,15 @@ object View {
     loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
     override def start(): Unit = {
       Platform.runLater(() => {
+        import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.GlobalViewConstants.{SCREEN_MIN_HEIGHT, SCREEN_MIN_WIDTH}
         import javafx.scene.image.Image
         stage = Some(new Stage())
         val stg = stage.get
         stg.getIcons.add(new Image("/images/Icon.png"));
         stg setScene scene
         stg.show()
-        stg setMinHeight 650
-        stg setMinWidth 850
+        stg setMinHeight SCREEN_MIN_WIDTH
+        stg setMinWidth SCREEN_MIN_HEIGHT
         changeScreen(ScreenEvent.GotoHome)
         stg setOnCloseRequest (_ => System.exit(0))
         logger info s"View started on ${Thread.currentThread()}"
