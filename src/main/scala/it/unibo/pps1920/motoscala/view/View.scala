@@ -43,16 +43,16 @@ object View {
       Platform.runLater(() => {
         import javafx.scene.image.Image
         stage = Some(new Stage())
-        stage.get.getIcons.add(new Image("/images/Icon.png"));
-
-        stage.get setMaximized true
-        stage.get setMinHeight 500
-        stage.get setMinWidth 750
-        stage.get setScene scene
-        stage.get.show()
+        val stg = stage.get
+        stg.getIcons.add(new Image("/images/Icon.png"));
+        stg setScene scene
+        stg.show()
+        stg setMinHeight 650
+        stg setMinWidth 850
         changeScreen(ScreenEvent.GotoHome)
-        stage.get setOnCloseRequest (_ => System.exit(0))
+        stg setOnCloseRequest (_ => System.exit(0))
         logger info s"View started on ${Thread.currentThread()}"
+
       })
     }
     override def changeScreen(event: ScreenEvent): Unit = screenLoader.applyScreen(stateMachine.consume(event), root)
@@ -66,6 +66,7 @@ object View {
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
   }
+
 }
 
 
