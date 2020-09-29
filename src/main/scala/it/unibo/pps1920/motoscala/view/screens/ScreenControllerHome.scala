@@ -10,28 +10,6 @@ final class ScreenControllerHome(protected override val viewFacade: ViewFacade,
   viewFacade.loadFXMLNode(FXMLScreens.HOME, this)
   logger info "Home Screen"
 
-  this.textPlay.setOnAction(_ => {
-    viewFacade.changeScreen(ScreenEvent.GotoGame)
-  })
-
-  this.textPlayMultiplayer.setOnAction(_ => {
-    viewFacade.changeScreen(ScreenEvent.GotoLobby)
-  })
-
-  this.textSettings.setOnAction(_ => {
-    viewFacade.changeScreen(ScreenEvent.GotoSettings)
-  })
-
-  this.textStats.setOnAction(_ => {
-    viewFacade.changeScreen(ScreenEvent.GotoStats)
-  })
-
-
-  this.textExit.setOnAction(_ => {
-    import javafx.application.Platform
-    Platform.exit()
-  })
-
 
   override def notify(ev: ViewEvent): Unit = ev match {
     case event: ViewEvent.HomeEvent => logger info "Home message"

@@ -20,14 +20,14 @@ package object view {
     loader.load()
   }
 
-  def chargeSceneSheets(scene: Scene): Unit = {
-    scene.getStylesheets.add(View.getClass.getResource(FXMLScreens.HOME.cssPath).toString)
-  }
+  def chargeSceneSheets(scene: Scene, screen: FXMLScreens): Unit = scene.getStylesheets
+    .add(View.getClass.getResource(screen.cssPath).toString)
+
 
   /**
    * A simple method for charging icon in node.
    *
-   * @param icon the icon
+   * @param icon     the icon
    * @param fontSize the font size
    * @return [[FontIcon]]
    */
@@ -40,11 +40,11 @@ package object view {
   /**
    * Show a dialog into the main pane.
    *
-   * @param mainPane the main [[StackPane]]
-   * @param title the String title dialog
+   * @param mainPane    the main [[StackPane]]
+   * @param title       the String title dialog
    * @param description the String description
-   * @param size the  size
-   * @param ev the [[MouseEvent]]
+   * @param size        the  size
+   * @param ev          the [[MouseEvent]]
    */
   def showDialog(mainPane: StackPane, title: String, description: String, size: JavafxEnums.DimDialog,
                  ev: EventHandler[MouseEvent]): Unit = {
@@ -77,11 +77,11 @@ package object view {
   /**
    * Show a notification popup into the main windows of the operating system.
    *
-   * @param title the String title of the notification
-   * @param message the String text of the notification
-   * @param secondsDuration the number of  of the notification
+   * @param title            the String title of the notification
+   * @param message          the String text of the notification
+   * @param secondsDuration  the number of  of the notification
    * @param notificationType the type of the notification
-   * @param ev the [[EventHandler]] ev, lambda
+   * @param ev               the [[EventHandler]] ev, lambda
    */
   def showNotificationPopup(title: String, message: String, secondsDuration: JavafxEnums.Notification_Duration,
                             notificationType: JavafxEnums.NotificationType,
@@ -105,29 +105,49 @@ package object view {
   }
 
   object JavafxEnums {
+
     sealed abstract class DimDialog(val dim: Int) {}
-    case object BIG_DIALOG extends DimDialog(3)
-    case object MEDIUM_DIALOG extends DimDialog(2)
-    case object SMALL_DIALOG extends DimDialog(1)
 
     sealed abstract class IconDimension(val dim: Int) {}
-    case object BIGGEST_ICON extends IconDimension(80)
-    case object BIGGER_ICON extends IconDimension(60)
-    case object BIG_ICON extends IconDimension(40)
-    case object MEDIUM_ICON extends IconDimension(30)
-    case object SMALL_ICON extends IconDimension(20)
-    case object SMALLER_ICON extends IconDimension(15)
-    case object SMALLEST_ICON extends IconDimension(10)
 
     sealed abstract class NotificationType(val code: Int) {}
-    case object ERROR_NOTIFICATION extends NotificationType(1)
-    case object WARNING_NOTIFICATION extends NotificationType(2)
-    case object SUCCESS_NOTIFICATION extends NotificationType(3)
-    case object INFO_NOTIFICATION extends NotificationType(4)
 
     sealed abstract class Notification_Duration(val time: Int) {}
+
+    case object BIG_DIALOG extends DimDialog(3)
+
+    case object MEDIUM_DIALOG extends DimDialog(2)
+
+    case object SMALL_DIALOG extends DimDialog(1)
+
+    case object BIGGEST_ICON extends IconDimension(80)
+
+    case object BIGGER_ICON extends IconDimension(60)
+
+    case object BIG_ICON extends IconDimension(40)
+
+    case object MEDIUM_ICON extends IconDimension(30)
+
+    case object SMALL_ICON extends IconDimension(20)
+
+    case object SMALLER_ICON extends IconDimension(15)
+
+    case object SMALLEST_ICON extends IconDimension(10)
+
+    case object ERROR_NOTIFICATION extends NotificationType(1)
+
+    case object WARNING_NOTIFICATION extends NotificationType(2)
+
+    case object SUCCESS_NOTIFICATION extends NotificationType(3)
+
+    case object INFO_NOTIFICATION extends NotificationType(4)
+
     case object LONG_DURATION extends Notification_Duration(7)
+
     case object MEDIUM_DURATION extends Notification_Duration(5)
+
     case object SHORT_DURATION extends Notification_Duration(3)
+
   }
+
 }
