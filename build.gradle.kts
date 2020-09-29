@@ -45,7 +45,7 @@ dependencies {
     implementation(Libs.Scala.scalatest_mustmatchers)
     implementation(Libs.Scala.scalatest_shouldmatchers)
     implementation(Libs.Scala.scalatest_plus)
-    implementation(Libs.Scala.scala_xml)
+    implementation(Libs.Scala.scalatest_scalactic)
     //SCALA MODULES
     implementation(Libs.Scala.scala_collection_contrib)
     implementation(Libs.Scala.scala_parallel_collections)
@@ -53,6 +53,8 @@ dependencies {
     //SCALA LIBS
     implementation(Libs.Scala.scala_fsa)
     implementation(Libs.Scala.scala_refined)
+    implementation(Libs.Scala.scala_cats_core)
+    implementation(Libs.Scala.scala_monix)
     //AKKA
     implementation(Libs.Akka.akka_actor)
     implementation(Libs.Akka.akka_remote)
