@@ -34,7 +34,7 @@ object View {
     private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
     private val root = new StackPane()
-    private val scene = new Scene(root, 200, 200)
+    private val scene = new Scene(root)
     private var stage: Option[Stage] = None
 
     //Controller will observe me
@@ -61,10 +61,6 @@ object View {
       val s = stateMachine.consume(event)
       screenLoader.applyScreen(s, root)
     }
-
-    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
-      .loadFXMLNode(screen, controller)
-
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)
@@ -72,11 +68,12 @@ object View {
       case event: ViewEvent.SettingsEvent => logger info event.getClass.toString
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
-
     private def loadScreens(): Unit = {
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
       loadFXMLNode(FXMLScreens.GAME, new ScreenControllerGame(this, controller))
     }
+    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
+      .loadFXMLNode(screen, controller)
   }
 }
 
