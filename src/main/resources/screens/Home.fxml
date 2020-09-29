@@ -10,11 +10,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane fx:id="root" minHeight="500.0" minWidth="800.0" nodeOrientation="LEFT_TO_RIGHT" stylesheets="@style/Home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="root" minHeight="800.0" minWidth="700.0" nodeOrientation="LEFT_TO_RIGHT" stylesheets="@style/Home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
     <center>
-        <AnchorPane fx:id="mainAnchorPane" maxHeight="500.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="mainAnchorPane" maxHeight="450.0" BorderPane.alignment="TOP_CENTER">
             <children>
-            <GridPane id="gridPane" fx:id="mainGridPane" alignment="CENTER" hgap="10.0" vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="0.0">
+            <GridPane id="gridPane" fx:id="mainGridPane" alignment="CENTER" hgap="10.0" vgap="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="50.0">
               <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" percentWidth="100.0" />
               </columnConstraints>
@@ -43,14 +43,18 @@
         </AnchorPane>
     </center>
    <top>
-        <ImageView fitHeight="193.0" fitWidth="424.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-            <image>
-                <Image url="@../images/Logo.png" />
-            </image>
+      <BorderPane minHeight="200.0" BorderPane.alignment="CENTER">
          <BorderPane.margin>
-            <Insets bottom="10.0" top="10.0" />
+            <Insets />
          </BorderPane.margin>
-        </ImageView>
+         <center>
+              <ImageView fitHeight="200.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                      <Image url="@../images/Logo.png" />
+                  </image>
+              </ImageView>
+         </center>
+      </BorderPane>
    </top>
 
 </BorderPane>
