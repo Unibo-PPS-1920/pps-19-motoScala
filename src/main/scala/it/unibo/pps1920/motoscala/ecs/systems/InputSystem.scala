@@ -21,9 +21,9 @@ object InputSystem {
     def update(): Unit = {
       eventQueue.dequeueAll(_ => true).foreach {
         case CommandEvent(CommandData(entity, direction)) =>
-          coordinator.getEntityComponent(entity, classOf[DirectionComponent]).asInstanceOf[DirectionComponent]
+          coordinator.getEntityComponent(entity, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
             .dir = direction
-          coordinator.getEntityComponent(entity, classOf[VelocityComponent]).asInstanceOf[VelocityComponent]
+          coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
             .vel = deltaVelocity
         case _ =>
       }
