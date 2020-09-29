@@ -1,7 +1,5 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
-import java.util.UUID
-
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
@@ -20,11 +18,13 @@ class GameEventHandler {
   private val keyPressedHandler: EventHandler[KeyEvent] = createKeyPressHandler()
   private val keyReleasedHandler: EventHandler[KeyEvent] = createKeyReleasedHandler()
   private var handleCommand: Option[CommandEvent => Unit] = None
+  private var entity: Option[Entity] = None
 
-  def addKeyListeners(root: Pane, f: CommandEvent => Unit): Unit = {
+  def addKeyListeners(en: Entity)(root: Pane, f: CommandEvent => Unit): Unit = {
     root.addEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
     root.addEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
     handleCommand = f.some
+    entity = en.some
   }
   def removeKeyListeners(root: Pane): Unit = {
     root.removeEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
@@ -65,9 +65,7 @@ class GameEventHandler {
 
   private def setKey(keyCode: KeyCode, direction: Direction, isActive: Boolean): Unit = {
     activeKeys += (keyCode -> isActive)
-    handleCommand.foreach(_ (CommandEvent(CommandData(new Entity {
-      override def uuid: UUID = UUID.randomUUID()
-    }, direction, isActive))))
+    handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, direction, isActive))))
 
     logger info s"${if (isActive) "pressed" else "released"} $direction"
   }
