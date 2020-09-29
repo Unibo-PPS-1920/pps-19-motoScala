@@ -5,4 +5,4 @@ import it.unibo.pps1920.motoscala.ecs.Component
 /**
  * Component for intangible entities e.g. floor tiles
  */
-case object IntangibleComponent extends Component
+final case object IntangibleComponent extends Component

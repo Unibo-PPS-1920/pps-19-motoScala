@@ -9,4 +9,4 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
  * @param pos entity's position on the plane
  */
 
-case class PositionComponent(var pos: Vector2) extends Component
+final case class PositionComponent(var pos: Vector2) extends Component

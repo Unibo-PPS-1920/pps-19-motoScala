@@ -7,6 +7,4 @@ import it.unibo.pps1920.motoscala.ecs.Component
  *
  * @param vel the velocity of the entity
  */
-case class VelocityComponent(var vel: Double) extends Component {
-
-}
+final case class VelocityComponent(var vel: Double) extends Component
