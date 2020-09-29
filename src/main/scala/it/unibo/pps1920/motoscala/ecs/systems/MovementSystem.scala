@@ -1,16 +1,14 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
-import it.unibo.pps1920.motoscala.ecs.AbstractSystem
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-
-trait MovementSystem extends AbstractSystem {}
+import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
 object MovementSystem {
 
-  def apply(coordinator: Coordinator): MovementSystem = new MovementSystemImpl(coordinator)
+  def apply(coordinator: Coordinator): System = new MovementSystemImpl(coordinator)
 
-  private class MovementSystemImpl(coordinator: Coordinator) extends MovementSystem {
+  private class MovementSystemImpl(coordinator: Coordinator) extends AbstractSystem {
 
 
     override def update(): Unit = entitiesRef()
@@ -23,7 +21,6 @@ object MovementSystem {
 
         p.pos = p.pos add (d.dir.value mul v.vel)
         v.vel = 0
-        //        coordinator.getEntityComponent(e, classOf[VelocityComponent]).asInstanceOf[VelocityComponent].vel = 0
       })
   }
 

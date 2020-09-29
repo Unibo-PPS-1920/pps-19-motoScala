@@ -8,5 +8,4 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction.Direction
  *
  * @param dir direction the entity is pointing to
  */
-case class DirectionComponent(var dir: Direction) extends Component {
-}
+final case class DirectionComponent(var dir: Direction) extends Component

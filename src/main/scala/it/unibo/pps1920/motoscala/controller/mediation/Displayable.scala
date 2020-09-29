@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event._
  * This interfaced wraps an [[EventObserver]] for [[DisplayableEvent]].
  */
 trait Displayable extends EventObserver[DisplayableEvent] {
-  def notifyDrawEntities(entities: Seq[Entity]): Unit
+  def notifyDrawEntities(entities: Seq[EntityData]): Unit
   def notifyLevelSetup(data: LevelSetupData): Unit
   def notifyLevelEnd(data: LevelEndData): Unit
   override def notify(event: DisplayableEvent): Unit = event match {
