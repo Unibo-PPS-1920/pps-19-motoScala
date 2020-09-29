@@ -47,7 +47,10 @@ object View {
       })
     }
 
-    override def changeScreen(event: ScreenEvent): Unit = screenLoader.applyScreen(stateMachine.consume(event), root)
+    override def changeScreen(event: ScreenEvent): Unit = {
+      screenLoader.applyScreen(stateMachine.consume(event), root)
+      screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
+    }
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)

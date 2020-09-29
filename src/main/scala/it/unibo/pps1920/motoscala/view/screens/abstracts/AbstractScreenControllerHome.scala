@@ -25,6 +25,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
   @FXML protected var textSettings: Button = _
   @FXML protected var textStats: Button = _
   @FXML protected var textExit: Button = _
+
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
     this.initializeGrid(this.root)
@@ -41,6 +42,9 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     assert(textStats != null, "fx:id=\"textStats\" was not injected: check your FXML file 'Home.fxml'.")
     assert(textExit != null, "fx:id=\"textExit\" was not injected: check your FXML file 'Home.fxml'.")
   }
+
+  override def whenDisplayed(): Unit = {}
+
   private def initializeButtons(): Unit = {
     this.textPlay.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoGame))
     this.textPlayMultiplayer.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))

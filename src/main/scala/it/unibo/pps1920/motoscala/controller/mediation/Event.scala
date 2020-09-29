@@ -21,6 +21,6 @@ object Event {
 }
 
 object EventData {
-  final case class CommandData(entity: Entity, direction: Direction)
+  final case class CommandData(entity: Entity, direction: Direction, moving: Boolean)
   final case class EntityData(vec: Vector2, shape: Shape, enType: EntityType)
 }

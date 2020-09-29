@@ -3,9 +3,8 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.layout.BorderPane?>
 
-
 <BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <Canvas height="600.0" width="600.0" BorderPane.alignment="CENTER" />
+      <Canvas fx:id="canvas" height="600.0" width="600.0" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
