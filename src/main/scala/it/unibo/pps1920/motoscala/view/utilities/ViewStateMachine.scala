@@ -10,7 +10,7 @@ private[view] object ViewStateMachine {
     .WithFunctionTransitions[FXMLScreens, ScreenEvent]()
     .initialState(FXMLScreens.HOME)
     .transition({
-      case (HOME, GotoLevels) => LEVELS
+      case (HOME, GotoGame) => GAME
       case (HOME, GotoLobby) => LOBBY
       case (HOME, GotoSettings) => SETTINGS
       case (HOME, GotoStats) => STATS

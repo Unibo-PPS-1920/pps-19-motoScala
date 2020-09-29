@@ -20,6 +20,7 @@ object Controller {
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def startGame(level: Level): Unit = engine = Option(GameEngine(mediator))
     override def start(): Unit = logger info s"Controller started on ${Thread.currentThread()}"
+    override def getMediator: Mediator = mediator
   }
   def apply(): Controller = new ControllerImpl()
 }

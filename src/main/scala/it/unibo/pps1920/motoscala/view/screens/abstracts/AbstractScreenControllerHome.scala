@@ -1,12 +1,14 @@
-package it.unibo.pps1920.motoscala.view.screens
+package it.unibo.pps1920.motoscala.view.screens.abstracts
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
+import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import javafx.application.Platform
 import javafx.fxml.FXML
 import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
-import javafx.scene.layout.BorderPane
+import javafx.scene.layout.{AnchorPane, BorderPane, GridPane, Pane}
 import javafx.scene.shape.Line
 import scalafx.animation.TranslateTransition
 import scalafx.scene.shape.Rectangle
@@ -14,9 +16,6 @@ import scalafx.util.Duration
 
 abstract class AbstractScreenControllerHome(protected override val viewFacade: ViewFacade,
                                             protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  import javafx.scene.layout.{AnchorPane, GridPane, Pane}
-
-
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var mainGridPane: GridPane = _
@@ -43,27 +42,11 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     assert(textExit != null, "fx:id=\"textExit\" was not injected: check your FXML file 'Home.fxml'.")
   }
   private def initializeButtons(): Unit = {
-    this.textPlay.setOnAction(_ => {
-      viewFacade.changeScreen(ScreenEvent.GotoGame)
-    })
-
-    this.textPlayMultiplayer.setOnAction(_ => {
-      viewFacade.changeScreen(ScreenEvent.GotoLobby)
-    })
-
-    this.textSettings.setOnAction(_ => {
-      viewFacade.changeScreen(ScreenEvent.GotoSettings)
-    })
-
-    this.textStats.setOnAction(_ => {
-      viewFacade.changeScreen(ScreenEvent.GotoStats)
-    })
-
-
-    this.textExit.setOnAction(_ => {
-      import javafx.application.Platform
-      Platform.exit()
-    })
+    this.textPlay.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoGame))
+    this.textPlayMultiplayer.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
+    this.textSettings.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoSettings))
+    this.textStats.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoStats))
+    this.textExit.setOnAction(_ => Platform.exit())
   }
 
   private def initializeBackground(pane: Pane): Unit = {
@@ -123,6 +106,4 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     final val CSS_BACKGROUND_ID = "Background"
 
   }
-
-
 }
