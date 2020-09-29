@@ -1,5 +1,5 @@
 package it.unibo.pps1920.motoscala.controller
 
-trait LevelDescription {
+case class LevelDescription(entities: List[LevelEntity])
 
-}
+case class LevelEntity()
