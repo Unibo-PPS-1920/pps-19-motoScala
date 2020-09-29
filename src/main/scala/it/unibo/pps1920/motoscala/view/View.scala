@@ -4,6 +4,8 @@ import com.sun.javafx.application.PlatformImpl
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
+import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
+import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
 import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
 import javafx.application.Platform
 import javafx.scene.Scene

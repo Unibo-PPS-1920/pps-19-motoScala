@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.view.screens.abstracts
+package it.unibo.pps1920.motoscala.view.screens.home
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
