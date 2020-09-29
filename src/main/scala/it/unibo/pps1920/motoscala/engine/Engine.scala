@@ -46,7 +46,10 @@ object GameEngine {
 
     override def resume(): Unit = gameLoop.unPause()
 
-    override def stop(): Unit = gameLoop.halt()
+    override def stop(): Unit = {
+      gameLoop.halt()
+      mediator.unsubscribe(this)
+    }
 
     override def notifyCommand(cmd: CommandData): Unit = eventQueue.enqueue(CommandEvent(cmd))
   }

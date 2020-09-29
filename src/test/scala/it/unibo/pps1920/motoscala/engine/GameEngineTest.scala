@@ -2,7 +2,6 @@ package it.unibo.pps1920.motoscala.engine
 
 import it.unibo.pps1920.motoscala.controller.LevelDescription
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.engine.EngineTestClasses._
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually
@@ -21,7 +20,7 @@ class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   "A GameEngine" when {
     "created" should {
       "init" in {
-        engine.init(Level())
+        engine.init(LevelDescription(List()))
       }
       "start" in {
         engine.start()
@@ -53,6 +52,3 @@ class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   }
 }
 
-object EngineTestClasses {
-  final case class Level() extends LevelDescription
-}
