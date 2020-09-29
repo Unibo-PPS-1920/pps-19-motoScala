@@ -14,6 +14,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
 
 @RunWith(classOf[JUnitRunner])
 class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
@@ -49,7 +50,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        result.event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)))
+        result.event shouldBe DrawEntityEvent(Seq(EntityData(Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)))
                                               )
       }
       "emit the correct event for multiple entities" in {
@@ -61,7 +62,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntityComponent(entity2, shape2)
         drawSystem.update()
         result
-          .event shouldBe DrawEntityEvent(Seq((Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)), (Vector2(3, 2), Circle(2), Color(0, 0, 0, 0))))
+          .event shouldBe DrawEntityEvent(Seq(EntityData(Vector2(1, 2), Circle(3), Color(1, 1, 1, 1)), EntityData(Vector2(3, 2), Circle(2), Color(0, 0, 0, 0))))
       }
     }
   }

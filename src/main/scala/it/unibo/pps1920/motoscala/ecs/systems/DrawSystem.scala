@@ -20,11 +20,12 @@ object DrawSystem {
     override def update(): Unit = {
       val entitiesToView = entitiesRef()
         .collect(e => {
+          import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
           val p = coordinator
             .getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
           val s = coordinator
             .getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]
-          (p.pos, s.shape, s.color)
+          EntityData(p.pos, s.shape, s.color)
         }).toSeq
       mediator.publishEvent(DrawEntityEvent(entitiesToView))
     }
