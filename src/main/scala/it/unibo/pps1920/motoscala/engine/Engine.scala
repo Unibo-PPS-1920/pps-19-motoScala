@@ -35,15 +35,6 @@ object GameEngine {
 
     override def init(level: LevelDescription): Unit = {
       mediator.subscribe(this)
-
-
-      import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
-      import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent}
-      import it.unibo.pps1920.motoscala.ecs.util.Vector2
-      import scalafx.scene.paint.Color
-      val pos: PositionComponent = PositionComponent(Vector2(1, 2))
-      var shape = ShapeComponent(Circle(3), Color(1, 1, 1, 1))
-
     }
     override def start(): Unit = {
       gameLoop.status match {
