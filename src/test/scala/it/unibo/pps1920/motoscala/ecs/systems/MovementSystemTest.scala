@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Direction._
@@ -18,7 +19,7 @@ class MovementSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAl
 
 
   var coordinator: Coordinator = _
-  var movement: MovementSystem = _
+  var movement: System = _
   var mediator: Mediator = _
   val entity = TestEntity(UUID.randomUUID())
   val entity2 = TestEntity(UUID.randomUUID())

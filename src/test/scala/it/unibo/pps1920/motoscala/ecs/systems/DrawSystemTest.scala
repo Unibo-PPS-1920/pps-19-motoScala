@@ -3,8 +3,9 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.DrawEntityEvent
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.Entity
+import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
@@ -14,7 +15,6 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
 
 @RunWith(classOf[JUnitRunner])
 class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
@@ -23,7 +23,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
   import scalafx.scene.paint.Color
 
   var coordinator: Coordinator = _
-  var drawSystem: DrawSystem = _
+  var drawSystem: System = _
   var mediator: Mediator = _
   override def beforeAll(): Unit = {
     coordinator = Coordinator()

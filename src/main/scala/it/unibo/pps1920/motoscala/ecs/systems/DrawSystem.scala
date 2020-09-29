@@ -2,21 +2,16 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.DrawEntityEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.AbstractSystem
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-
-
-trait DrawSystem extends AbstractSystem {
-
-}
+import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
 object DrawSystem {
 
 
-  def apply(mediator: Mediator, coordinator: Coordinator): DrawSystem = new DrawSystemImpl(mediator, coordinator)
+  def apply(mediator: Mediator, coordinator: Coordinator): System = new DrawSystemImpl(mediator, coordinator)
 
-  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator) extends DrawSystem {
+  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator) extends AbstractSystem {
     override def update(): Unit = {
       val entitiesToView = entitiesRef()
         .collect(e => {

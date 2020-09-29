@@ -34,6 +34,9 @@ object GameEngine {
     override def tick(): Unit = coordinator.updateSystems()
 
     override def init(level: LevelDescription): Unit = {
+      mediator.subscribe(this)
+
+
       import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
       import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent}
       import it.unibo.pps1920.motoscala.ecs.util.Vector2
