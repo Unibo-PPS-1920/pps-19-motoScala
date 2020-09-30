@@ -1,7 +1,8 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, LevelSetupData}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, Event, Mediator}
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
