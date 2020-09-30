@@ -45,7 +45,6 @@ dependencies {
     implementation(Libs.Scala.scalatest_mustmatchers)
     implementation(Libs.Scala.scalatest_shouldmatchers)
     implementation(Libs.Scala.scalatest_plus)
-    implementation(Libs.Scala.scalatest_scalactic)
     //SCALA MODULES
     implementation(Libs.Scala.scala_collection_contrib)
     implementation(Libs.Scala.scala_parallel_collections)
@@ -71,6 +70,8 @@ dependencies {
     implementation(Libs.Parsers.jackson_annotation)
     implementation(Libs.Parsers.jackson_databind)
     implementation(Libs.Parsers.jackson_yaml)
+    implementation(Libs.Parsers.jackson_module)
+
 }
 
 application {

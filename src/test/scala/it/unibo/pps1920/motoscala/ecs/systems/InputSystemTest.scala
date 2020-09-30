@@ -55,7 +55,7 @@ class InputSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
   "A movementSystem" when {
     "updating" should {
       "move an entity to direction" in {
-        eventQueue.enqueue(CommandEvent(CommandData(entity, North)))
+        eventQueue.enqueue(CommandEvent(CommandData(entity, North, true)))
         coordinator.updateSystems()
         coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
           .vel shouldBe 1
