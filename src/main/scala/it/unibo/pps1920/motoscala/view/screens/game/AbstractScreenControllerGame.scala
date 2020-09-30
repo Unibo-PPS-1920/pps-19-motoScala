@@ -23,6 +23,7 @@ abstract class AbstractScreenControllerGame(
   private val gameEventHandler: GameEventHandler = new GameEventHandler()
   private var playerEntity: Option[Entity] = None
   private var mapSize: Option[Coordinate] = None
+  private var isPlaying: Boolean = false
 
   @FXML protected var root: BorderPane = _
   @FXML protected var canvas: Canvas = _
@@ -34,6 +35,7 @@ abstract class AbstractScreenControllerGame(
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
 
   def initialize(): Unit = {
+    isPlaying = false
     assertNodeInjected()
     initButtons()
     gameEventHandler.addKeyListeners(BumperCarEntity(UUID.randomUUID()))(root, sendCommandEvent)
@@ -56,10 +58,10 @@ abstract class AbstractScreenControllerGame(
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))
     buttonBack.setOnAction(_ => dismiss())
     //PLAY-PAUSE
-    buttonStart.setGraphic(PauseIcon)
+    buttonStart.setGraphic(PlayIcon)
     buttonStart.setOnAction(_ => if (buttonStart.getGraphic == PlayIcon) {
       buttonStart.setGraphic(PauseIcon)
-      controller.resume()
+      if (!isPlaying) {controller.start(); isPlaying = true } else controller.resume()
     } else {
       buttonStart.setGraphic(PlayIcon)
       controller.pause()

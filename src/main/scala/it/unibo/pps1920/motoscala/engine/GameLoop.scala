@@ -20,17 +20,19 @@ private[engine] object GameLoop {
     override var fps: Int,
     val engine: UpdatableEngine
   ) extends GameLoop {
-
-
     private val Ms = 1000
     private val logger = LoggerFactory getLogger classOf[GameLoop]
-
     @volatile private var _status: GameStatus = Stopped
 
     override def run(): Unit = {
       _status = Running
       //noinspection LoopVariableNotUpdated
-      while (_status == Running) {
+      while (_status != Stopped) {
+        if (_status == Paused) {
+          this.synchronized {
+            wait()
+          }
+        }
         val start = System.currentTimeMillis()
 
         engine.tick()
@@ -57,7 +59,7 @@ private[engine] object GameLoop {
 
     override def unPause(): GameStatus = this.synchronized {
       _status match {
-        case Paused => _status = Running; logger debug "resumed"; _status
+        case Paused => _status = Running; logger debug "resumed"; this.notifyAll(); _status
         case Running | Stopped => logger error "Not paused, can't unpause"; _status
       }
     }
