@@ -20,7 +20,7 @@ object InputSystem {
     val deltaVelocity: Double = 1
     def update(): Unit = {
       eventQueue.dequeueAll(_ => true).foreach {
-        case CommandEvent(CommandData(entity, direction)) =>
+        case CommandEvent(CommandData(entity, direction, isActive)) =>
           coordinator.getEntityComponent(entity, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
             .dir = direction
           coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
