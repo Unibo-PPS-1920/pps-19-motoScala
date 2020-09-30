@@ -5,6 +5,7 @@ import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.{Stage, StageStyle, WindowEvent}
+import scalafx.scene.control.Button
 
 private[view] object ViewUtils {
   def createStage(
@@ -24,5 +25,11 @@ private[view] object ViewUtils {
     stage.centerOnScreen()
     stage setOnCloseRequest onCloseRequest
     stage
+  }
+  def buttonFactory(bText: String): Button = {
+    new Button {
+      text = bText
+      id = "Button"
+    }
   }
 }

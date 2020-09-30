@@ -9,6 +9,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 class ScreenControllerGame(protected override val viewFacade: ViewFacade,
                            protected override val controller: ObservableUI)
   extends AbstractScreenControllerGame(viewFacade, controller) with Displayable {
+  logger info "Game Screen"
   private val mediator: Mediator = controller.getMediator
 
   mediator.subscribe(this)
