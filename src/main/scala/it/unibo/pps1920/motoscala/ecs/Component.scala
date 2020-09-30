@@ -1,3 +1,3 @@
 package it.unibo.pps1920.motoscala.ecs
 
-trait Component
+sealed trait Component

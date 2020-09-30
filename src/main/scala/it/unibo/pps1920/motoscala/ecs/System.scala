@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs
 
 import it.unibo.pps1920.motoscala.ecs.managers.ECSSignature
 
-trait System {
+sealed trait System {
   def signature: ECSSignature
   def entitiesRef(): Set[Entity]
   def addEntityRef(entity: Entity): Unit
