@@ -9,7 +9,10 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
+import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
+import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
@@ -80,14 +83,18 @@ abstract class AbstractScreenControllerGame(
 
   protected def drawEntities(entities: Seq[EntityData]): Unit = entities.foreach(e => {
     e.entity match {
-      case BumperCarEntity(_) =>
-      case Enemy1Entity(_) =>
-      case TileEntity(_) =>
+      case BumperCarEntity(_) => Drawables.CellDrawable.draw(e)
+      case Enemy1Entity(_) => Drawables.CellDrawable.draw(e)
+      case TileEntity(_) => Drawables.CellDrawable.draw(e)
     }
   })
 
-
   override def whenDisplayed(): Unit = {initialize(); root.requestFocus() }
   def sendCommandEvent(event: CommandEvent): Unit
+
+  private object Drawables {
+    val CellDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.EnemySpiderTexture), context)
+  }
 }
+
 
