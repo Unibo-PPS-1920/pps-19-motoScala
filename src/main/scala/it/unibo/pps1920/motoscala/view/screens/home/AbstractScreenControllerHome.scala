@@ -46,7 +46,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
   override def whenDisplayed(): Unit = {}
 
   private def initializeButtons(): Unit = {
-    this.textPlay.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoGame))
+    this.textPlay.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLevels))
     this.textPlayMultiplayer.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
     this.textSettings.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoSettings))
     this.textStats.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoStats))

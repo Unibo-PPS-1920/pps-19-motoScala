@@ -15,8 +15,10 @@ private[view] object ScreenLoader {
 
     override def getScreenController(screen: FXMLScreens): ScreenController = cache(screen)._2
     def applyScreen(screen: FXMLScreens, root: Pane): Unit = root.getChildren.setAll(cache(screen)._1)
-    def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit =
+    def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = {
+      println(screen, controller.getClass)
       cache += (screen -> ((loadFxml(screen, controller), controller)))
+    }
   }
   def apply(): ScreenLoader = new ScreenLoaderImpl()
 }
