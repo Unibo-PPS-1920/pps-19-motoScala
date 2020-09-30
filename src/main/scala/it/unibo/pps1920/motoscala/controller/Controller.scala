@@ -41,7 +41,7 @@ object Controller {
                     LevelData(1, Coordinate(100, 100), List()))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
-    override def pause(): Unit = engine.get.resume()
+    override def pause(): Unit = engine.get.pause()
     override def resume(): Unit = engine.get.resume()
     override def stop(): Unit = {
       engine.get.stop()

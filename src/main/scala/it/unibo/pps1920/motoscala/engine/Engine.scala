@@ -3,7 +3,8 @@ package it.unibo.pps1920.motoscala.engine
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent, LevelSetupEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EventData, Mediator}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
@@ -78,7 +79,7 @@ object GameEngine {
         }
 
       })
-      mediator.publishEvent(LevelSetupEvent(EventData.LevelSetupData(isSinglePlayer = true, isHosting = true, player)))
+      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
     }
     override def start(): Unit = {
       gameLoop.status match {
