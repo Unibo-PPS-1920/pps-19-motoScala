@@ -56,8 +56,8 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
   private def initializeBackground(pane: Pane): Unit = {
     //Background setup
     val background: Rectangle = new Rectangle()
-    background.width = ViewConstants.SCREEN_WIDTH
-    background.height = ViewConstants.SCREEN_HEIGHT
+    background.width = ViewConstants.Window.ScreenWidth
+    background.height = ViewConstants.Window.ScreenHeight
     background.setCache(true)
     background.setCacheHint(CacheHint.SPEED)
     background.setId(Constant.CSS_BACKGROUND_ID)
@@ -74,7 +74,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
       xLine.setId(Constant.CSS_LINE_ID)
       val translate: TranslateTransition = new TranslateTransition
       translate.setDuration(Duration.apply(Constant.ANIMATION_DURATION * 2))
-      translate.setToY((ViewConstants.SCREEN_HEIGHT + Constant.Y_LINE_PORTION * multiplayer) / 2)
+      translate.setToY((ViewConstants.Window.ScreenHeight + Constant.Y_LINE_PORTION * multiplayer) / 2)
       translate.setCycleCount(Timeline.Indefinite)
       translate.setNode(xLine)
       translate.setAutoReverse(true)
@@ -100,8 +100,8 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     final val SCREEN_LINE_DIVIDER = 10
     final val X_LINE_NUMBER = (-2, 10)
     final val Y_LINE_NUMBER = (1, 10)
-    final val X_LINE_PORTION = ViewConstants.SCREEN_HEIGHT / SCREEN_LINE_DIVIDER
-    final val Y_LINE_PORTION = ViewConstants.SCREEN_WIDTH / SCREEN_LINE_DIVIDER
+    final val X_LINE_PORTION = ViewConstants.Window.ScreenHeight / SCREEN_LINE_DIVIDER
+    final val Y_LINE_PORTION = ViewConstants.Window.ScreenWidth / SCREEN_LINE_DIVIDER
     final val CSS_LINE_ID = "Line"
     final val CSS_BACKGROUND_ID = "Background"
   }
