@@ -3,13 +3,13 @@ package it.unibo.pps1920.motoscala.engine
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent, LevelSetupEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EntityType, EventData, Mediator}
+import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
 import it.unibo.pps1920.motoscala.engine.GameStatus._
-import it.unibo.pps1920.motoscala.model.Level.LevelData
+import it.unibo.pps1920.motoscala.model.Level.{EnemyEntity, LevelData, PlayerEntity, TileEntity}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -50,10 +50,11 @@ object GameEngine {
       coordinator.registerSystem(DrawSystem(mediator, coordinator))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
-      level.entities.foreach(e => e.enType match {
-        case EntityType.Player =>
-        case EntityType.Tile =>
-        case enemy: EntityType.Enemy =>
+      level.entities.foreach(e => e match {
+        case TileEntity(shape, position, tangible) =>
+        case PlayerEntity(position, shape, direction, velocity) =>
+        case EnemyEntity(position, shape, direction, velocity) =>
+
       })
       mediator.publishEvent(LevelSetupEvent(EventData.LevelSetupData(isSinglePlayer = true, isHosting = true, player)))
     }
