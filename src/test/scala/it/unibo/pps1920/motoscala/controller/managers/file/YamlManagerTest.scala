@@ -47,7 +47,7 @@ class YamlManagerTest extends Suites(new InnerTest) with BeforeAndAfterAll {
   }
 
   override def beforeAll(): Unit = {
-    FileManager.createLocalDirectoryTree(APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Dummy.txt")
+    FileManager.createLocalDirectoryTreeFromFile(APP_MAIN_FOLDER)
   }
 }
 case class TestClass(

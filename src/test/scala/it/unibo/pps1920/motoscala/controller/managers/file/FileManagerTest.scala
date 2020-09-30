@@ -14,7 +14,7 @@ private class InnerTestFileManager extends AnyWordSpec with Matchers {
   "A File manager" when {
     "Manage files" should {
       "Create Directory Tree" in {
-        FileManager.createLocalDirectoryTree(USER_HOME + SYSTEM_SEPARATOR + "Test" + SYSTEM_SEPARATOR + "Test.txt")
+        FileManager.createLocalDirectoryTreeFromFile(USER_HOME + SYSTEM_SEPARATOR + "Test")
         (USER_HOME + SYSTEM_SEPARATOR + "Test" + SYSTEM_SEPARATOR).toFile.isDirectory shouldBe true
       }
       "Create Directory" in {
@@ -30,6 +30,15 @@ private class InnerTestFileManager extends AnyWordSpec with Matchers {
         FileManager.deleteLocalFile(USER_HOME + SYSTEM_SEPARATOR + "Test" + SYSTEM_SEPARATOR + "Test.txt")
         (USER_HOME + SYSTEM_SEPARATOR + "Test" + SYSTEM_SEPARATOR + "Test.txt").toFile.exists() shouldBe false
       }
+      "List file names in directory" in {
+        FileManager.createLocalFile(USER_HOME + SYSTEM_SEPARATOR + "Test1" + SYSTEM_SEPARATOR + "Test.txt")
+        FileManager.createLocalFile(USER_HOME + SYSTEM_SEPARATOR + "Test2" + SYSTEM_SEPARATOR + "Test.txt")
+
+        FileManager.getListFiles(USER_HOME + SYSTEM_SEPARATOR + "Test")
+        (USER_HOME + SYSTEM_SEPARATOR + "Test").toFile.listFiles().length shouldBe 1
+      }
+
+
     }
   }
 }

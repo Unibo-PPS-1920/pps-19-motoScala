@@ -11,19 +11,20 @@ import scala.util.Try
 
 class YamlManager {
   private final val logger = LoggerFactory getLogger classOf[YamlManager]
-  private val mapper = new ObjectMapper(new YAMLFactory())
+  private final val mapper = new ObjectMapper(new YAMLFactory())
   def loadYaml[T](location: Path)(cl: Class[T]): Option[T] = {
-    mapper.findAndRegisterModules
-    mapper.registerModule(DefaultScalaModule)
-    val cls = manifest.runtimeClass.asInstanceOf[Class[T]]
+    this.initializeMapper()
+    //  val cls = manifest.runtimeClass.asInstanceOf[Class[T]] Alternativa???
     Try(mapper.readValue(location.toFile, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
-
   def saveYaml[T](location: Path)(data: T): Boolean = {
-    mapper.findAndRegisterModules
-    mapper.registerModule(DefaultScalaModule)
+    this.initializeMapper()
     Try(mapper.writeValue(location.toFile, data))
       .fold(err => {logger.warn(err.getMessage); false }, _ => true)
+  }
+  private final def initializeMapper(): Unit = {
+    mapper.findAndRegisterModules
+    mapper.registerModule(DefaultScalaModule)
   }
 
 }
