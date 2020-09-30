@@ -37,10 +37,10 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
         mediator subscribe observerCommand
       }
       "allow to send command" in {
-        mediator.publishEvent(new Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South, true)))
-        mediator.publishEvent(new Event.DrawEntityEvent(List.empty))
-        mediator.publishEvent(new Event.LevelSetupEvent("Bebebe"))
-        mediator.publishEvent(new Event.LevelEndEvent("Bababa"))
+        mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South, moving = true)))
+        mediator.publishEvent(Event.DrawEntityEvent(List.empty))
+        mediator.publishEvent(Event.LevelSetupEvent(""))
+        mediator.publishEvent(Event.LevelEndEvent(""))
       }
     }
     "publishing" should {
@@ -55,7 +55,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       mediator unsubscribe observerCommand
     }
     "publishing" in {
-      mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), North, true)))
+      mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), North, moving = true)))
     }
     "not modify flag" in {
       ToggleFlags.cmdFlag shouldBe true

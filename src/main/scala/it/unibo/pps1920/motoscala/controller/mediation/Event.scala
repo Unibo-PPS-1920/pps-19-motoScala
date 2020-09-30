@@ -8,7 +8,7 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 sealed trait Event
 
 object Event {
-  type EntityData = EventData.EntityData
+  type EntityData = EventData.DrawEntityData
   type LevelSetupData = String
   type LevelEndData = String
   type CommandData = EventData.CommandData
@@ -22,5 +22,5 @@ object Event {
 
 object EventData {
   final case class CommandData(entity: Entity, direction: Direction, moving: Boolean)
-  final case class EntityData(vec: Vector2, shape: Shape, enType: EntityType)
+  final case class DrawEntityData(pos: Vector2, direction: Direction, shape: Shape, enType: EntityType)
 }

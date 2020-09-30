@@ -11,7 +11,6 @@ trait Coordinator {
   def removeEntityComponent(entity: Entity, component: Component): Unit
   def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
   def registerSystem(sys: System): Unit
-  def signSystem(sys: System, sysSignature: ECSSignature): Unit
   def updateSystems(): Unit
 }
 
@@ -37,8 +36,6 @@ object Coordinator {
     override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
       this.synchronized(componentManager.getEntityComponent(entity, compType))
     override def registerSystem(sys: System): Unit = this.synchronized(systemManager.registerSystem(sys))
-    override def signSystem(sys: System, sysSignature: ECSSignature): Unit =
-      this.synchronized(systemManager.setSignature(sys, sysSignature))
     override def updateSystems(): Unit = this.synchronized(systemManager.updateAll())
   }
   type ComponentType = Class[_]

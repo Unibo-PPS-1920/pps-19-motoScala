@@ -5,7 +5,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Direction._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
@@ -38,10 +38,6 @@ class MovementSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAl
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerSystem(movement)
-    coordinator
-      .signSystem(movement, ECSSignature.apply()
-        .signComponent(classOf[PositionComponent], classOf[VelocityComponent], classOf[DirectionComponent]))
-
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity, pos)
     coordinator.addEntityComponent(entity, dir)
