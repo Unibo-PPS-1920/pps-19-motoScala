@@ -1,16 +1,16 @@
 package it.unibo.pps1920.motoscala.engine
 
-import it.unibo.pps1920.motoscala.controller.LevelDescription
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.engine.GameStatus._
+import it.unibo.pps1920.motoscala.model.Level.LevelData
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
 
 trait Engine extends UpdatableEngine with Commandable {
-  def init(level: LevelDescription): Unit
+  def init(level: LevelData): Unit
   def start(): Unit
   def pause(): Unit
   def resume(): Unit
@@ -33,7 +33,7 @@ object GameEngine {
 
     override def tick(): Unit = coordinator.updateSystems()
 
-    override def init(level: LevelDescription): Unit = {
+    override def init(level: LevelData): Unit = {
       mediator.subscribe(this)
     }
     override def start(): Unit = {
