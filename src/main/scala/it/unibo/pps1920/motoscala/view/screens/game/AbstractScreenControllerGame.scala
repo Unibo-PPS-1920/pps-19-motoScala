@@ -8,6 +8,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
+import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
 import javafx.fxml.FXML
@@ -21,7 +22,7 @@ abstract class AbstractScreenControllerGame(
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   private val gameEventHandler: GameEventHandler = new GameEventHandler()
   private var playerEntity: Option[Entity] = None
-  //private var mapSize: Option[Vector2] = None
+  private var mapSize: Option[Coordinate] = None
 
   @FXML protected var root: BorderPane = _
   @FXML protected var canvas: Canvas = _
@@ -62,7 +63,7 @@ abstract class AbstractScreenControllerGame(
   }
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.playerEntity.some
-    //mapSize = data.level.mapSize.some
+    mapSize = data.level.mapSize.some
     if (data.isSinglePlayer) {
       labelTitle setText s"Level: ${data.level.index}"
     } else {

@@ -7,6 +7,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData, L
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
+import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import org.junit.runner.RunWith
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -40,7 +41,9 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       "allow to send command" in {
         mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South, moving = true)))
         mediator.publishEvent(Event.DrawEntityEvent(List.empty))
-        mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(true, true, BumperCarEntity(UUID.randomUUID()))))
+        mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
+          LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
+          BumperCarEntity(UUID.randomUUID()))))
         mediator.publishEvent(Event.LevelEndEvent(""))
       }
     }
