@@ -11,6 +11,7 @@ private[view] object ViewStateMachine {
     .initialState(FXMLScreens.HOME)
     .transition({
       case (HOME, GotoGame) => GAME
+      case (HOME, GotoLevels) => LEVELS
       case (HOME, GotoLobby) => LOBBY
       case (HOME, GotoSettings) => SETTINGS
       case (HOME, GotoStats) => STATS

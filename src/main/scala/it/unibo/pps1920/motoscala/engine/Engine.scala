@@ -1,8 +1,13 @@
 package it.unibo.pps1920.motoscala.engine
 
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
+import java.util.UUID
+
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent, LevelSetupEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EntityType, EventData, Mediator}
+import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
+import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import org.slf4j.LoggerFactory
@@ -21,9 +26,9 @@ trait Engine extends UpdatableEngine with Commandable {
 object GameEngine {
 
 
-  def apply(mediator: Mediator): Engine = new GameEngineImpl(mediator)
+  def apply(mediator: Mediator, myUuid: UUID): Engine = new GameEngineImpl(mediator, myUuid)
 
-  private class GameEngineImpl(mediator: Mediator) extends Engine {
+  private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
 
     private val logger = LoggerFactory getLogger classOf[Engine]
@@ -35,6 +40,22 @@ object GameEngine {
 
     override def init(level: LevelData): Unit = {
       mediator.subscribe(this)
+      coordinator.registerComponentType(classOf[PositionComponent])
+      coordinator.registerComponentType(classOf[VelocityComponent])
+      coordinator.registerComponentType(classOf[DirectionComponent])
+      coordinator.registerComponentType(classOf[IntangibleComponent])
+      coordinator.registerComponentType(classOf[ShapeComponent])
+      coordinator.registerComponentType(classOf[TypeComponent])
+      coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerSystem(DrawSystem(mediator, coordinator))
+      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+      val player = BumperCarEntity(myUuid)
+      level.entities.foreach(e => e.enType match {
+        case EntityType.Player =>
+        case EntityType.Tile =>
+        case enemy: EntityType.Enemy =>
+      })
+      mediator.publishEvent(LevelSetupEvent(EventData.LevelSetupData(isSinglePlayer = true, isHosting = true, player)))
     }
     override def start(): Unit = {
       gameLoop.status match {
@@ -51,7 +72,10 @@ object GameEngine {
       mediator.unsubscribe(this)
     }
 
-    override def notifyCommand(cmd: CommandData): Unit = eventQueue.enqueue(CommandEvent(cmd))
+    override def notifyCommand(cmd: CommandData): Unit = {
+      eventQueue.enqueue(CommandEvent(cmd))
+      logger.info(cmd + "")
+    }
   }
 
 }
