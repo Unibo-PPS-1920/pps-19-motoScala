@@ -1,8 +1,10 @@
 package it.unibo.pps1920.motoscala.engine
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
+import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EntityType, Mediator}
+import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
+import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import org.slf4j.LoggerFactory
@@ -35,6 +37,21 @@ object GameEngine {
 
     override def init(level: LevelData): Unit = {
       mediator.subscribe(this)
+      coordinator.registerComponentType(classOf[PositionComponent])
+      coordinator.registerComponentType(classOf[VelocityComponent])
+      coordinator.registerComponentType(classOf[DirectionComponent])
+      coordinator.registerComponentType(classOf[IntangibleComponent])
+      coordinator.registerComponentType(classOf[ShapeComponent])
+      coordinator.registerComponentType(classOf[TypeComponent])
+      coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerSystem(DrawSystem(mediator, coordinator))
+      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+      level.entities.foreach(e => e.enType match {
+        case EntityType.Player =>
+        case EntityType.Tile =>
+        case enemy: EntityType.Enemy =>
+      })
+
     }
     override def start(): Unit = {
       gameLoop.status match {
