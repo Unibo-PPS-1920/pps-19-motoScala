@@ -72,7 +72,10 @@ object GameEngine {
       mediator.unsubscribe(this)
     }
 
-    override def notifyCommand(cmd: CommandData): Unit = eventQueue.enqueue(CommandEvent(cmd))
+    override def notifyCommand(cmd: CommandData): Unit = {
+      eventQueue.enqueue(CommandEvent(cmd))
+      logger.info(cmd + "")
+    }
   }
 
 }

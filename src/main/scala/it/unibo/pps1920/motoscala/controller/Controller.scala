@@ -9,8 +9,8 @@ import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Level.{LevelData, LevelEntity}
+import it.unibo.pps1920.motoscala.view.ObserverUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
-import it.unibo.pps1920.motoscala.view.{ObserverUI, View}
 import org.slf4j.LoggerFactory
 
 trait Controller extends ActorController with SoundController with ObservableUI {
@@ -18,7 +18,7 @@ trait Controller extends ActorController with SoundController with ObservableUI 
 
 object Controller {
   private class ControllerImpl private[Controller]() extends Controller {
-    private val logger = LoggerFactory getLogger classOf[View]
+    private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
     private val mediator = Mediator()
@@ -28,6 +28,7 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
+      logger info s"level selected: $level"
       engine = Option(motoscala.engine.GameEngine(mediator, myUuid))
       engine.get.init(levels.filter(data => data.index == level).head)
     }
@@ -35,7 +36,8 @@ object Controller {
     override def start(): Unit = engine.get.start()
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
-      levels = List(LevelData(0, (100, 100), List(LevelEntity(Player, util.Vector2(50, 50)))))
+      levels = List(LevelData(0, (100, 100), List(LevelEntity(Player, util.Vector2(50, 50)))),
+                    LevelData(1, (100, 100), List(LevelEntity(Player, util.Vector2(50, 50)))))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.resume()

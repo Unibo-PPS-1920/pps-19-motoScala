@@ -29,14 +29,18 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   }
 
   private def initBackButton(): Unit = {
-    buttonBack = ViewUtils.buttonFactory(bText = s"Back")
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+    buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => viewFacade.changeScreen(ScreenEvent.GoBack))
+  }
+
+  private def selectLevel(level: Int): Unit = {
+    controller.setupGame(level)
+    viewFacade.changeScreen(ScreenEvent.GoNext)
   }
 
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"Level $i")
+      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i))
       grid.addRow(i, button)
     })
     grid.addRow(levels.size, buttonBack)

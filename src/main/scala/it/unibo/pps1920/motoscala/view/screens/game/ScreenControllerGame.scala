@@ -15,8 +15,8 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
 
   mediator.subscribe(this)
 
+  override def notifyLevelSetup(data: LevelSetupData): Unit = logger info s"$data"
   override def notifyDrawEntities(entities: Seq[EntityData]): Unit = ???
-  override def notifyLevelSetup(data: LevelSetupData): Unit = ???
   override def notifyLevelEnd(data: LevelEndData): Unit = ???
 
   override def notify(ev: ViewEvent): Unit = ???
