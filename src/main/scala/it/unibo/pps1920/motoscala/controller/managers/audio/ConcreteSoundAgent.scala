@@ -18,8 +18,8 @@ final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
   override def playMusic(media: Media): Unit = {
     require(medias.isDefinedAt(media))
     val musicPlayer: MediaPlayer = medias(media)
-    musicPlayer setVolume volumeMusic
-    musicPlayer play()
+    musicPlayer.setVolume(volumeMusic)
+    musicPlayer.play()
     this.stopMusic()
     this.actualMusicPlayer = Some(musicPlayer)
   }
@@ -27,8 +27,8 @@ final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
   override def playClip(clip: Clips): Unit = {
     require(clips.isDefinedAt(clip))
     val clipPlayer: AudioClip = clips(clip)
-    clipPlayer setVolume volumeEffect
-    clipPlayer play()
+    clipPlayer.setVolume(volumeEffect)
+    clipPlayer.play()
     this.actualClipPlayer = Some(clipPlayer)
   }
   override def setVolumeMusic(value: Double): Unit = this.volumeMusic = _
