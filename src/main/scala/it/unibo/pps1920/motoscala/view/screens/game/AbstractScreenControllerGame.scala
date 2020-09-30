@@ -33,10 +33,15 @@ abstract class AbstractScreenControllerGame(
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
 
-  @FXML override def initialize(): Unit = {
+  def initialize(): Unit = {
     assertNodeInjected()
     initButtons()
     gameEventHandler.addKeyListeners(BumperCarEntity(UUID.randomUUID()))(root, sendCommandEvent)
+  }
+  private def dismiss(): Unit = {
+    gameEventHandler.removeKeyListeners(root)
+    controller.stop()
+    viewFacade.changeScreen(ScreenEvent.GoBack)
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
@@ -47,12 +52,11 @@ abstract class AbstractScreenControllerGame(
   }
 
   private def initButtons(): Unit = {
+    //BACK
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))
+    buttonBack.setOnAction(_ => dismiss())
+    //PLAY-PAUSE
     buttonStart.setGraphic(PauseIcon)
-    buttonBack.setOnAction(_ => {
-      controller.stop()
-      viewFacade.changeScreen(ScreenEvent.GoBack)
-    })
     buttonStart.setOnAction(_ => if (buttonStart.getGraphic == PlayIcon) {
       buttonStart.setGraphic(PauseIcon)
       controller.resume()
@@ -64,19 +68,12 @@ abstract class AbstractScreenControllerGame(
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
-    if (data.isSinglePlayer) {
+    if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
-      labelTitle setText s"Level: ${data.level.index}"
-    } else {
-      labelTitle setText s"MP Level: ${data.level.index}"
-      if (data.isHosting) {
-        buttonStart setVisible true
-      } else {
-        buttonStart setVisible false
-      }
-    }
+      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
+    } else {buttonStart setVisible false }
   }
-  override def whenDisplayed(): Unit = this.root.requestFocus()
+  override def whenDisplayed(): Unit = {initialize(); root.requestFocus() }
   def sendCommandEvent(event: CommandEvent): Unit
 }
 
