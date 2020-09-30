@@ -45,7 +45,6 @@ object GameEngine {
       coordinator.registerComponentType(classOf[DirectionComponent])
       coordinator.registerComponentType(classOf[IntangibleComponent])
       coordinator.registerComponentType(classOf[ShapeComponent])
-      coordinator.registerComponentType(classOf[TypeComponent])
       coordinator.registerSystem(MovementSystem(coordinator))
       coordinator.registerSystem(DrawSystem(mediator, coordinator))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
