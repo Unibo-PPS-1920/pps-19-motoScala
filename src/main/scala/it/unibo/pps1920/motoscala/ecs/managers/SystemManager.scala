@@ -4,7 +4,6 @@ import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 
 private[managers] trait SystemManager {
   def registerSystem(sys: System): Unit
-  def setSignature(sys: System, sysSignature: ECSSignature): Unit
   def entitySignatureChanged(entity: Entity, enSignature: ECSSignature): Set[System]
   def entityDestroyed(entity: Entity): Unit
   def updateAll(): Unit
@@ -14,8 +13,7 @@ private[managers] object SystemManager {
   private class SystemManagerImpl() extends SystemManager {
     private var systemSignature: Map[System, ECSSignature] = Map()
 
-    override def registerSystem(sys: System): Unit = systemSignature += (sys -> null)
-    override def setSignature(sys: System, sysSignature: ECSSignature): Unit = systemSignature += (sys -> sysSignature)
+    override def registerSystem(sys: System): Unit = systemSignature += (sys -> sys.signature)
     override def entitySignatureChanged(entity: Entity, enSignature: ECSSignature): Set[System] = {
       val partition = systemSignature.partition(_._2.signatureSet.&(enSignature.signatureSet)
                                                   == enSignature.signatureSet)
