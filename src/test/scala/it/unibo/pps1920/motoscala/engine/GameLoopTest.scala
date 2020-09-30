@@ -12,7 +12,7 @@ import org.scalatestplus.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Eventually {
   implicit override val patienceConfig: PatienceConfig = {
-    PatienceConfig(timeout = scaled(Span(1000, Millis)), interval = scaled(Span(5, Millis)))
+    PatienceConfig(timeout = scaled(Span(2000, Millis)), interval = scaled(Span(5, Millis)))
   }
   val mediator: Mediator = Mediator()
   val engine: Engine = GameEngine(mediator)
