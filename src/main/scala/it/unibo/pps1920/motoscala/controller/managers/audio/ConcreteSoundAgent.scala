@@ -31,8 +31,8 @@ final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
     clipPlayer.play()
     this.actualClipPlayer = Some(clipPlayer)
   }
-  override def setVolumeMusic(value: Double): Unit = this.volumeMusic = _
-  override def setVolumeEffect(value: Double): Unit = this.volumeEffect = _
+  override def setVolumeMusic(value: Double): Unit = this.volumeMusic = value
+  override def setVolumeEffect(value: Double): Unit = this.volumeEffect = value
   override def restartMusic(): Unit = this.actualClipPlayer.foreach(_.stop())
 
   override def pauseMusic(): Unit = this.actualClipPlayer.foreach(_.stop())
