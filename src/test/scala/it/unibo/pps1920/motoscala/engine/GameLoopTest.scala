@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.engine
 
+import java.util.UUID
+
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
@@ -12,10 +14,10 @@ import org.scalatestplus.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Eventually {
   implicit override val patienceConfig: PatienceConfig = {
-    PatienceConfig(timeout = scaled(Span(1000, Millis)), interval = scaled(Span(5, Millis)))
+    PatienceConfig(timeout = scaled(Span(10000, Millis)), interval = scaled(Span(5, Millis)))
   }
   val mediator: Mediator = Mediator()
-  val engine: Engine = GameEngine(mediator)
+  val engine: Engine = GameEngine(mediator, UUID.randomUUID())
   var loop: GameLoop = _
 
   before {

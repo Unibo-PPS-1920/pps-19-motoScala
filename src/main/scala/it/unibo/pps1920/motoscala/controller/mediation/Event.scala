@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.controller.mediation
 
+
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Shape
 import it.unibo.pps1920.motoscala.ecs.util.Direction.Direction
@@ -9,7 +11,6 @@ sealed trait Event
 
 object Event {
   type EntityData = EventData.DrawEntityData
-  type LevelSetupData = String
   type LevelEndData = String
   type CommandData = EventData.CommandData
   sealed trait DisplayableEvent extends Event
@@ -23,4 +24,5 @@ object Event {
 object EventData {
   final case class CommandData(entity: Entity, direction: Direction, moving: Boolean)
   final case class DrawEntityData(pos: Vector2, direction: Direction, shape: Shape, enType: EntityType)
+  final case class LevelSetupData(isSinglePlayer: Boolean, isHosting: Boolean, playerEntity: Entity)
 }

@@ -6,6 +6,5 @@ import it.unibo.pps1920.motoscala.view.View
 object Main extends App {
   val controller = Controller()
   val view = View(controller)
-  controller.start()
   view.start()
 }
