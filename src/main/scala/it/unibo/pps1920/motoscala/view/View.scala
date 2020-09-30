@@ -6,6 +6,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
 import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
 import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
+import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
 import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
 import javafx.application.Platform
 import javafx.scene.Scene
@@ -56,13 +57,15 @@ object View {
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)
+      case event: ViewEvent.LevelEvent => screenLoader.getScreenController(FXMLScreens.LEVELS).notify(event)
       case event: ViewEvent.LobbyEvent => logger info event.getClass.toString
       case event: ViewEvent.SettingsEvent => logger info event.getClass.toString
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
     private def loadScreens(): Unit = {
-      loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
       loadFXMLNode(FXMLScreens.GAME, new ScreenControllerGame(this, controller))
+      loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
+      loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
     }
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
       .loadFXMLNode(screen, controller)
