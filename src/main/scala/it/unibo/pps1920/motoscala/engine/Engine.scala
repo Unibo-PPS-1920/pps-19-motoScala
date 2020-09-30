@@ -5,11 +5,13 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
-import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
+import it.unibo.pps1920.motoscala.ecs.util
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
-import it.unibo.pps1920.motoscala.model.Level.{EnemyEntity, LevelData, PlayerEntity, TileEntity}
+import it.unibo.pps1920.motoscala.model.Level.{Enemy1, LevelData, Player, Tile}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -50,9 +52,30 @@ object GameEngine {
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
       level.entities.foreach(e => e match {
-        case TileEntity(shape, position, tangible) =>
-        case PlayerEntity(position, shape, direction, velocity) =>
-        case EnemyEntity(position, shape, direction, velocity) =>
+        case Tile(shape, position, tangible) => {
+          val tile = TileEntity(UUID.randomUUID())
+          coordinator.addEntity(tile)
+          coordinator.addEntityComponent(tile, ShapeComponent(shape))
+          coordinator.addEntityComponent(tile, PositionComponent(util.Vector2(position.x, position.y)))
+          if (!tangible) coordinator.addEntityComponent(tile, IntangibleComponent())
+        }
+        case Player(position, shape, direction, velocity) => {
+          coordinator.addEntity(player)
+          coordinator.addEntityComponent(player, ShapeComponent(shape))
+          coordinator.addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
+          coordinator
+            .addEntityComponent(player, DirectionComponent(util.Direction.Direction(Vector2(direction.x, direction.y))))
+          coordinator.addEntityComponent(player, VelocityComponent(velocity))
+        }
+        case Enemy1(position, shape, direction, velocity) => {
+          val enemy = Enemy1Entity(UUID.randomUUID())
+          coordinator.addEntity(enemy)
+          coordinator.addEntityComponent(enemy, ShapeComponent(shape))
+          coordinator.addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
+          coordinator
+            .addEntityComponent(enemy, DirectionComponent(util.Direction.Direction(Vector2(direction.x, direction.y))))
+          coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
+        }
 
       })
       mediator.publishEvent(LevelSetupEvent(EventData.LevelSetupData(isSinglePlayer = true, isHosting = true, player)))
