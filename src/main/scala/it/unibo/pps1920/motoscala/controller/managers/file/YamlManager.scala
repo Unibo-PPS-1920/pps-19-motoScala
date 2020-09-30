@@ -17,14 +17,23 @@ class YamlManager {
     //  val cls = manifest.runtimeClass.asInstanceOf[Class[T]] Alternativa???
     Try(mapper.readValue(location.toFile, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
+  private final def initializeMapper(): Unit = {
+
+    mapper.findAndRegisterModules
+    //   mapper.activateDefaultTyping(ptv, DefaultTyping.OBJECT_AND_NON_CONCRETE);
+
+    mapper.registerModule(DefaultScalaModule)
+
+    import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
+
+    val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[AnyVal]).build
+
+    mapper.activateDefaultTyping(ptv)
+  }
   def saveYaml[T](location: Path)(data: T): Boolean = {
     this.initializeMapper()
     Try(mapper.writeValue(location.toFile, data))
       .fold(err => {logger.warn(err.getMessage); false }, _ => true)
-  }
-  private final def initializeMapper(): Unit = {
-    mapper.findAndRegisterModules
-    mapper.registerModule(DefaultScalaModule)
   }
 
 }
