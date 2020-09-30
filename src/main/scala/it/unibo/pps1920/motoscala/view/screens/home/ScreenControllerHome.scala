@@ -1,9 +1,9 @@
-package it.unibo.pps1920.motoscala.view.screens
+package it.unibo.pps1920.motoscala.view.screens.home
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
-import it.unibo.pps1920.motoscala.view.screens.abstracts.AbstractScreenControllerHome
+import it.unibo.pps1920.motoscala.view.screens.FXMLScreens
 
 
 final class ScreenControllerHome(protected override val viewFacade: ViewFacade,
