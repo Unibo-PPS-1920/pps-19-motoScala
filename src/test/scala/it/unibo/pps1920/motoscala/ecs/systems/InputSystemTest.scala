@@ -6,7 +6,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, Comm
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
@@ -42,10 +42,6 @@ class InputSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerSystem(input)
-    coordinator
-      .signSystem(input, ECSSignature.apply()
-        .signComponent(classOf[VelocityComponent], classOf[DirectionComponent]))
-
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity, dir)
     coordinator.addEntityComponent(entity, vel)

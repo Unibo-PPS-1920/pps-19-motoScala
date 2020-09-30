@@ -37,11 +37,6 @@ class SystemManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
         sysManager.registerSystem(sys2)
       }
 
-      "set a system signature" in {
-        sysManager.setSignature(sys1, ECSSignature(comp1.getClass, comp2.getClass))
-        sysManager.setSignature(sys2, ECSSignature(comp1.getClass))
-      }
-
       "notify entity signature changed" in {
         sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass, comp2.getClass)) shouldBe Set(sys1)
         sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass)) shouldBe Set(sys2, sys1)
@@ -63,10 +58,10 @@ object SystemManagerTestClasses {
   final case class TestEntity(_uuid: UUID) extends Entity {
     override def uuid: UUID = _uuid
   }
-  final case class System1() extends AbstractSystem {
+  final case class System1() extends AbstractSystem(ECSSignature(classOf[Comp1], classOf[Comp2])) {
     override def update(): Unit = println("system1")
   }
-  final case class System2() extends AbstractSystem {
+  final case class System2() extends AbstractSystem(ECSSignature(classOf[Comp1])) {
     override def update(): Unit = println("system2")
   }
 }

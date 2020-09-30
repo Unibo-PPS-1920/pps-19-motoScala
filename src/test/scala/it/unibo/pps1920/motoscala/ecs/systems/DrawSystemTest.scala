@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
 import it.unibo.pps1920.motoscala.controller.mediation.{EntityType, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent, TypeComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 import org.junit.runner.RunWith
@@ -37,9 +37,6 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     coordinator.registerComponentType(classOf[TypeComponent])
     coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerSystem(drawSystem)
-    coordinator
-      .signSystem(drawSystem, ECSSignature.apply()
-        .signComponent(classOf[PositionComponent], classOf[DirectionComponent], classOf[ShapeComponent], classOf[TypeComponent]))
     val entity = TestEntity(UUID.randomUUID())
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity, pos)
