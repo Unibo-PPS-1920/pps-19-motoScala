@@ -4,11 +4,11 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 import it.unibo.pps1920.motoscala
-import it.unibo.pps1920.motoscala.controller.mediation.EntityType.Player
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.util
+import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
-import it.unibo.pps1920.motoscala.model.Level.{LevelData, LevelEntity}
+import it.unibo.pps1920.motoscala.model.Level
+import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import it.unibo.pps1920.motoscala.view.ObserverUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
 import org.slf4j.LoggerFactory
@@ -36,8 +36,9 @@ object Controller {
     override def start(): Unit = engine.get.start()
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
-      levels = List(LevelData(0, (100, 100), List(LevelEntity(Player, util.Vector2(50, 50)))),
-                    LevelData(1, (100, 100), List(LevelEntity(Player, util.Vector2(50, 50)))))
+      levels = List(LevelData(0, Coordinate(100, 100), List(Level
+                                                              .Player(Coordinate(50, 50), Circle(12), Coordinate(0, 1), 10))),
+                    LevelData(1, Coordinate(100, 100), List()))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.resume()
