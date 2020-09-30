@@ -30,12 +30,13 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var buttonStart: Button = _
   @FXML protected var buttonBack: Button = _
   @FXML protected var labelTitle: Label = _
-  protected var context: GraphicsContext = new GraphicsContext(canvas)
+  private var context: GraphicsContext = _
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
 
   def initialize(): Unit = {
+    context = canvas.getGraphicsContext2D
     isPlaying = false
     assertNodeInjected()
     initButtons()
