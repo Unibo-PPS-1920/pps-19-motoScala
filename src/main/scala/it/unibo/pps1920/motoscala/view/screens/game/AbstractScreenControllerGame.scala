@@ -65,13 +65,14 @@ abstract class AbstractScreenControllerGame(
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
     if (data.isSinglePlayer) {
+      buttonStart setVisible true
       labelTitle setText s"Level: ${data.level.index}"
     } else {
       labelTitle setText s"MP Level: ${data.level.index}"
       if (data.isHosting) {
-        buttonStart setDisable true
+        buttonStart setVisible true
       } else {
-        buttonStart setDisable false
+        buttonStart setVisible false
       }
     }
   }
