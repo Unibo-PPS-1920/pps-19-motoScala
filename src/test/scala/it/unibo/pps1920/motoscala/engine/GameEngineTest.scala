@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.engine
 
+import java.util.UUID
+
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import org.junit.runner.RunWith
@@ -14,7 +16,7 @@ class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   val mediator: Mediator = Mediator()
 
   override def beforeAll(): Unit = {
-    engine = GameEngine(mediator)
+    engine = GameEngine(mediator, UUID.randomUUID())
   }
 
   "A GameEngine" when {
