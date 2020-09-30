@@ -13,9 +13,9 @@ object FileManager {
   private final val logger = LoggerFactory getLogger getClass
   final implicit def stringPathToPath(path: String): Path = Paths.get(path)
   final def createLocalDirectoryTree(path: Path)(): Boolean = Try(path.toFile.mkdirs())
-    .fold(_ => {logger.warn(_); false }, _ => true)
+    .fold(error => {logger.warn(error.getMessage); false }, _ => true)
   final def createLocalDirectory(path: Path): Boolean = Try(path.toFile.mkdir)
-    .fold(_ => {logger.warn(_); false }, _ => true)
+    .fold(error => {logger.warn(error.getMessage); false }, _ => true)
   final def createLocalFile(path: String): Boolean = ???
   final def deleteLocalFile(path: String): Boolean = ???
   final def loadLocalFile(): Unit = ???
