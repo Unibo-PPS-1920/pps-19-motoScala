@@ -71,6 +71,8 @@ dependencies {
     implementation(Libs.Parsers.jackson_annotation)
     implementation(Libs.Parsers.jackson_databind)
     implementation(Libs.Parsers.jackson_yaml)
+    implementation(Libs.Parsers.jackson_module)
+
 }
 
 application {
