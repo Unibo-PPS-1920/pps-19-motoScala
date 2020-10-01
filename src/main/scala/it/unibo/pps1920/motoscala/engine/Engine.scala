@@ -65,7 +65,7 @@ object GameEngine {
           coordinator.addEntityComponent(player, ShapeComponent(shape))
           coordinator.addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
           coordinator
-            .addEntityComponent(player, DirectionComponent(util.Direction.Direction(Vector2(direction.x, direction.y))))
+            .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(player, VelocityComponent(velocity))
         }
         case Enemy1(position, shape, direction, velocity) => {
@@ -74,7 +74,7 @@ object GameEngine {
           coordinator.addEntityComponent(enemy, ShapeComponent(shape))
           coordinator.addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
           coordinator
-            .addEntityComponent(enemy, DirectionComponent(util.Direction.Direction(Vector2(direction.x, direction.y))))
+            .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
         }
 

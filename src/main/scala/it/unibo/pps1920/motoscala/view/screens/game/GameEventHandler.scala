@@ -4,6 +4,7 @@ import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
 import it.unibo.pps1920.motoscala.ecs.Entity
+import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.util.Direction._
 import javafx.event.EventHandler
 import javafx.scene.input.{KeyCode, KeyEvent}
