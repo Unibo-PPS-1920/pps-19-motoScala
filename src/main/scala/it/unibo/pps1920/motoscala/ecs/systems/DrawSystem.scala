@@ -6,12 +6,14 @@ import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
+import org.slf4j.LoggerFactory
 
 object DrawSystem {
   def apply(mediator: Mediator, coordinator: Coordinator): System = new DrawSystemImpl(mediator, coordinator)
 
   private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[DirectionComponent], classOf[ShapeComponent])) {
+    private val logger = LoggerFactory getLogger classOf[DrawSystemImpl]
     override def update(): Unit = {
       val entitiesToView = entitiesRef()
         .collect(e => {
@@ -20,6 +22,7 @@ object DrawSystem {
           val d = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
           DrawEntityData(p.pos, d.dir, s.shape, e)
         }).toSeq
+      logger info "drawing" + entitiesToView
       mediator.publishEvent(DrawEntityEvent(entitiesToView))
     }
   }
