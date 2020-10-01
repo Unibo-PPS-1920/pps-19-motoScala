@@ -23,7 +23,6 @@ object DrawSystem {
         val d = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
         DrawEntityData(p.pos, d.dir, s.shape, e)
       }).partition(d => d.entity.uuid == myUuid)
-      logger info "drawing" + entitiesToView
       mediator.publishEvent(Event.DrawEntityEvent(entitiesToView._1.head, entitiesToView._2.toSeq))
     }
   }

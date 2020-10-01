@@ -32,4 +32,3 @@ object InputSystem {
   }
 
 }
-

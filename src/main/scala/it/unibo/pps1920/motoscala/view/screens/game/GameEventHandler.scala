@@ -67,8 +67,7 @@ class GameEventHandler {
   private def setKey(keyCode: KeyCode, direction: Direction, isActive: Boolean): Unit = {
     activeKeys += (keyCode -> isActive)
     handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, direction, isActive))))
-
-    logger info s"${if (isActive) "pressed" else "released"} $direction"
+    //logger info s"${if (isActive) "pressed" else "released"} $direction"
   }
 }
 
