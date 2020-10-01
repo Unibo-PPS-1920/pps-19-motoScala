@@ -83,9 +83,9 @@ abstract class AbstractScreenControllerGame(
 
   protected def drawEntities(entities: Seq[EntityData]): Unit = entities.foreach(e => {
     e.entity match {
-      case BumperCarEntity(_) => Drawables.CellDrawable.draw(e)
-      case Enemy1Entity(_) => Drawables.CellDrawable.draw(e)
-      case TileEntity(_) => Drawables.CellDrawable.draw(e)
+      case BumperCarEntity(_) => Drawables.EnemyDrawable.draw(e)
+      case Enemy1Entity(_) => Drawables.EnemyDrawable.draw(e)
+      case TileEntity(_) => Drawables.EnemyDrawable.draw(e)
     }
   })
 
@@ -93,7 +93,7 @@ abstract class AbstractScreenControllerGame(
   def sendCommandEvent(event: CommandEvent): Unit
 
   private object Drawables {
-    val CellDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.EnemySpiderTexture), context)
+    val EnemyDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.EnemySpiderTexture), context)
   }
 }
 
