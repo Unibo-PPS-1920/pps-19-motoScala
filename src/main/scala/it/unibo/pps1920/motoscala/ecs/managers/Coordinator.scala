@@ -27,9 +27,11 @@ object Coordinator {
       componentManager entityDestroyed entity
     }
     override def registerComponentType(compType: ComponentType): Unit = componentManager.registerComponentType(compType)
-    override def addEntityComponent(entity: Entity, component: Component): Unit =
+    override def addEntityComponent(entity: Entity, component: Component): Unit = {
+      println(entity)
       this.synchronized(systemManager.entitySignatureChanged(entity, componentManager
         .bindComponentToEntity(entity, component)))
+    }
     override def removeEntityComponent(entity: Entity, component: Component): Unit =
       this.synchronized(systemManager.entitySignatureChanged(entity, componentManager
         .unbindComponentFromEntity(entity, component)))
