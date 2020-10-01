@@ -14,13 +14,17 @@ object MovementSystem {
 
     private val logger = LoggerFactory getLogger classOf[MovementSystemImpl]
     override def update(): Unit = {
+      logger info s"moving ${entitiesRef()}"
       entitiesRef()
         .foreach(e => {
           val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
-          val d = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
+
           val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
+
+          val d = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
+
           p.pos = p.pos add (d.dir.value mul v.vel)
-          logger info s"pos: ${p.pos} dir: ${d.dir.value}"
+          v.vel = 0
         })
     }
 

@@ -7,6 +7,9 @@ package it.unibo.pps1920.motoscala.ecs.util
 
 
 sealed case class Direction(value: Vector2) {
+  def +(dir: Direction): Direction = {
+    Direction((dir.value add value).unit())
+  }
   def angle(dir: Direction): Int = dir match {
     case Direction.Center => 0
     case Direction.North => 0
@@ -21,9 +24,6 @@ sealed case class Direction(value: Vector2) {
   }
 }
 object Direction {
-  def +(dir: Direction, dir2: Direction): Direction = {
-    Direction((dir.value add dir2.value).unit())
-  }
   object Center extends Direction(Vector2(0, 0))
   object North extends Direction(Vector2(0, -1))
   object NorthWest extends Direction(Vector2(-1, -1))

@@ -4,7 +4,6 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, Comm
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
-import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
 import scala.collection.mutable
@@ -19,26 +18,17 @@ object InputSystem {
                                 eventQueue: mutable.Queue[CommandableEvent])
     extends AbstractSystem(ECSSignature(classOf[VelocityComponent], classOf[DirectionComponent])) {
 
-    val deltaVelocity: Double = 10
+    val deltaVelocity: Double = 1
     def update(): Unit = {
       eventQueue.dequeueAll(_ => true).foreach {
         case CommandEvent(CommandData(entity, direction, isActive)) =>
-          val dir = coordinator.getEntityComponent(entity, classOf[DirectionComponent]).get
-            .asInstanceOf[DirectionComponent]
-          val vel = coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get
-            .asInstanceOf[VelocityComponent]
-
-          if (isActive) {
-            val dirnew = Direction.+(dir.dir, direction)
-            dir.dir = dirnew
-            vel.vel = deltaVelocity
-          } else {
-            vel.vel = 0
-          }
+          coordinator.getEntityComponent(entity, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
+            .dir = direction
+          coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
+            .vel = deltaVelocity
         case _ =>
       }
     }
   }
 
 }
-
