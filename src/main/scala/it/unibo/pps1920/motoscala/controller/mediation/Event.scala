@@ -14,7 +14,7 @@ object Event {
   type LevelEndData = String
   type CommandData = EventData.CommandData
   sealed trait DisplayableEvent extends Event
-  final case class DrawEntityEvent(entity: Seq[EntityData]) extends DisplayableEvent
+  final case class DrawEntityEvent(player: EntityData, entity: Seq[EntityData]) extends DisplayableEvent
   final case class LevelSetupEvent(data: LevelSetupData) extends DisplayableEvent
   final case class LevelEndEvent(data: LevelEndData) extends DisplayableEvent
   sealed trait CommandableEvent extends Event

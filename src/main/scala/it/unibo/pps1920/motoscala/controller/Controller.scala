@@ -37,7 +37,7 @@ object Controller {
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(100, 100), List(Level
-                                                              .Player(Coordinate(50, 50), Circle(12), Coordinate(0, 1), 10))),
+                                                              .Enemy1(Coordinate(50, 50), Circle(12), Coordinate(0, 1), 10))),
                     LevelData(1, Coordinate(100, 100), List()))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }

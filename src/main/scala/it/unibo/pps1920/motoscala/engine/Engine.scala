@@ -42,18 +42,21 @@ object GameEngine {
     override def tick(): Unit = coordinator.updateSystems()
 
     override def init(level: LevelData): Unit = {
+      logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
-      coordinator.registerComponentType(classOf[VelocityComponent])
-      coordinator.registerComponentType(classOf[DirectionComponent])
-      coordinator.registerComponentType(classOf[IntangibleComponent])
       coordinator.registerComponentType(classOf[ShapeComponent])
+      coordinator.registerComponentType(classOf[DirectionComponent])
+      coordinator.registerComponentType(classOf[VelocityComponent])
+      coordinator.registerComponentType(classOf[IntangibleComponent])
       coordinator.registerSystem(MovementSystem(coordinator))
-      coordinator.registerSystem(DrawSystem(mediator, coordinator))
+      coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
+      logger info "" + level.entities
       level.entities.foreach(e => e match {
         case Tile(shape, position, tangible) => {
+          logger info "add tile"
           val tile = TileEntity(UUID.randomUUID())
           coordinator.addEntity(tile)
           coordinator.addEntityComponent(tile, ShapeComponent(shape))
@@ -61,6 +64,7 @@ object GameEngine {
           if (!tangible) coordinator.addEntityComponent(tile, IntangibleComponent())
         }
         case Player(position, shape, direction, velocity) => {
+          logger info "add player"
           coordinator.addEntity(player)
           coordinator.addEntityComponent(player, ShapeComponent(shape))
           coordinator.addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
@@ -69,6 +73,7 @@ object GameEngine {
           coordinator.addEntityComponent(player, VelocityComponent(velocity))
         }
         case Enemy1(position, shape, direction, velocity) => {
+          logger info "add enemy"
           val enemy = Enemy1Entity(UUID.randomUUID())
           coordinator.addEntity(enemy)
           coordinator.addEntityComponent(enemy, ShapeComponent(shape))
@@ -77,9 +82,9 @@ object GameEngine {
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
         }
-
       })
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
+      logger info "engine init done"
     }
     override def start(): Unit = {
       gameLoop.status match {
