@@ -50,7 +50,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator.registerComponentType(classOf[IntangibleComponent])
       coordinator.registerSystem(MovementSystem(coordinator))
-      coordinator.registerSystem(DrawSystem(mediator, coordinator))
+      coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities

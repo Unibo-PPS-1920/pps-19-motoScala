@@ -38,8 +38,9 @@ class SystemManagerTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
       }
 
       "notify entity signature changed" in {
-        sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass, comp2.getClass)) shouldBe Set(sys1)
-        sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass)) shouldBe Set(sys2, sys1)
+        sysManager
+          .entitySignatureChanged(entity, ECSSignature(comp1.getClass, comp2.getClass)) shouldBe Set(sys1, sys2)
+        sysManager.entitySignatureChanged(entity, ECSSignature(comp1.getClass)) shouldBe Set(sys2)
       }
 
       "update all systems" in {

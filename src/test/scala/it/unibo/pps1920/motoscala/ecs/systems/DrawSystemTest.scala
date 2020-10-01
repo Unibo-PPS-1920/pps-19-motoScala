@@ -2,9 +2,8 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.Event.DrawEntityEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
@@ -28,7 +27,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = new MediatorImpl()
-    drawSystem = DrawSystem(mediator, coordinator)
+    drawSystem = DrawSystem(mediator, coordinator, pid)
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val d = DirectionComponent(Direction.North)
@@ -55,8 +54,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        result.event shouldBe DrawEntityEvent(Seq(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid))))
+        result.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
+          .North, Circle(3), TestEntity(pid)), Seq())
       }
       "emit the correct event for multiple entities" in {
         val entity2id = UUID.randomUUID()
@@ -70,8 +69,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntityComponent(entity2, d2)
         drawSystem.update()
         result
-          .event shouldBe DrawEntityEvent(Seq(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), DrawEntityData(Vector2(3, 2), Direction
+          .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
+          .North, Circle(3), TestEntity(pid)), Seq(DrawEntityData(Vector2(3, 2), Direction
           .North, Circle(2), TestEntity(entity2id))))
       }
     }
