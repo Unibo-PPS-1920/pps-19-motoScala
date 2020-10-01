@@ -28,7 +28,7 @@ object ViewConstants {
     object Textures {
       val TextureFolder: String = "/textures/"
       val BackgroundTexture: String = TextureFolder + "background.png"
-      val EnemySpiderTexture: String = TextureFolder + "EnemySpider.png"
+      val EnemySpiderTexture: String = "/textures/EnemySpider.png"
     }
   }
 }

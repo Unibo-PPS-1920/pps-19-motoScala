@@ -28,7 +28,7 @@ class EntityDrawable(override val image: Image,
   def draw(data: DrawEntityData): Unit = {
     val s = size(data)
     graphicsContext.save(); // saves the current state on stack, including the current transform
-    graphicsContext.rotate(rotation(data.direction))
+    graphicsContext.rotate(20);
     graphicsContext.drawImage(image, data.pos.x, data.pos.y, s._1, s._2)
     graphicsContext.restore()
   }

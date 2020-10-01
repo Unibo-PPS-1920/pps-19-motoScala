@@ -6,6 +6,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, Event, Mediator}
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import javafx.application.Platform
 
 class ScreenControllerGame(protected override val viewFacade: ViewFacade,
                            protected override val controller: ObservableUI)
@@ -15,8 +16,8 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
 
   mediator.subscribe(this)
 
-  override def notifyLevelSetup(data: LevelSetupData): Unit = handleSetup(data)
-  override def notifyDrawEntities(entities: Seq[EntityData]): Unit = drawEntities(entities)
+  override def notifyLevelSetup(data: LevelSetupData): Unit = Platform.runLater(() => handleSetup(data))
+  override def notifyDrawEntities(entities: Seq[EntityData]): Unit = Platform.runLater(() => drawEntities(entities))
   override def notifyLevelEnd(data: LevelEndData): Unit = ???
 
   override def notify(ev: ViewEvent): Unit = ???
