@@ -12,7 +12,12 @@ object ViewConstants {
     val HalfScreenHeight: Double = ScreenHeight / 2
     val StageIconPath = "/images/Icon.png"
     val ScreenMinWidth: Int = 700
-    val ScreenMinHeigth: Int = 800
+    val ScreenMinHeight: Int = 800
+  }
+
+  object Canvas {
+    val CanvasWidth: Int = 500
+    val CanvasHeight: Int = 600
   }
 
 
@@ -28,7 +33,7 @@ object ViewConstants {
     object Textures {
       val TextureFolder: String = "/textures/"
       val BackgroundTexture: String = TextureFolder + "background.png"
-      val EnemySpiderTexture: String = "/textures/EnemySpider.png"
+      val ParticleTexture: String = TextureFolder + "particle.png"
     }
   }
 }

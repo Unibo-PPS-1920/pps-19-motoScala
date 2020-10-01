@@ -4,7 +4,9 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
 import it.unibo.pps1920.motoscala.ecs.components.Shape
 import it.unibo.pps1920.motoscala.ecs.util.Direction
 import javafx.scene.canvas.GraphicsContext
-import javafx.scene.image.Image
+import javafx.scene.image.{Image, ImageView}
+import javafx.scene.paint.Color
+import scalafx.scene.SnapshotParameters
 
 class EntityDrawable(override val image: Image,
                      val graphicsContext: GraphicsContext) extends ImageDrawable {
@@ -27,9 +29,11 @@ class EntityDrawable(override val image: Image,
   }
   def draw(data: DrawEntityData): Unit = {
     val s = size(data)
-    graphicsContext.save(); // saves the current state on stack, including the current transform
-    graphicsContext.rotate(20);
-    graphicsContext.drawImage(image, data.pos.x, data.pos.y, s._1, s._2)
-    graphicsContext.restore()
+    val iv = new ImageView(image)
+    iv.setRotate(40)
+    val params = new SnapshotParameters()
+    params.setFill(Color.TRANSPARENT)
+    val rotatedImage = iv.snapshot(params, null)
+    graphicsContext.drawImage(rotatedImage, data.pos.x, data.pos.y, s._1, s._2)
   }
 }

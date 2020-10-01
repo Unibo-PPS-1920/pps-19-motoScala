@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.view.utilities
 
-import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Window.{ScreenMinHeigth, ScreenMinWidth}
+import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Window.{ScreenMinHeight, ScreenMinWidth}
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.scene.Scene
 import javafx.scene.image.Image
@@ -10,7 +10,7 @@ import scalafx.scene.control.Button
 private[view] object ViewUtils {
   def createStage(
     scene: Scene,
-    minDim: (Int, Int) = (ScreenMinWidth, ScreenMinHeigth),
+    minDim: (Int, Int) = (ScreenMinWidth, ScreenMinHeight),
     icon: Image = new Image(ViewConstants.Window.StageIconPath),
     title: String = ViewConstants.Window.Window_title,
     onCloseRequest: EventHandler[WindowEvent] = _ => System.exit(0)

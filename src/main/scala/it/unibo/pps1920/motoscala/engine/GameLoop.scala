@@ -43,7 +43,7 @@ private[engine] object GameLoop {
           //          logger debug "wasting " + deltaTime + "ms"
           Thread.sleep(deltaTime)
         } else {
-          //          logger debug "overrun by " + deltaTime + "ms"
+          logger debug "overrun by " + deltaTime + "ms"
         }
       }
     }

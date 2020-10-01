@@ -1,7 +1,5 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
-import java.util.UUID
-
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
@@ -39,11 +37,8 @@ abstract class AbstractScreenControllerGame(
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
 
   def initialize(): Unit = {
-    context = canvas.getGraphicsContext2D
-    isPlaying = false
     assertNodeInjected()
-    initButtons()
-    gameEventHandler.addKeyListeners(BumperCarEntity(UUID.randomUUID()))(root, sendCommandEvent)
+    context = canvas.getGraphicsContext2D
   }
   private def dismiss(): Unit = {
     gameEventHandler.removeKeyListeners(root)
@@ -63,6 +58,7 @@ abstract class AbstractScreenControllerGame(
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))
     buttonBack.setOnAction(_ => dismiss())
     //PLAY-PAUSE
+    isPlaying = false
     buttonStart.setGraphic(PlayIcon)
     buttonStart.setOnAction(_ => if (buttonStart.getGraphic == PlayIcon) {
       buttonStart.setGraphic(PauseIcon)
@@ -75,25 +71,33 @@ abstract class AbstractScreenControllerGame(
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
+    canvas.setWidth(mapSize.get.x)
+    canvas.setHeight(mapSize.get.y)
     if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
     } else {buttonStart setVisible false }
+    initButtons()
+    gameEventHandler.addKeyListeners(playerEntity.get)(root, sendCommandEvent)
   }
 
-  protected def drawEntities(entities: Seq[EntityData]): Unit = entities.foreach(e => {
-    e.entity match {
-      case BumperCarEntity(_) => Drawables.EnemyDrawable.draw(e)
-      case Enemy1Entity(_) => Drawables.EnemyDrawable.draw(e)
-      case TileEntity(_) => Drawables.EnemyDrawable.draw(e)
-    }
-  })
+  protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
+    context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
+    context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
 
-  override def whenDisplayed(): Unit = {initialize(); root.requestFocus() }
+    entities.foreach(e => e.entity match {
+      case BumperCarEntity(_) =>
+      case Enemy1Entity(_) =>
+      case TileEntity(_) =>
+    })
+    Drawables.PlayerDrawable.draw(player)
+  }
+
+  override def whenDisplayed(): Unit = root.requestFocus()
   def sendCommandEvent(event: CommandEvent): Unit
 
   private object Drawables {
-    val EnemyDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.EnemySpiderTexture), context)
+    val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
 
