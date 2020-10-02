@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs
 
 import it.unibo.pps1920.motoscala.ecs.managers.ECSSignature
+import org.slf4j.{Logger, LoggerFactory}
 
 trait System {
   def signature: ECSSignature
@@ -12,6 +13,7 @@ trait System {
 
 abstract class AbstractSystem(override val signature: ECSSignature) extends System {
   private var _entitiesRef: Set[Entity] = Set()
+  protected val logger: Logger = LoggerFactory getLogger this.getClass
 
   override def entitiesRef(): Set[Entity] = _entitiesRef
   override def addEntityRef(entity: Entity): Unit = _entitiesRef += entity
