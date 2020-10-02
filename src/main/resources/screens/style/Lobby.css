@@ -1,3 +1,8 @@
+
+#gridPane {
+    /* -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 1), 50, 0, 0, 0);*/
+}
+
 #Background {
     -fx-fill: #0c2d4a;
 }
@@ -32,22 +37,10 @@
 
 .root * {
     -fx-font-size: 35px;
-}
-
-#root {
     -fx-background-color: #0c2d4a;
 }
 
-#LevelTitle {
-    -fx-padding: 8 15 15 15;
-    -fx-background-insets: 0, 0, 0 0 3 0, 0 0 4 0;
-    -fx-background-radius: 10;
-    -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
-    #9d4024,
-    #d86e3a,
-    radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
-}
-
-#canvasStack {
-    -fx-background-color: black;
+#Line {
+    -fx-stroke-width: 3;
+    -fx-stroke: #ffffff;
 }

@@ -11,6 +11,7 @@ import it.unibo.pps1920.motoscala.model.Level
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import it.unibo.pps1920.motoscala.view.ObserverUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
+import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import org.slf4j.LoggerFactory
 
 trait Controller extends ActorController with SoundController with ObservableUI {
@@ -36,9 +37,9 @@ object Controller {
     override def start(): Unit = engine.get.start()
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
-      levels = List(LevelData(0, Coordinate(100, 100), List(Level
-                                                              .Player(Coordinate(50, 50), Circle(12), Coordinate(0, 1), 10))),
-                    LevelData(1, Coordinate(100, 100), List()))
+      levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10),
+                                   Level.Enemy1(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10))))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()

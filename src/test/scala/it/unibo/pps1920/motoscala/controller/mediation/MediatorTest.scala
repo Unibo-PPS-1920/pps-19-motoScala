@@ -39,8 +39,8 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
         mediator subscribe observerCommand
       }
       "allow to send command" in {
-        mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South, moving = true)))
-        mediator.publishEvent(Event.DrawEntityEvent(List.empty))
+        mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South)))
+        mediator.publishEvent(Event.DrawEntityEvent(null, List.empty))
         mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
@@ -59,7 +59,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       mediator unsubscribe observerCommand
     }
     "publishing" in {
-      mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), North, moving = true)))
+      mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), North)))
     }
     "not modify flag" in {
       ToggleFlags.cmdFlag shouldBe true
@@ -68,7 +68,8 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
 }
 object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
-    override def notifyDrawEntities(entities: Seq[Event.EntityData]): Unit = ToggleFlags.drawFlag = !ToggleFlags
+    override def notifyDrawEntities(player: EntityData, entities: Seq[Event.EntityData]): Unit = ToggleFlags
+      .drawFlag = !ToggleFlags
       .drawFlag
     override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
     override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag

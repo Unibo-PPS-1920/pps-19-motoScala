@@ -1,18 +1,19 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
-import java.util.UUID
-
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
-import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
+import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
+import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
 import javafx.fxml.FXML
-import javafx.scene.canvas.Canvas
+import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
 import javafx.scene.layout.BorderPane
 import org.kordamp.ikonli.material.Material
@@ -20,23 +21,30 @@ import org.kordamp.ikonli.material.Material
 abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  private val gameEventHandler: GameEventHandler = new GameEventHandler()
+  private var gameEventHandler: Option[GameEventHandler] = None
   private var playerEntity: Option[Entity] = None
   private var mapSize: Option[Coordinate] = None
+  private var isPlaying: Boolean = false
 
   @FXML protected var root: BorderPane = _
   @FXML protected var canvas: Canvas = _
   @FXML protected var buttonStart: Button = _
   @FXML protected var buttonBack: Button = _
   @FXML protected var labelTitle: Label = _
+  private var context: GraphicsContext = _
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
 
-  @FXML override def initialize(): Unit = {
+  def initialize(): Unit = {
     assertNodeInjected()
-    initButtons()
-    gameEventHandler.addKeyListeners(BumperCarEntity(UUID.randomUUID()))(root, sendCommandEvent)
+    context = canvas.getGraphicsContext2D
+  }
+  private def dismiss(): Unit = {
+    gameEventHandler.foreach(_.dismiss())
+    controller.stop()
+    viewFacade.changeScreen(ScreenEvent.GoBack)
+    viewFacade.getStage.setFullScreen(false)
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
@@ -47,15 +55,15 @@ abstract class AbstractScreenControllerGame(
   }
 
   private def initButtons(): Unit = {
+    //BACK
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))
-    buttonStart.setGraphic(PauseIcon)
-    buttonBack.setOnAction(_ => {
-      controller.stop()
-      viewFacade.changeScreen(ScreenEvent.GoBack)
-    })
+    buttonBack.setOnAction(_ => dismiss())
+    //PLAY-PAUSE
+    isPlaying = false
+    buttonStart.setGraphic(PlayIcon)
     buttonStart.setOnAction(_ => if (buttonStart.getGraphic == PlayIcon) {
       buttonStart.setGraphic(PauseIcon)
-      controller.resume()
+      if (!isPlaying) {controller.start(); isPlaying = true } else controller.resume()
     } else {
       buttonStart.setGraphic(PlayIcon)
       controller.pause()
@@ -64,19 +72,34 @@ abstract class AbstractScreenControllerGame(
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
-    if (data.isSinglePlayer) {
+    canvas.setWidth(mapSize.get.x)
+    canvas.setHeight(mapSize.get.y)
+    if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
-      labelTitle setText s"Level: ${data.level.index}"
-    } else {
-      labelTitle setText s"MP Level: ${data.level.index}"
-      if (data.isHosting) {
-        buttonStart setVisible true
-      } else {
-        buttonStart setVisible false
-      }
-    }
+      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
+    } else {buttonStart setVisible false }
+    initButtons()
+    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
+    viewFacade.getStage.setFullScreen(true)
   }
-  override def whenDisplayed(): Unit = this.root.requestFocus()
+
+  protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
+    context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
+    context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
+    entities.foreach(e => e.entity match {
+      case BumperCarEntity(_) =>
+      case Enemy1Entity(_) =>
+      case TileEntity(_) =>
+    })
+    Drawables.PlayerDrawable.draw(player)
+  }
+
+  override def whenDisplayed(): Unit = root.requestFocus()
   def sendCommandEvent(event: CommandEvent): Unit
+
+  private object Drawables {
+    val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
+  }
 }
+
 

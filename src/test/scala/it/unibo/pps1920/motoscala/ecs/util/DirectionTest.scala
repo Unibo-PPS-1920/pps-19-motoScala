@@ -12,6 +12,7 @@ class DirectionTest extends AnyWordSpec with Matchers {
   "North" when {
     "summed to Center" should {
       "be North" in {
+        print(North + Center)
         North + Center shouldBe North
       }
     }

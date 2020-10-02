@@ -7,6 +7,9 @@ import it.unibo.pps1920.motoscala.view.screens._
 import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
 import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
 import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
+import it.unibo.pps1920.motoscala.view.screens.lobby.ScreenControllerLobby
+import it.unibo.pps1920.motoscala.view.screens.settings.ScreenControllerSettings
+import it.unibo.pps1920.motoscala.view.screens.stats.ScreenControllerStats
 import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
 import javafx.application.Platform
 import javafx.scene.Scene
@@ -15,6 +18,7 @@ import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
 
 private[view] trait ViewFacade {
+  def getStage: Stage
   def changeScreen(screen: ScreenEvent): Unit
   def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
@@ -50,6 +54,8 @@ object View {
       })
     }
 
+    override def getStage: Stage = stage.get
+
     override def changeScreen(event: ScreenEvent): Unit = {
       screenLoader.applyScreen(stateMachine.consume(event), root)
       screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
@@ -63,6 +69,9 @@ object View {
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
     private def loadScreens(): Unit = {
+      loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))
+      loadFXMLNode(FXMLScreens.SETTINGS, new ScreenControllerSettings(this, controller))
+      loadFXMLNode(FXMLScreens.LOBBY, new ScreenControllerLobby(this, controller))
       loadFXMLNode(FXMLScreens.GAME, new ScreenControllerGame(this, controller))
       loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))

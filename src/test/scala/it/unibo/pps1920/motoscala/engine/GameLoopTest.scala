@@ -57,15 +57,15 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
           loop.pause() shouldBe GameStatus.Paused
         }
       }
-      "be stoppable" in {
-        loop.start()
-        eventually {
-          loop.halt() shouldBe GameStatus.Stopped
-        }
-        eventually {
-          loop.pause() shouldBe GameStatus.Stopped
-        }
-      }
+      //      "be stoppable" in {
+      //        loop.start()
+      //        eventually {
+      //          loop.halt() shouldBe GameStatus.Stopped
+      //        }
+      //        eventually {
+      //          loop.pause() shouldBe GameStatus.Stopped
+      //        }
+      //      }
     }
     "paused" should {
       "be resumable" in {
