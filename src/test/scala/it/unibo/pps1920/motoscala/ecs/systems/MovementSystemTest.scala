@@ -54,7 +54,7 @@ class MovementSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAl
         coordinator.getEntityComponent(entity, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
           .pos shouldBe Vector2(0, 1)
         coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-          .vel shouldBe 0
+          .vel shouldBe 1.0
       }
       "move multiple entities to direction" in {
         coordinator.addEntity(entity2)

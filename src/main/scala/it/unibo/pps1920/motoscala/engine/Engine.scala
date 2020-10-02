@@ -33,7 +33,7 @@ object GameEngine {
 
 
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private val gameLoop = GameLoop(30, this)
+    private val gameLoop = GameLoop(60, this)
     private val coordinator: Coordinator = Coordinator()
     private val eventQueue: CommandQueue = CommandQueue()
 

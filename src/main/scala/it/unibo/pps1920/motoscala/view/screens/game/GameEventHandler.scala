@@ -7,6 +7,7 @@ import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.util.Direction._
 import javafx.event.EventHandler
+import javafx.scene.input.KeyCode._
 import javafx.scene.input.{KeyCode, KeyEvent}
 import javafx.scene.layout.Pane
 import org.slf4j.{Logger, LoggerFactory}
@@ -15,7 +16,7 @@ import scala.collection.mutable
 
 class GameEventHandler {
   protected val logger: Logger = LoggerFactory getLogger this.getClass
-  private val activeKeys: mutable.Map[KeyCode, Boolean] = mutable.Map()
+  private val activeKeys: mutable.HashSet[Direction] = mutable.HashSet()
   private val keyPressedHandler: EventHandler[KeyEvent] = createKeyPressHandler()
   private val keyReleasedHandler: EventHandler[KeyEvent] = createKeyReleasedHandler()
   private var handleCommand: Option[CommandEvent => Unit] = None
@@ -33,41 +34,37 @@ class GameEventHandler {
     handleCommand = None
   }
 
-  private def createKeyPressHandler(): EventHandler[KeyEvent] = {
-    val keyPressedHandler: EventHandler[KeyEvent] = e => {
-      val key = e.getCode
-      if (!activeKeys.getOrElseUpdate(key, true)) {
-        key match {
-          case KeyCode.W => setKey(key, North, isActive = true)
-          case KeyCode.A => setKey(key, West, isActive = true)
-          case KeyCode.S => setKey(key, South, isActive = true)
-          case KeyCode.D => setKey(key, East, isActive = true)
-          case _ => logger info ""
-        }
-      }
+  import ImplicitConversions._
+  private def createKeyPressHandler(): EventHandler[KeyEvent] = e => {
+    val dir = e.getCode
+    if (!activeKeys.contains(dir)) {
+      activeKeys += dir
+      update
     }
-    keyPressedHandler
-  }
-  private def createKeyReleasedHandler(): EventHandler[KeyEvent] = {
-    val keyReleasedHandler: EventHandler[KeyEvent] = e => {
-      val key = e.getCode
-      if (activeKeys.getOrElseUpdate(key, false)) {
-        key match {
-          case KeyCode.W => setKey(key, North, isActive = false)
-          case KeyCode.A => setKey(key, West, isActive = false)
-          case KeyCode.S => setKey(key, South, isActive = false)
-          case KeyCode.D => setKey(key, East, isActive = false)
-          case _ => logger info ""
-        }
-      }
-    }
-    keyReleasedHandler
   }
 
-  private def setKey(keyCode: KeyCode, direction: Direction, isActive: Boolean): Unit = {
-    activeKeys += (keyCode -> isActive)
-    handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, direction, isActive))))
-    //    logger info s"${if (isActive) "pressed" else "released"} $direction"
+  private def createKeyReleasedHandler(): EventHandler[KeyEvent] = e => {
+    val dir = e.getCode
+    if (activeKeys.contains(dir)) {
+      activeKeys -= dir
+      update
+    }
+  }
+
+  private def update: Unit = {
+    val dir = activeKeys.foldLeft[Direction](Center)(_ + _)
+    handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, dir))))
+  }
+
+  object ImplicitConversions {
+    implicit def keyToDir(key: KeyCode): Direction = key match {
+      case W => North
+      case S => South
+      case A => West
+      case D => East
+      case _ => Center
+    }
   }
 }
+
 
