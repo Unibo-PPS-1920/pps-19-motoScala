@@ -38,10 +38,10 @@ class GameEventHandler {
       val key = e.getCode
       if (!activeKeys.getOrElseUpdate(key, true)) {
         key match {
-          case KeyCode.LEFT => setKey(key, West, isActive = true)
-          case KeyCode.RIGHT => setKey(key, East, isActive = true)
-          case KeyCode.UP => setKey(key, North, isActive = true)
-          case KeyCode.DOWN => setKey(key, South, isActive = true)
+          case KeyCode.W => setKey(key, North, isActive = true)
+          case KeyCode.A => setKey(key, West, isActive = true)
+          case KeyCode.S => setKey(key, South, isActive = true)
+          case KeyCode.D => setKey(key, East, isActive = true)
           case _ => logger info ""
         }
       }
@@ -53,10 +53,10 @@ class GameEventHandler {
       val key = e.getCode
       if (activeKeys.getOrElseUpdate(key, false)) {
         key match {
-          case KeyCode.LEFT => setKey(key, West, isActive = false)
-          case KeyCode.RIGHT => setKey(key, East, isActive = false)
-          case KeyCode.UP => setKey(key, North, isActive = false)
-          case KeyCode.DOWN => setKey(key, South, isActive = false)
+          case KeyCode.W => setKey(key, North, isActive = false)
+          case KeyCode.A => setKey(key, West, isActive = false)
+          case KeyCode.S => setKey(key, South, isActive = false)
+          case KeyCode.D => setKey(key, East, isActive = false)
           case _ => logger info ""
         }
       }
@@ -67,7 +67,7 @@ class GameEventHandler {
   private def setKey(keyCode: KeyCode, direction: Direction, isActive: Boolean): Unit = {
     activeKeys += (keyCode -> isActive)
     handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, direction, isActive))))
-    //logger info s"${if (isActive) "pressed" else "released"} $direction"
+    //    logger info s"${if (isActive) "pressed" else "released"} $direction"
   }
 }
 
