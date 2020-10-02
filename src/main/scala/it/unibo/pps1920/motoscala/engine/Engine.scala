@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, CommandableEvent, LevelSetupEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
@@ -14,8 +14,6 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level.{Enemy1, LevelData, Player, Tile}
 import org.slf4j.LoggerFactory
-
-import scala.collection.mutable
 
 trait Engine extends UpdatableEngine with Commandable {
   def init(level: LevelData): Unit
@@ -35,9 +33,9 @@ object GameEngine {
 
 
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private val gameLoop = GameLoop(30, this)
+    private val gameLoop = GameLoop(60, this)
     private val coordinator: Coordinator = Coordinator()
-    private val eventQueue: mutable.Queue[CommandableEvent] = mutable.Queue()
+    private val eventQueue: CommandQueue = CommandQueue()
 
     override def tick(): Unit = coordinator.updateSystems()
 
@@ -54,7 +52,7 @@ object GameEngine {
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
-      level.entities.foreach(e => e match {
+      level.entities.foreach {
         case Tile(shape, position, tangible) => {
           logger info "add tile"
           val tile = TileEntity(UUID.randomUUID())
@@ -82,7 +80,7 @@ object GameEngine {
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
         }
-      })
+      }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"
     }

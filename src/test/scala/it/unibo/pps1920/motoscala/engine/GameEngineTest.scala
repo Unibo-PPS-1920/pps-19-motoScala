@@ -4,13 +4,10 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
-import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   var engine: Engine = _
   val mediator: Mediator = Mediator()
