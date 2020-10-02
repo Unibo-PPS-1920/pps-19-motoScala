@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
 
 private[view] trait ViewFacade {
+  def getStage: Stage
   def changeScreen(screen: ScreenEvent): Unit
   def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
@@ -52,6 +53,8 @@ object View {
         logger info s"View started on ${Thread.currentThread()}"
       })
     }
+
+    override def getStage: Stage = stage.get
 
     override def changeScreen(event: ScreenEvent): Unit = {
       screenLoader.applyScreen(stateMachine.consume(event), root)
