@@ -3,6 +3,7 @@ object Versions {
     const val scoverage = "4.0.2"
     const val shadow = "6.0.0"
     const val sem_vers_pianini = "0.2.2"
+    const val javafx_plugin = "0.0.9"
 
     //JAVAFX
     const val jfoenix = "8.0.8"

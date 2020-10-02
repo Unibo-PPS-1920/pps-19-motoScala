@@ -12,6 +12,7 @@ plugins {
     id(Libs.Plugins.scoverage) version Versions.scoverage
     id(Libs.Plugins.shadow) version Versions.shadow
     id(Libs.Plugins.sem_vers_pianini) version Versions.sem_vers_pianini
+    id(Libs.Plugins.javafx_plugin) version Versions.javafx_plugin
 }
 
 gitSemVer {
@@ -76,6 +77,11 @@ dependencies {
 
 application {
     mainClassName = Config.Project.mainClass
+}
+
+javafx {
+    version = "15"
+    modules("javafx.controls", "javafx.fxml", "javafx.media", "javafx.base")
 }
 
 java {
