@@ -44,6 +44,7 @@ abstract class AbstractScreenControllerGame(
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)
+    viewFacade.getStage.setFullScreen(false)
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
@@ -79,6 +80,7 @@ abstract class AbstractScreenControllerGame(
     } else {buttonStart setVisible false }
     initButtons()
     gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
+    viewFacade.getStage.setFullScreen(true)
   }
 
   protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
