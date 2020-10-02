@@ -1,6 +1,5 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
-import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
 import it.unibo.pps1920.motoscala.ecs.Entity
@@ -14,46 +13,44 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
 
-class GameEventHandler {
+case class GameEventHandler(
+  private var pane: Pane,
+  private var handleCommand: CommandEvent => Unit,
+  private var entity: Entity
+) {
   protected val logger: Logger = LoggerFactory getLogger this.getClass
   private val activeKeys: mutable.HashSet[Direction] = mutable.HashSet()
   private val keyPressedHandler: EventHandler[KeyEvent] = createKeyPressHandler()
   private val keyReleasedHandler: EventHandler[KeyEvent] = createKeyReleasedHandler()
-  private var handleCommand: Option[CommandEvent => Unit] = None
-  private var entity: Option[Entity] = None
 
-  def addKeyListeners(en: Entity)(root: Pane, f: CommandEvent => Unit): Unit = {
-    root.addEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
-    root.addEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
-    handleCommand = f.some
-    entity = en.some
-  }
-  def removeKeyListeners(root: Pane): Unit = {
-    root.removeEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
-    root.removeEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
-    handleCommand = None
+  pane.addEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
+  pane.addEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
+
+  def dismiss(): Unit = {
+    pane.removeEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
+    pane.removeEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
   }
 
   import ImplicitConversions._
   private def createKeyPressHandler(): EventHandler[KeyEvent] = e => {
     val dir = e.getCode
     if (!activeKeys.contains(dir)) {
-      activeKeys += dir
-      update
+      activeKeys add dir
+      update()
     }
   }
 
   private def createKeyReleasedHandler(): EventHandler[KeyEvent] = e => {
     val dir = e.getCode
     if (activeKeys.contains(dir)) {
-      activeKeys -= dir
-      update
+      activeKeys remove dir
+      update()
     }
   }
 
-  private def update: Unit = {
+  private def update(): Unit = {
     val dir = activeKeys.foldLeft[Direction](Center)(_ + _)
-    handleCommand.foreach(_ (CommandEvent(CommandData(entity.get, dir))))
+    handleCommand(CommandEvent(CommandData(entity, dir)))
   }
 
   object ImplicitConversions {

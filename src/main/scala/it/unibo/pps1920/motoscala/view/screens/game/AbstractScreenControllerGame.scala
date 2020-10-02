@@ -21,7 +21,7 @@ import org.kordamp.ikonli.material.Material
 abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  private val gameEventHandler: GameEventHandler = new GameEventHandler()
+  private var gameEventHandler: Option[GameEventHandler] = None
   private var playerEntity: Option[Entity] = None
   private var mapSize: Option[Coordinate] = None
   private var isPlaying: Boolean = false
@@ -41,7 +41,7 @@ abstract class AbstractScreenControllerGame(
     context = canvas.getGraphicsContext2D
   }
   private def dismiss(): Unit = {
-    gameEventHandler.removeKeyListeners(root)
+    gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)
   }
@@ -78,13 +78,12 @@ abstract class AbstractScreenControllerGame(
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
     } else {buttonStart setVisible false }
     initButtons()
-    gameEventHandler.addKeyListeners(playerEntity.get)(root, sendCommandEvent)
+    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
   }
 
   protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
     context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
-
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
       case Enemy1Entity(_) =>
