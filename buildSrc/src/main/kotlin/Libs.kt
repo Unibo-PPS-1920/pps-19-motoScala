@@ -2,6 +2,7 @@
 
 object Libs {
     object Plugins {
+        const val javafx_plugin = "org.openjfx.javafxplugin"
         const val scoverage = "org.scoverage"
         const val shadow = "com.github.johnrengelman.shadow"
         const val sem_vers_pianini = "org.danilopianini.git-sensitive-semantic-versioning"
