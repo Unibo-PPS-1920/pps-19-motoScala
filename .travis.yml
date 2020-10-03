@@ -4,7 +4,8 @@ git:
 os: linux
 dist: xenial
 env:
-  - JDK="bellsoft-jdk8u265+1-linux-amd64-full"
+  # OLD BEFORE JAVAFX15 AND JAVA 11- JDK="bellsoft-jdk8u265+1-linux-amd64-full"
+  - JDK="bellsoft-jdk11.0.8+10-linux-amd64-full"
 stages:
   - check
   - deploy
@@ -25,7 +26,8 @@ jobs:
 before_install:
   - echo "Downloading jdk"
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-  - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
+  - source ./install-jdk.sh --url https://download.bell-sw.com/java/11.0.8+10/bellsoft-jdk11.0.8+10-linux-amd64-full.tar.gz
+  # OLD BEFORE JAVAFX15 AND JAVA 11- source ./install-jdk.sh --url https://download.bell-sw.com/java/11.0.8+10/bellsoft-jdk11.0.8+10-linux-amd64-full.tar.gz
   - java -version
 before_deploy:
   - echo "Preparing for deploy"
