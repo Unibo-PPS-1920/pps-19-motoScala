@@ -3,10 +3,14 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 import java.nio.file.Path
 import java.util.concurrent.ArrayBlockingQueue
 
+import org.slf4j.LoggerFactory
 import scalafx.scene.media.{AudioClip, MediaPlayer}
 
-final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
+import scala.util.{Failure, Success, Try}
 
+private final class ConcreteSoundAgent extends Thread with SoundAgentLogic with SoundAgent {
+
+  private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Media, MediaPlayer] = Map()
   private var blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](100)
@@ -14,6 +18,15 @@ final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
   private var actualClipPlayer: Option[AudioClip] = None
   private var volumeMusic: Double = 1.0
   private var volumeEffect: Double = 1.0
+
+  override def run(): Unit = {
+    while (true) {
+      Try(this.blockingQueue.take()) match {
+        case Success(value) =>
+        case Failure(exception) => logger warn (exception.getMessage)
+      }
+    }
+  }
 
   override def playMusic(media: Media): Unit = {
     require(medias.isDefinedAt(media))
@@ -46,4 +59,8 @@ final class ConcreteSoundAgent extends SoundAgentLogic with SoundAgent {
     ???
   }
 
+}
+
+object ConcreteSoundAgent {
+  def apply(): ConcreteSoundAgent = new ConcreteSoundAgent
 }
