@@ -98,6 +98,7 @@ tasks.withType<ShadowJar> {
     val newTransformer = AppendingTransformer()
     newTransformer.resource = "reference.conf"
     transformers.add(newTransformer)
+    mergeServiceFiles()
 }
 
 tasks.withType<Jar> {

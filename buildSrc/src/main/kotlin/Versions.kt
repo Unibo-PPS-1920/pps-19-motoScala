@@ -6,7 +6,7 @@ object Versions {
 
     //JAVAFX
     const val jfoenix = "8.0.8"
-    const val ikonli = "2.4.0"
+    const val ikonli = "11.5.0"
     const val enzo = "0.3.6"
 
     //SCALA_FX

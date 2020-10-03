@@ -49,5 +49,14 @@
 }
 
 #canvasStack {
-    -fx-background-color: black;
+    -fx-background-image: url("/images/background.jpg");
+    -fx-background-radius: 5;
+    -fx-border-insets: 2 0 0 0, 3 0 0 0, 0 0 2 0, 0 0 3 0;
+    -fx-border-width: 5;
+    -fx-border-radius: 10;
+    -fx-border-color: linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+    #9d4024,
+    #d86e3a,
+    radial-gradient(center 50% 50%, radius 100%, #d86e3a, #c54e2c);
+    -fx-effect: dropshadow(two-pass-box, black, 20, 0.1, 0, 0);
 }
