@@ -84,6 +84,10 @@ javafx {
     modules("javafx.controls", "javafx.fxml", "javafx.media", "javafx.base")
 }
 
+jacoco {
+    toolVersion = "0.8.6"
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -104,6 +108,7 @@ tasks.withType<ShadowJar> {
     val newTransformer = AppendingTransformer()
     newTransformer.resource = "reference.conf"
     transformers.add(newTransformer)
+    mergeServiceFiles()
 }
 
 tasks.withType<Jar> {
