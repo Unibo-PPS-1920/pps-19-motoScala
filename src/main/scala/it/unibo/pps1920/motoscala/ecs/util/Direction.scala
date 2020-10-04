@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.util
 
+import it.unibo.pps1920.motoscala.ecs.util.Direction._
+
 
 /**
  * Abstraction for cardinal directions
@@ -21,6 +23,19 @@ sealed case class Direction(value: Vector2) {
     case Direction.West => 270
     case Direction.East => 90
     case _ => -1
+  }
+
+  def opposite(dir: Direction): Direction = dir match {
+    case Direction.Center => Center
+    case Direction.North => South
+    case Direction.NorthWest => SouthWest
+    case Direction.NorthEast => SouthEast
+    case Direction.South => North
+    case Direction.SouthWest => NorthWest
+    case Direction.SouthEast => NorthEast
+    case Direction.West => East
+    case Direction.East => West
+    case _ => Center
   }
 }
 object Direction {

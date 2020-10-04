@@ -91,7 +91,7 @@ abstract class AbstractScreenControllerGame(
     //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
-      case Enemy1Entity(_) =>
+      case Enemy1Entity(_) => Drawables.Enemy1Drawable.draw(e)
       case TileEntity(_) =>
     })
     Drawables.PlayerDrawable.draw(player)
@@ -102,6 +102,7 @@ abstract class AbstractScreenControllerGame(
 
   private object Drawables {
     val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
+    val Enemy1Drawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
 

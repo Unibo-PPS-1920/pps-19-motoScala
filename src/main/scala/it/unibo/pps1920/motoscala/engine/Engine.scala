@@ -8,7 +8,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, InputSystem, MovementSystem}
+import it.unibo.pps1920.motoscala.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
@@ -47,7 +47,9 @@ object GameEngine {
       coordinator.registerComponentType(classOf[DirectionComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator.registerComponentType(classOf[IntangibleComponent])
+      coordinator.registerComponentType(classOf[CollisionComponent])
       coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerSystem(CollisionSystem(coordinator))
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
@@ -69,6 +71,7 @@ object GameEngine {
           coordinator
             .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(player, VelocityComponent(velocity))
+          coordinator.addEntityComponent(player, CollisionComponent())
         }
         case Enemy1(position, shape, direction, velocity) => {
           logger info "add enemy"
@@ -79,6 +82,7 @@ object GameEngine {
           coordinator
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
+          coordinator.addEntityComponent(enemy, CollisionComponent())
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
