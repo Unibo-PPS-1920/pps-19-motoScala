@@ -2,6 +2,7 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 
 import java.util.concurrent.ArrayBlockingQueue
 
+import javafx.application.Platform
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
 import org.slf4j.LoggerFactory
@@ -35,37 +36,56 @@ private final class ConcreteSoundAgent extends SoundAgent {
     if (!this.medias.contains(media)) {
       this.medias += (media -> (new MediaPlayer(new Media(this.getClass.getResource(media.entryName).toString))))
     }
-    this.actualMusicPlayer = this.medias(media)
-    this.actualMusicPlayer.setVolume(volumeMusic)
-    this.actualMusicPlayer.play()
-    this.actualMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE)
+    Platform.runLater(() => {
+      this.actualMusicPlayer = this.medias(media)
+      this.actualMusicPlayer.setVolume(volumeMusic)
+      this.actualMusicPlayer.play()
+      this.actualMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE)
+    })
+
   }
   override def stopMusic(): Unit = this.actualMusicPlayer.stop()
   override def playClip(clip: Clips): Unit = {
     if (!this.clips.contains(clip)) {
       this.clips += (clip -> (new AudioClip(this.getClass.getResource(clip.entryName).toString)))
     }
-    this.actualClipPlayer = this.clips(clip)
-    this.actualClipPlayer.play(volumeEffect)
+
+    Platform.runLater(() => {
+      this.actualClipPlayer = this.clips(clip)
+      this.actualClipPlayer.play(volumeEffect)
+    })
   }
   override def setVolumeMusic(value: Double): Unit = {
     this.volumeMusic = value
-    this.actualMusicPlayer.setVolume(this.volumeMusic)
+    Platform.runLater(() => {
+      this.actualMusicPlayer.setVolume(this.volumeMusic)
+    })
   }
   override def setVolumeEffect(value: Double): Unit = {
     this.volumeEffect = value
-    this.actualClipPlayer.setVolume(this.volumeEffect)
+    Platform.runLater(() => {
+      this.actualClipPlayer.setVolume(this.volumeEffect)
+    })
   }
   override def restartMusic(): Unit = {
-    this.actualMusicPlayer.stop()
-    this.actualMusicPlayer.seek(Duration.ZERO);
-    this.actualMusicPlayer.play()
+    Platform.runLater(() => {
+      this.actualMusicPlayer.stop()
+      this.actualMusicPlayer.seek(Duration.ZERO);
+      this.actualMusicPlayer.play()
+    })
   }
-  override def pauseMusic(): Unit = this.actualMusicPlayer.pause()
+  override def pauseMusic(): Unit = Platform.runLater(() => {
+    this.actualMusicPlayer.pause()
+  })
 
-  override def enqueueEvent(ev: MediaEvent): Unit = this.blockingQueue.add(ev)
+  override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() => {
+    this.blockingQueue.add(ev)
 
-  override def resumeMusic(): Unit = this.actualMusicPlayer.pause()
+  })
+
+  override def resumeMusic(): Unit = Platform.runLater(() => {
+    this.actualMusicPlayer.pause()
+  })
 }
 
 object SoundAgent {
