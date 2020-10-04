@@ -1,6 +1,5 @@
 package it.unibo.pps1920.motoscala.view
 
-import com.sun.javafx.application.PlatformImpl
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
@@ -30,7 +29,7 @@ trait View extends ObserverUI {
 object View {
   def apply(controller: ObservableUI): View = {
     require(controller != null)
-    PlatformImpl.startup(() => {})
+    Platform.startup(() => {})
     new ViewImpl(controller)
   }
 
