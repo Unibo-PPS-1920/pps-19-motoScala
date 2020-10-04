@@ -8,20 +8,19 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 
 object CollisionSystem {
-  def apply(coordinator: Coordinator): System = new InputSystemImpl(coordinator)
-  private class InputSystemImpl(coordinator: Coordinator)
+  def apply(coordinator: Coordinator, fps: Int): System = new CollisionSystemImpl(coordinator, fps)
+  private class CollisionSystemImpl(coordinator: Coordinator, fps: Int)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[DirectionComponent], classOf[ShapeComponent], classOf[CollisionComponent])) {
 
-    val fps = 60
     val collisionDuration: Int = fps * 2
-    val deltaCollision = 20
+    val deltaCollision: Int = (fps / 3).ceil.toInt
     def update(): Unit = {
       entitiesRef().foreach(e => {
         val col = coordinator.getEntityComponent(e, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
         if (col
           .duration > 0) {
           col.duration -= deltaCollision
-          if (col.duration == 0) col.direction = Center
+          if (col.duration <= 0) col.direction = Center
           coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent].dir = col
             .direction
         } else {

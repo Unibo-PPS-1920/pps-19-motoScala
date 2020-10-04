@@ -33,9 +33,9 @@ object GameEngine {
 
   private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
-
+    private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private val gameLoop = GameLoop(60, this)
+    private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
     private val eventQueue: CommandQueue = CommandQueue()
 
@@ -51,7 +51,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[IntangibleComponent])
       coordinator.registerComponentType(classOf[CollisionComponent])
       coordinator.registerSystem(MovementSystem(coordinator))
-      coordinator.registerSystem(CollisionSystem(coordinator))
+      coordinator.registerSystem(CollisionSystem(coordinator, Fps))
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
