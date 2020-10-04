@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.util
 
+import scala.math.{pow, sqrt}
+
 /**
  * 2d vector
  */
@@ -12,6 +14,7 @@ trait Vector2 {
 
   def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)
 
+  def dist(vector2: Vector2): Double = sqrt(pow(x - vector2.x, 2) + pow(y - vector2.y, 2))
   def sub(vector2: Vector2): Vector2 = Vector2(x - vector2.x, y - vector2.y)
 
   def unit(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)

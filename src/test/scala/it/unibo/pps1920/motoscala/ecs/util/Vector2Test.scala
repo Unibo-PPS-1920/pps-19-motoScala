@@ -30,5 +30,11 @@ class Vector2Test extends AnyWordSpec with Matchers {
     "mul" in {
       Vector2(3, 4) mul 2 shouldBe Vector2(6, 8)
     }
+    "dist" in {
+      Vector2(0, 0) dist Vector2(1, 1) shouldBe math.sqrt(2)
+      Vector2(1, 1) dist Vector2(0, 0) shouldBe math.sqrt(2)
+      Vector2(0, 0) dist Vector2(2, 1) shouldBe math.sqrt(5)
+      Vector2(2, 1) dist Vector2(0, 0) shouldBe math.sqrt(5)
+    }
   }
 }
