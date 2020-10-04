@@ -4,7 +4,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 import it.unibo.pps1920.motoscala
-import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Media, SoundAgent}
+import it.unibo.pps1920.motoscala.controller.managers.audio._
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
@@ -28,6 +28,8 @@ object Controller {
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
     private var levels: List[LevelData] = List()
+    this.soundAgent.start();
+
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
@@ -49,15 +51,7 @@ object Controller {
       engine.get.stop()
       engine = None
     }
-
-
-    override def playSoundTrack(med: Media): Unit = this.soundAgent.enqueueEvent(ev => this.soundAgent.playMusic(med))
-    override def playEffect(clip: Clips): Unit = this.soundAgent.enqueueEvent(ev => this.soundAgent.playClip(clip))
-    override def setVolumeSoundTrack(value: Double): Unit = this.soundAgent.setVolumeMusic(_)
-    override def setVolumeEffect(value: Double): Unit = this.soundAgent.setVolumeEffect(_)
-    override def stopMusic(): Unit = this.soundAgent.stopMusic()
-    override def restartMusic(): Unit = this.soundAgent.restartMusic()
-    override def pauseMusic(): Unit = this.soundAgent.pauseMusic()
+    override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
   }
 }
 
