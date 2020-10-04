@@ -38,8 +38,9 @@ object Controller {
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10),
-                                   Level.Enemy1(Coordinate(100, 100), Circle(25), Coordinate(0, 0), 10))))
+                              List(Level.Player(Coordinate(400, 400), Circle(25), Coordinate(0, 0), 10),
+                                   Level.Enemy1(Coordinate(300, 300), Circle(25), Coordinate(0, 0), 10),
+                                   Level.Enemy1(Coordinate(300, 200), Circle(25), Coordinate(0, 0), 10))))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()

@@ -12,7 +12,7 @@ sealed case class Direction(value: Vector2) {
   def +(dir: Direction): Direction = Direction((dir.value add value).unit())
 
 
-  def angle(dir: Direction): Int = dir match {
+  def angle(): Int = this match {
     case Direction.Center => 0
     case Direction.North => 0
     case Direction.NorthWest => 315
@@ -25,16 +25,16 @@ sealed case class Direction(value: Vector2) {
     case _ => -1
   }
 
-  def opposite(dir: Direction): Direction = dir match {
-    case Direction.Center => Center
-    case Direction.North => South
-    case Direction.NorthWest => SouthWest
-    case Direction.NorthEast => SouthEast
-    case Direction.South => North
-    case Direction.SouthWest => NorthWest
-    case Direction.SouthEast => NorthEast
-    case Direction.West => East
-    case Direction.East => West
+  def opposite(): Direction = this match {
+    case Center => Direction(Vector2(-1 * math.random(), -1 * math.random()).unit())
+    case North => South
+    case NorthWest => SouthEast
+    case NorthEast => SouthWest
+    case South => North
+    case SouthWest => NorthEast
+    case SouthEast => NorthWest
+    case West => East
+    case East => West
     case _ => Center
   }
 }
