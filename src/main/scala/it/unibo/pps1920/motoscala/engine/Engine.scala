@@ -45,15 +45,15 @@ object GameEngine {
       logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
-      coordinator.registerComponentType(classOf[ShapeComponent])
-      coordinator.registerComponentType(classOf[DirectionComponent])
-      coordinator.registerComponentType(classOf[VelocityComponent])
-      coordinator.registerComponentType(classOf[IntangibleComponent])
-      coordinator.registerComponentType(classOf[CollisionComponent])
-      coordinator.registerSystem(MovementSystem(coordinator))
-      coordinator.registerSystem(CollisionSystem(coordinator, Fps))
-      coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
-      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+        .registerComponentType(classOf[ShapeComponent])
+        .registerComponentType(classOf[DirectionComponent])
+        .registerComponentType(classOf[VelocityComponent])
+        .registerComponentType(classOf[IntangibleComponent])
+        .registerComponentType(classOf[CollisionComponent])
+        .registerSystem(MovementSystem(coordinator))
+        .registerSystem(CollisionSystem(coordinator, Fps))
+        .registerSystem(DrawSystem(mediator, coordinator, myUuid))
+        .registerSystem(InputSystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
       level.entities.foreach {
@@ -61,30 +61,28 @@ object GameEngine {
           logger info "add tile"
           val tile = TileEntity(UUID.randomUUID())
           coordinator.addEntity(tile)
-          coordinator.addEntityComponent(tile, ShapeComponent(shape))
-          coordinator.addEntityComponent(tile, PositionComponent(util.Vector2(position.x, position.y)))
+            .addEntityComponent(tile, ShapeComponent(shape))
+            .addEntityComponent(tile, PositionComponent(util.Vector2(position.x, position.y)))
           if (!tangible) coordinator.addEntityComponent(tile, IntangibleComponent())
         }
         case Player(position, shape, direction, velocity) => {
           logger info "add player"
           coordinator.addEntity(player)
-          coordinator.addEntityComponent(player, ShapeComponent(shape))
-          coordinator.addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
+            .addEntityComponent(player, ShapeComponent(shape))
+            .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(player, VelocityComponent(velocity))
-          coordinator.addEntityComponent(player, CollisionComponent(0, Center))
+            .addEntityComponent(player, VelocityComponent(velocity))
+            .addEntityComponent(player, CollisionComponent(0, Center))
         }
         case Enemy1(position, shape, direction, velocity) => {
           logger info "add enemy"
           val enemy = Enemy1Entity(UUID.randomUUID())
           coordinator.addEntity(enemy)
-          coordinator.addEntityComponent(enemy, ShapeComponent(shape))
-          coordinator.addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
+            .addEntityComponent(enemy, ShapeComponent(shape))
+            .addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(enemy, VelocityComponent(velocity))
-          coordinator.addEntityComponent(enemy, CollisionComponent(0, Center))
+            .addEntityComponent(enemy, VelocityComponent(velocity))
+            .addEntityComponent(enemy, CollisionComponent(0, Center))
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
