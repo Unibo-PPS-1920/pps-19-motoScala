@@ -12,11 +12,11 @@ object CollisionSystem {
   private class CollisionSystemImpl(coordinator: Coordinator, fps: Int)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[DirectionComponent], classOf[ShapeComponent], classOf[CollisionComponent])) {
 
-    val collisionDuration: Int = fps * 2
-    val deltaCollision: Int = (fps / 3).ceil.toInt
     def update(): Unit = {
       entitiesRef().foreach(e => {
         val col = coordinator.getEntityComponent(e, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
+        val collisionDuration: Int = fps * col.mass
+        val deltaCollision: Int = (fps / 3).ceil.toInt
         if (col
           .duration > 0) {
           col.duration -= deltaCollision
@@ -38,7 +38,7 @@ object CollisionSystem {
                   (pos dist pos2) < (radius + radius2)
                 case Shape.Rectangle(_, _) => false
               })).foreach(e2 => {
-              bounce(e, e2)
+              bounce(e, e2, collisionDuration)
             }
                           )
             case Shape.Rectangle(_, _) =>
@@ -48,7 +48,7 @@ object CollisionSystem {
                             )
 
     }
-    def bounce(e1: Entity, e2: Entity): Unit = {
+    def bounce(e1: Entity, e2: Entity, collisionDuration: Int): Unit = {
       val dir1 = coordinator.getEntityComponent(e1, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
       val dir2 = coordinator.getEntityComponent(e2, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
       logger info s"bouncing $dir1 off $dir2"

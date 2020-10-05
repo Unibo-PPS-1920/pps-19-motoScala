@@ -72,7 +72,7 @@ object GameEngine {
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
             .addEntityComponent(player, VelocityComponent(velocity))
-            .addEntityComponent(player, CollisionComponent(0, Center))
+            .addEntityComponent(player, CollisionComponent(8, 0, Center))
         }
         case Enemy1(position, shape, direction, velocity) => {
           logger info "add enemy"
@@ -82,7 +82,7 @@ object GameEngine {
             .addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
             .addEntityComponent(enemy, VelocityComponent(velocity))
-            .addEntityComponent(enemy, CollisionComponent(0, Center))
+            .addEntityComponent(enemy, CollisionComponent(3, 0, Center))
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
