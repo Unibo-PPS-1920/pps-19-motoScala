@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, TileEntity}
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
@@ -91,8 +91,8 @@ abstract class AbstractScreenControllerGame(
     //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
-      case Enemy1Entity(_) => Drawables.Enemy1Drawable.draw(e)
-      case TileEntity(_) =>
+      case RedPupaEntity(_) => Drawables.Enemy1Drawable.draw(e)
+
     })
     Drawables.PlayerDrawable.draw(player)
   }
