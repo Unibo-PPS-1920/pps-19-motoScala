@@ -4,7 +4,6 @@ import java.nio.file.Paths
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{APP_MAIN_FOLDER, SYSTEM_SEPARATOR}
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.stringPathToPath
 import org.junit.runner.RunWith
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

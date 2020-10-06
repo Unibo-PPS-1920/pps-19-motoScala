@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.view
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusicEvent
+import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
 import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
@@ -50,15 +52,16 @@ object View {
         changeScreen(ScreenEvent.GotoHome)
         this.stage = Some(stage)
         logger info s"View started on ${Thread.currentThread()}"
+        controller.redirectSoundEvent(PlayMusicEvent(Music.Menu))
       })
+
+
     }
-
-    override def getStage: Stage = stage.get
-
     override def changeScreen(event: ScreenEvent): Unit = {
       screenLoader.applyScreen(stateMachine.consume(event), root)
       screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
     }
+    override def getStage: Stage = stage.get
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)

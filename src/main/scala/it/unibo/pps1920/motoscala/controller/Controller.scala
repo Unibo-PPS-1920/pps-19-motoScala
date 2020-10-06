@@ -4,6 +4,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 import it.unibo.pps1920.motoscala
+import it.unibo.pps1920.motoscala.controller.managers.audio._
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
@@ -18,13 +19,16 @@ trait Controller extends ActorController with SoundController with ObservableUI 
 }
 
 object Controller {
+  def apply(): Controller = new ControllerImpl()
   private class ControllerImpl private[Controller]() extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
+    private val mediator = Mediator()
+    private val myUuid: UUID = randomUUID()
+    private val soundAgent: SoundAgent = SoundAgent()
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
-    private val mediator = Mediator()
     private var levels: List[LevelData] = List()
-    private val myUuid: UUID = randomUUID()
+    this.soundAgent.start();
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -33,7 +37,6 @@ object Controller {
       engine = Option(motoscala.engine.GameEngine(mediator, myUuid))
       engine.get.init(levels.filter(data => data.index == level).head)
     }
-
     override def start(): Unit = engine.get.start()
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
@@ -48,8 +51,8 @@ object Controller {
       engine.get.stop()
       engine = None
     }
+    override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
   }
-  def apply(): Controller = new ControllerImpl()
 }
 
 

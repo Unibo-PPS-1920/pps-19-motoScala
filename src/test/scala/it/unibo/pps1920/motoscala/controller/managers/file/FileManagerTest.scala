@@ -1,7 +1,6 @@
 package it.unibo.pps1920.motoscala.controller.managers.file
 
 import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{SYSTEM_SEPARATOR, USER_HOME}
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.stringPathToPath
 import org.junit.runner.RunWith
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
