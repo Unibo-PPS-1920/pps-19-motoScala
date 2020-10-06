@@ -41,7 +41,7 @@ object Controller {
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
                               List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10),
-                                   Level.RedPupa(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10))))
+                                   Level.RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), 10))))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()

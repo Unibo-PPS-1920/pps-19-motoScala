@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
+import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
@@ -91,8 +91,10 @@ abstract class AbstractScreenControllerGame(
     //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
-      case RedPupaEntity(_) => Drawables.Enemy1Drawable.draw(e)
-
+      case RedPupaEntity(_) => Drawables.RedPupaDrawable.draw(e)
+      case BlackPupaEntity(_) => Drawables.BlackPupaDrawable.draw(e)
+      case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
+      case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
     })
     Drawables.PlayerDrawable.draw(player)
   }
@@ -101,8 +103,11 @@ abstract class AbstractScreenControllerGame(
   def sendCommandEvent(event: CommandEvent): Unit
 
   private object Drawables {
-    val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
-    val Enemy1Drawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
+    val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCar), context)
+    val BlackPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BlackPupa), context)
+    val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
+    val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
+    val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
   }
 }
 
