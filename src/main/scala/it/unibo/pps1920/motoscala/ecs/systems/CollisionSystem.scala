@@ -24,8 +24,8 @@ object CollisionSystem {
           dir.dir = col.colDirection
           col.duration -= 1
           if (col.duration <= 0) {
-            logger info s"${col.duration} ${col.inDirection}"
-            dir.dir = col.inDirection
+            //logger info s"$e ${col.duration} ${col.inputDirection}"
+            dir.dir = col.inputDirection
             coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent].vel = col
               .oldSpeed
           }
@@ -39,7 +39,7 @@ object CollisionSystem {
             val posCo = coordinator.getEntityComponent(other, classOf[PositionComponent]).get
               .asInstanceOf[PositionComponent]
             (shapeC.shape, shapeCo.shape) match {
-              case (Circle(radius), Circle(radius2)) => if ((posC.pos dist posCo.pos) < (radius + radius2))
+              case (Circle(radius), Circle(radius2)) => if ((posC.pos dist posCo.pos) <= (radius + radius2))
                 bounce(e, other)
               case _ =>
             }
@@ -50,24 +50,17 @@ object CollisionSystem {
     def bounce(e1: Entity, e2: Entity): Unit = {
       val dir1 = coordinator.getEntityComponent(e1, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
       val dir2 = coordinator.getEntityComponent(e2, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
-      logger info s"bouncing $dir1 off $dir2"
+      //logger info s"bouncing $e1 $dir1 off $dir2"
       //calculate new directions
       val col1 = coordinator.getEntityComponent(e1, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
       val col2 = coordinator.getEntityComponent(e2, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
-      col1.inDirection = dir1.dir
-      col2.inDirection = dir2.dir
-      col1.colDirection = dir1.dir.opposite()
-      col2.colDirection = dir2.dir.opposite()
-      val duration1: Int = (((col1.mass * fps) / (10 * fps)) * (fps / 2)).toInt
-      val duration2: Int = (((col2.mass * fps) / (10 * fps)) * (fps / 2)).toInt
+      col1.inputDirection = dir1.dir
+      col1.colDirection = dir2.dir + dir1.dir.opposite()
+      val duration1: Int = (((col2.mass * fps) / (10 * fps)) * (fps / 5)).toInt
       col1.duration = duration1
-      col2.duration = duration2
       val vel1 = coordinator.getEntityComponent(e1, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-      val vel2 = coordinator.getEntityComponent(e2, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
       col1.oldSpeed = vel1.vel
-      col2.oldSpeed = vel2.vel
       vel1.vel = 30
-      vel2.vel = 30
     }
   }
 }

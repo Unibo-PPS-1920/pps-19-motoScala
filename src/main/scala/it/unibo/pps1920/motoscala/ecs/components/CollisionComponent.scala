@@ -12,5 +12,5 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction
 final case class CollisionComponent(var mass: Double,
                                     var duration: Int = 0,
                                     var colDirection: Direction,
-                                    var inDirection: Direction,
+                                    var inputDirection: Direction,
                                     var oldSpeed: Double) extends Component

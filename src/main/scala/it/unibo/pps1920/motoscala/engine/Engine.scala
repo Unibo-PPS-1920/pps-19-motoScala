@@ -33,7 +33,7 @@ object GameEngine {
 
   private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
-    private val Fps = 30
+    private val Fps = 10
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()

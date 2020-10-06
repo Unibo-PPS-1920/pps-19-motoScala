@@ -26,7 +26,7 @@ sealed case class Direction(value: Vector2) {
   }
 
   def opposite(): Direction = this match {
-    case Center => Center
+    case Center => Center //Direction(Vector2(-1 * math.random(), -1 * math.random()).unit())
     case North => South
     case NorthWest => SouthEast
     case NorthEast => SouthWest
