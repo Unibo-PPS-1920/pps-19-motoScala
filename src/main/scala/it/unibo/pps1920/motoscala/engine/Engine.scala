@@ -33,7 +33,7 @@ object GameEngine {
 
   private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
-    private val Fps = 10
+    private val Fps = 30
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
@@ -72,7 +72,7 @@ object GameEngine {
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
             .addEntityComponent(player, VelocityComponent(velocity))
-            .addEntityComponent(player, CollisionComponent(4, 0, Center, Center, 0))
+            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Center, Center, 0))
         }
         case Enemy1(position, shape, direction, velocity) => {
           logger info "add enemy"
@@ -82,7 +82,7 @@ object GameEngine {
             .addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
             .addEntityComponent(enemy, VelocityComponent(velocity))
-            .addEntityComponent(enemy, CollisionComponent(5, 0, Center, Center, 0))
+            .addEntityComponent(enemy, CollisionComponent(5, isColliding = false, 0, Center, Center, 0))
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))

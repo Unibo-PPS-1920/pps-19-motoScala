@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 
@@ -20,17 +21,17 @@ object CollisionSystem {
         val col = coordinator.getEntityComponent(e, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
         val dir = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
         //collision already happening
-        if (col.duration > 0) {
-          dir.dir = col.colDirection
-          col.duration -= 1
-          if (col.duration <= 0) {
-            //logger info s"$e ${col.duration} ${col.inputDirection}"
-            dir.dir = col.inputDirection
+        if (col.isColliding) {
+          if (col.duration > 0) {
+            col.duration -= 1
+            dir.dir = col.colDirection
+          } else {
+            dir.dir = Direction.Center
             coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent].vel = col
               .oldSpeed
+            col.isColliding = false
           }
         } else {
-          //check for new possible collisions
           val shapeC = coordinator.getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]
           val posC = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
           entitiesRef().filter(other => other.uuid != e.uuid).foreach(other => {
@@ -50,8 +51,6 @@ object CollisionSystem {
     def bounce(e1: Entity, e2: Entity): Unit = {
       val dir1 = coordinator.getEntityComponent(e1, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
       val dir2 = coordinator.getEntityComponent(e2, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
-      //logger info s"bouncing $e1 $dir1 off $dir2"
-      //calculate new directions
       val col1 = coordinator.getEntityComponent(e1, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
       val col2 = coordinator.getEntityComponent(e2, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
       col1.inputDirection = dir1.dir
@@ -61,6 +60,7 @@ object CollisionSystem {
       val vel1 = coordinator.getEntityComponent(e1, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
       col1.oldSpeed = vel1.vel
       vel1.vel = 30
+      col1.isColliding = true
     }
   }
 }

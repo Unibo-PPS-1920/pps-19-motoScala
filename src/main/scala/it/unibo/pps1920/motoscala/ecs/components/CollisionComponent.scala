@@ -2,6 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.components
 
 import it.unibo.pps1920.motoscala.ecs.Component
 import it.unibo.pps1920.motoscala.ecs.util.Direction
+
 /**
  *
  * @param mass determines how far the entity will bounce away
@@ -10,6 +11,7 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction
  * @param oldSpeed original speed to be restored after collision has happened
  */
 final case class CollisionComponent(var mass: Double,
+                                    var isColliding: Boolean,
                                     var duration: Int = 0,
                                     var colDirection: Direction,
                                     var inputDirection: Direction,
