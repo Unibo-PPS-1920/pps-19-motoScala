@@ -2,6 +2,7 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 
 import java.util.concurrent.ArrayBlockingQueue
 
+import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
 import javafx.application.Platform
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
@@ -34,7 +35,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   }
   override def playMusic(media: Music): Unit = {
     if (!this.medias.contains(media)) {
-      this.medias += (media -> (new MediaPlayer(new Media(this.getClass.getResource(media.entryName).toString))))
+      this.medias += (media -> (new MediaPlayer(new Media(loadFromJar(media.entryName)))))
     }
     Platform.runLater(() => {
       this.actualMusicPlayer = this.medias(media)
@@ -47,7 +48,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   override def stopMusic(): Unit = this.actualMusicPlayer.stop()
   override def playClip(clip: Clips): Unit = {
     if (!this.clips.contains(clip)) {
-      this.clips += (clip -> (new AudioClip(this.getClass.getResource(clip.entryName).toString)))
+      this.clips += (clip -> (new AudioClip(loadFromJar(clip.entryName))))
     }
 
     Platform.runLater(() => {
