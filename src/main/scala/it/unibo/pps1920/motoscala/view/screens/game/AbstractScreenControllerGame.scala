@@ -15,7 +15,7 @@ import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
-import javafx.scene.layout.BorderPane
+import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
 abstract class AbstractScreenControllerGame(
@@ -28,6 +28,7 @@ abstract class AbstractScreenControllerGame(
 
   @FXML protected var root: BorderPane = _
   @FXML protected var canvas: Canvas = _
+  @FXML protected var canvasStack: StackPane = _
   @FXML protected var buttonStart: Button = _
   @FXML protected var buttonBack: Button = _
   @FXML protected var labelTitle: Label = _
@@ -72,8 +73,10 @@ abstract class AbstractScreenControllerGame(
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
-    canvas.setWidth(mapSize.get.x)
-    canvas.setHeight(mapSize.get.y)
+    canvasStack.setMaxWidth(mapSize.get.x)
+    canvasStack.setMaxHeight(mapSize.get.y)
+    canvas.heightProperty().bind(canvasStack.maxHeightProperty())
+    canvas.widthProperty().bind(canvasStack.maxWidthProperty())
     if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
@@ -85,10 +88,10 @@ abstract class AbstractScreenControllerGame(
 
   protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
-    context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
+    //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
-      case Enemy1Entity(_) =>
+      case Enemy1Entity(_) => Drawables.Enemy1Drawable.draw(e)
       case TileEntity(_) =>
     })
     Drawables.PlayerDrawable.draw(player)
@@ -99,6 +102,7 @@ abstract class AbstractScreenControllerGame(
 
   private object Drawables {
     val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
+    val Enemy1Drawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
 

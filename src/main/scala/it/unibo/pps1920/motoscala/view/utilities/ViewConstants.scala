@@ -16,8 +16,8 @@ object ViewConstants {
   }
 
   object Canvas {
-    val CanvasWidth: Int = 500
-    val CanvasHeight: Int = 600
+    val CanvasWidth: Int = 800
+    val CanvasHeight: Int = 800
   }
 
 
