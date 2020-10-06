@@ -14,9 +14,10 @@ object FileManager {
   final def createLocalFile(path: Path): Boolean = tryAndBoolResult(path.createNewFile())(this.logger)
   final def deleteLocalFile(path: Path): Boolean = tryAndBoolResult(path.delete())(this.logger)
   final def getListFiles(path: Path): List[String] = path.list((file, _) => file.isFile).toList
-  final def loadLocalFile(): Unit = ???
-  final def resolveRelativePath(): Unit = ???
-  final def resolveAbsolutePath(): Unit = ???
+  final def loadFromJar(position: String): String = {
+    this.getClass.getResource(position).toString
+
+  }
 }
 
 
