@@ -66,9 +66,9 @@ object View {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)
       case event: ViewEvent.LevelEvent => screenLoader.getScreenController(FXMLScreens.LEVELS).notify(event)
-      case event: ViewEvent.LobbyEvent => logger info event.getClass.toString
-      case event: ViewEvent.SettingsEvent => logger info event.getClass.toString
-      case event: ViewEvent.StatsEvent => logger info event.getClass.toString
+      case event: ViewEvent.LobbyEvent => screenLoader.getScreenController(FXMLScreens.LOBBY).notify(event)
+      case event: ViewEvent.SettingsEvent => screenLoader.getScreenController(FXMLScreens.SETTINGS).notify(event)
+      case event: ViewEvent.StatsEvent => screenLoader.getScreenController(FXMLScreens.STATS).notify(event)
     }
     private def loadScreens(): Unit = {
       loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))

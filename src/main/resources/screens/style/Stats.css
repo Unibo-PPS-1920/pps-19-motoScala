@@ -36,7 +36,6 @@
 }
 
 .root * {
-    -fx-font-size: 35px;
     -fx-background-color: #0c2d4a;
 }
 
@@ -46,5 +45,28 @@
 }
 
 #listView {
-    -fx-background-color: #0c2d4a«;
+    -fx-background-color: #0c4a43;
+
+}
+
+#listView .list-cell {
+    -fx-font-size: 25px;
+    -fx-alignment: center;
+    -fx-text-fill: #958b8b;
+
+}
+
+#listView .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(#266eaa 0.0%, #2065a5 25.0%, #135ba0 75.0%, #0954a0 100.0%);
+    -fx-text-fill: white;
+}
+
+
+#listView .list-cell:even {
+    -fx-background-color: #05243e;
+}
+
+#listView .list-cell:filled:hover {
+    -fx-background-color: #0a64a5;
+    -fx-text-fill: white;
 }

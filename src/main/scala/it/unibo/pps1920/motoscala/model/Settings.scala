@@ -1,8 +1,8 @@
 package it.unibo.pps1920.motoscala.model
 
 object Settings {
-
-  case class Setting(volume: Int)
+  sealed trait Settings
+  case class SettingsData(volume: Float = 1.0f, diff: Int = 1) extends Settings
 
 }
 
