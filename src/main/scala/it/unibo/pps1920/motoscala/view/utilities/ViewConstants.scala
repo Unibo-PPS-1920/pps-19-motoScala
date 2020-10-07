@@ -32,8 +32,14 @@ object ViewConstants {
     /** Textures constants */
     object Textures {
       val TextureFolder: String = "/textures/"
+      val EntitiesFolder: String = TextureFolder + "/entities/"
       val BackgroundTexture: String = TextureFolder + "background.png"
       val ParticleTexture: String = TextureFolder + "particle.png"
+      val BumperCar: String = EntitiesFolder + "entity_22.png"
+      val RedPupa: String = EntitiesFolder + "entity_13.png"
+      val BlackPupa: String = EntitiesFolder + "entity_09.png"
+      val BluePupa: String = EntitiesFolder + "entity_10.png"
+      val Polar: String = EntitiesFolder + "entity_20.png"
     }
   }
 }
