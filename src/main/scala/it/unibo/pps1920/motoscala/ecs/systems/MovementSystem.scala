@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 object MovementSystem {
   def apply(coordinator: Coordinator): System = new MovementSystemImpl(coordinator)
   private class MovementSystemImpl(coordinator: Coordinator)
-    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent], classOf[DirectionComponent])) {
+    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent])) {
     override def update(): Unit = {
       entitiesRef()
         .foreach(e => {
