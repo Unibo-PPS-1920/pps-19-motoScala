@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.controller
 
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.view.ObserverUI
 
 trait ObservableUI extends SoundController {
@@ -10,8 +11,9 @@ trait ObservableUI extends SoundController {
   def setupGame(level: Level): Unit
   def getMediator: Mediator
   def loadAllLevels(): Unit
-  def loadSettings(): Unit
+  def getSetting(): Unit
   def loadStats(): Unit
+  def saveStats(settings: SettingsData): Unit
   def start(): Unit
   def pause(): Unit
   def resume(): Unit

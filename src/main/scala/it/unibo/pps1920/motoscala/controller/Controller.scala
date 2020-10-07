@@ -34,6 +34,7 @@ object Controller {
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
     private var levels: List[LevelData] = List()
+    private var actualSettings: SettingsData = loadSettings()
     this.soundAgent.start();
     this.dataManager.initAppDirectory()
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
@@ -58,11 +59,18 @@ object Controller {
       engine = None
     }
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
+
     override def loadStats(): Unit = observers
-      .foreach(o => o.notify(ScoreDataEvent(this.dataManager.loadScore()
-                                              .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
-    override def loadSettings(): Unit = observers
-      .foreach(o => o.notify(SettingsDataEvent(SettingsData(0.3f, 1))))
+      .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
+                                                            .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
+    override def getSetting(): Unit = observers
+      .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
+
+    override def saveStats(newSettings: SettingsData): Unit = {
+      this.actualSettings = newSettings
+      this.dataManager.saveSettings(this.actualSettings)
+    }
+    private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
 }
 

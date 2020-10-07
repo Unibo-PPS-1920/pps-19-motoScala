@@ -1,6 +1,9 @@
 package it.unibo.pps1920.motoscala.view.screens.settings
 
+import java.lang
+
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
@@ -30,31 +33,30 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
   }
 
   private def initBackButton(): Unit = {
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+    buttonBack.setOnAction(_ => {
+      this.controller.saveStats(SettingsData(this.volumeSlider.getValue.toFloat, this.diffSlider.getValue.toInt))
+      this.viewFacade.changeScreen(ScreenEvent.GoBack)
+    })
   }
   private def initSlider(): Unit = {
-
-
-    diffSlider.setLabelFormatter(new StringConverter[Double] {
-
-      override def toString(value: Double): String = {
-        value match {
-          case n if (n <= 1) => "Easy"
-          case n if (n <= 2) => "Medium"
-          case n if (n <= 3) => "Hard"
-        }
-
+    diffSlider.setLabelFormatter(new StringConverter[lang.Double]() {
+      override def toString(`object`: lang.Double): String = `object` match {
+        case n if (n <= 1.0d) => "Easy"
+        case n if (n <= 2.0d) => "Medium"
+        case n if (n <= 3.0d) => "Hard"
       }
-      override def fromString(string: String): Double = {
-        string match {
-          case "Easy" => 1.0d
-          case "Medium" => 2.0d
-          case "Hard" => 3.0d
-        }
+      override def fromString(string: String): lang.Double = string match {
+        case str if (str == "Easy") => 1.0d
+        case str if (str == "Medium") => 2.0d
+        case str if (str == "Hard") => 3.0d
       }
-
     });
-
   }
+
+  def displaySettings(settings: SettingsData): Unit = {
+    this.volumeSlider.setValue(settings.volume)
+    this.diffSlider.setValue(settings.diff)
+  }
+
 
 }
