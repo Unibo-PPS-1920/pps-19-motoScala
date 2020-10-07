@@ -2,13 +2,14 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
+import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
-import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
@@ -16,18 +17,19 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
+class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
-  import DrawSystemTestClasses._
+  import EndGameSystemTestClasses._
 
   var coordinator: Coordinator = _
-  var drawSystem: System = _
+  var endsys: System = _
   var mediator: Mediator = _
   val pid = UUID.randomUUID()
+  val entity = BumperCarEntity(pid)
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = new MediatorImpl()
-    drawSystem = DrawSystem(mediator, coordinator, pid)
+    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val d = DirectionComponent(Direction.North)
@@ -36,9 +38,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     coordinator.registerComponentType(classOf[ShapeComponent])
     coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
-    coordinator.registerSystem(drawSystem)
+    coordinator.registerSystem(endsys)
 
-    val entity = TestEntity(pid)
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity, v)
     coordinator.addEntityComponent(entity, pos)
@@ -50,35 +51,43 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
   }
 
-  "A drawSystem" when {
+  "A endgame" when {
     "updating" should {
-      "emit the correct event" in {
-        drawSystem.update()
-        resulta.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Seq())
+
+      "emit a winning event when only a bumpercar is left" in {
+        endsys.update()
+        res.event shouldBe Event.LevelEndEvent(EndData(true, entity))
       }
-      "emit the correct event for multiple entities" in {
-        val entity2id = UUID.randomUUID()
-        val entity2 = TestEntity(entity2id)
-        coordinator.addEntity(entity2)
-        val pos2: PositionComponent = PositionComponent(Vector2(3, 2))
-        val shape2 = ShapeComponent(Circle(2))
-        val d2 = DirectionComponent(Direction.North)
-        coordinator.addEntityComponent(entity2, pos2)
-        coordinator.addEntityComponent(entity2, shape2)
-        coordinator.addEntityComponent(entity2, d2)
-        drawSystem.update()
-        resulta
-          .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Seq(DrawEntityData(Vector2(3, 2), Direction
-          .North, Circle(2), TestEntity(entity2id))))
+      "eliminate enemies" in {
+        val e = RedPupaEntity(UUID.randomUUID())
+        val pos: PositionComponent = PositionComponent(Vector2(-1, -1))
+        val shape = ShapeComponent(Circle(3))
+        val d = DirectionComponent(Direction.North)
+        val v = VelocityComponent(2)
+        coordinator.addEntity(e)
+        coordinator.addEntityComponent(e, v)
+        coordinator.addEntityComponent(e, pos)
+        coordinator.addEntityComponent(e, shape)
+        coordinator.addEntityComponent(e, d)
+        endsys.entitiesRef() shouldBe Set(entity, e)
+        endsys.update()
+        endsys.entitiesRef() shouldBe Set(entity)
+
       }
+      "emit a loss event when an entity goes out of the playing field" in {
+        coordinator.getEntityComponent(entity, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
+          .pos = Vector2(-1, -1)
+        endsys.update()
+        res.event shouldBe Event.LevelEndEvent(EndData(false, entity))
+        endsys.entitiesRef() shouldBe Set.empty
+      }
+
     }
   }
 
 }
 
-object DrawSystemTestClasses {
+object EndGameSystemTestClasses {
 
 
   final class MediatorImpl extends Mediator {
@@ -91,16 +100,13 @@ object DrawSystemTestClasses {
 
     override def unsubscribe[T](observer: EventObserver[T]*): Unit = {}
 
-    override def publishEvent[T: ClassTag](ev: T): Unit = resulta.event = ev
+    override def publishEvent[T: ClassTag](ev: T): Unit = res.event = ev
 
   }
 
 }
 
-object resulta {
+object res {
   var event: Any = _
 }
 
-case class TestEntity(id: UUID) extends Entity {
-  override def uuid: UUID = id
-}

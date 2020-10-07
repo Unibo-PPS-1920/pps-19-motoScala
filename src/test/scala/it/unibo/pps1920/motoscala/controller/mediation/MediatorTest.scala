@@ -44,7 +44,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
         mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
-        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(null)))
+        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(true, null)))
       }
     }
     "publishing" should {
