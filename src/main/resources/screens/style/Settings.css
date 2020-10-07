@@ -33,6 +33,7 @@
 #Button Text {
     -fx-fill: white;
     /* -fx-effect: dropshadow(gaussian, #a30000, 0, 0, 0, 2);*/
+
 }
 
 .root * {
@@ -43,4 +44,18 @@
 #Line {
     -fx-stroke-width: 3;
     -fx-stroke: #ffffff;
+}
+
+.slider .track {
+    -fx-background-color: #903b12;
+}
+
+.slider .thumb {
+    -fx-background-color: #d86e3a;
+
+    -fx-background-radius: 50;
+}
+
+.slider .thumb:pressed {
+    -fx-background-color: #ea7f4b;
 }
