@@ -1,8 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.LevelEndEvent
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.PositionComponent
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
@@ -21,11 +20,15 @@ object EndGameSystem {
           p.x < 0 || p.y < 0 || p.x > canvasSize.x || p.y > canvasSize.y
         }).foreach(e => {
         if (e.getClass == classOf[BumperCarEntity]) {
-          mediator.publishEvent(LevelEndEvent(EndData(e)))
+          coordinator.removeEntity(e)
+          mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))
         } else {
           coordinator.removeEntity(e)
         }
       })
+      if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
+        mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))
+      }
     }
   }
 }
