@@ -5,7 +5,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity}
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2

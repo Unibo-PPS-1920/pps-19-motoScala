@@ -32,11 +32,9 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
-    val d = DirectionComponent(Direction.North)
-    val v = VelocityComponent(2)
+    val v = VelocityComponent(Vector2(0,-10))
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
-    coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerSystem(endsys)
 
@@ -44,7 +42,6 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     coordinator.addEntityComponent(entity, v)
     coordinator.addEntityComponent(entity, pos)
     coordinator.addEntityComponent(entity, shape)
-    coordinator.addEntityComponent(entity, d)
 
   }
   override def afterAll(): Unit = {
@@ -62,13 +59,11 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
         val e = RedPupaEntity(UUID.randomUUID())
         val pos: PositionComponent = PositionComponent(Vector2(-1, -1))
         val shape = ShapeComponent(Circle(3))
-        val d = DirectionComponent(Direction.North)
-        val v = VelocityComponent(2)
+        val v = VelocityComponent(Vector2(0,-10))
         coordinator.addEntity(e)
         coordinator.addEntityComponent(e, v)
         coordinator.addEntityComponent(e, pos)
         coordinator.addEntityComponent(e, shape)
-        coordinator.addEntityComponent(e, d)
         endsys.entitiesRef() shouldBe Set(entity, e)
         endsys.update()
         endsys.entitiesRef() shouldBe Set(entity)

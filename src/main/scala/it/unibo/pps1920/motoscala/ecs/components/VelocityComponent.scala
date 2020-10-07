@@ -8,4 +8,4 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
  *
  * @param vel the velocity of the entity
  */
-final case class VelocityComponent(var vel: Vector2, var defVel: Vector2) extends Component
+final case class VelocityComponent(var vel: Vector2, var defVel: Vector2 = Vector2(20,20)) extends Component

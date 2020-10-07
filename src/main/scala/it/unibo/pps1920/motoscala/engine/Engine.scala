@@ -73,8 +73,7 @@ object GameEngine {
           coordinator.addEntity(black)
           coordinator.addEntityComponent(black, ShapeComponent(shape))
           coordinator.addEntityComponent(black, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(black, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
+
           coordinator.addEntityComponent(black, VelocityComponent( util.Vector2(velocity.x, velocity.y)))
         }
         case RedPupa(position, shape, direction, velocity) => {
@@ -83,8 +82,6 @@ object GameEngine {
           coordinator.addEntity(red)
           coordinator.addEntityComponent(red, ShapeComponent(shape))
           coordinator.addEntityComponent(red, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(red, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(red, VelocityComponent(util.Vector2(velocity.x, velocity.y)))
         }
         case BluePupa(position, shape, direction, velocity) => {
@@ -93,8 +90,6 @@ object GameEngine {
           coordinator.addEntity(blue)
           coordinator.addEntityComponent(blue, ShapeComponent(shape))
           coordinator.addEntityComponent(blue, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(blue, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(blue, VelocityComponent(util.Vector2(velocity.x, velocity.y)))
         }
         case Polar(position, shape, direction, velocity) => {
@@ -103,8 +98,6 @@ object GameEngine {
           coordinator.addEntity(polar)
           coordinator.addEntityComponent(polar, ShapeComponent(shape))
           coordinator.addEntityComponent(polar, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(polar, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
           coordinator.addEntityComponent(polar, VelocityComponent(util.Vector2(velocity.x, velocity.y)))
 
         }
