@@ -22,6 +22,8 @@ trait Vector2 {
   def mul(scalar: Double): Vector2 = Vector2(x * scalar, y * scalar)
 
   def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)
+
+  def dot(v1: Vector2, v2:Vector2) : Double = v1.x*v2.x + v1.y*v2.y
 }
 
 object Vector2 {

@@ -13,8 +13,7 @@ object MovementSystem {
         .foreach(e => {
           val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
           val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-          val d = coordinator.getEntityComponent(e, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
-          p.pos = p.pos add (d.dir.value mul v.vel)
+          p.pos = p.pos add v.vel
         })
     }
   }

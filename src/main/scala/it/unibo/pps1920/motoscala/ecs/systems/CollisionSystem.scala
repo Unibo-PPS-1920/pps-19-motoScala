@@ -27,8 +27,8 @@ object CollisionSystem {
             dir.dir = col.colDirection
           } else {
             dir.dir = Direction.Center
-            coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent].vel = col
-              .oldSpeed
+            //coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent].vel = col
+            //  .oldSpeed
             col.isColliding = false
           }
         } else {
@@ -58,8 +58,8 @@ object CollisionSystem {
       val duration1: Int = (((col2.mass * fps) / (10 * fps)) * (fps / 5)).toInt
       col1.duration = duration1
       val vel1 = coordinator.getEntityComponent(e1, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-      col1.oldSpeed = vel1.vel
-      vel1.vel = 30
+      //col1.oldSpeed = vel1.vel
+      //vel1.vel = 30
       col1.isColliding = true
     }
   }

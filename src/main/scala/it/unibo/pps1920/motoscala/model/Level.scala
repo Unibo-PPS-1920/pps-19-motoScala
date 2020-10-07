@@ -7,8 +7,8 @@ object Level {
   case class LevelData(index: Int, mapSize: Coordinate, entities: List[LevelEntity])
   case class Coordinate(x: Int, y: Int)
   case class Tile(shape: Rectangle, position: Coordinate, tangible: Boolean) extends LevelEntity
-  case class Player(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Double) extends LevelEntity
-  case class Enemy1(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Double) extends LevelEntity
+  case class Player(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
+  case class Enemy1(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
 }
 
 /*package it.unibo.pps1920.motoscala.model
