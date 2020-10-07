@@ -51,7 +51,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        result.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
+        resulta.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
           .North, Circle(3), TestEntity(pid)), Seq())
       }
       "emit the correct event for multiple entities" in {
@@ -65,7 +65,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntityComponent(entity2, shape2)
         coordinator.addEntityComponent(entity2, vel2)
         drawSystem.update()
-        result
+        resulta
           .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
           .North, Circle(3), TestEntity(pid)), Seq(DrawEntityData(Vector2(3, 2), Direction
           .North, Circle(2), TestEntity(entity2id))))
@@ -88,13 +88,13 @@ object DrawSystemTestClasses {
 
     override def unsubscribe[T](observer: EventObserver[T]*): Unit = {}
 
-    override def publishEvent[T: ClassTag](ev: T): Unit = result.event = ev
+    override def publishEvent[T: ClassTag](ev: T): Unit = resulta.event = ev
 
   }
 
 }
 
-object result {
+object resulta {
   var event: Any = _
 }
 

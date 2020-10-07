@@ -4,6 +4,7 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 import it.unibo.pps1920.motoscala
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
@@ -26,6 +27,7 @@ object Controller {
     private var levels: List[LevelData] = List()
     private val myUuid: UUID = randomUUID()
 
+    override def redirectSoundEvent(me: MediaEvent): Unit = {}
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
@@ -38,10 +40,9 @@ object Controller {
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                              List(Level.Player(Coordinate(400, 400), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
-                                   Level.Enemy1(Coordinate(300, 300), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
-                                   Level
-                                     .Enemy1(Coordinate(300, 200), Circle(25), Coordinate(0, 0), Coordinate(10, 10)))))
+                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10,10)),
+                                   Level.RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(10,10)))))
+
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
