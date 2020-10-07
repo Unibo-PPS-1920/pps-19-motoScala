@@ -11,7 +11,6 @@ import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity, T
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems.{CollisionSystem, DrawSystem, InputSystem, MovementSystem}
 import it.unibo.pps1920.motoscala.ecs.util
-import it.unibo.pps1920.motoscala.ecs.util.Direction.Center
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level.{Enemy1, LevelData, Player, Tile}
@@ -33,7 +32,7 @@ object GameEngine {
 
   private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
-    private val Fps = 30
+    private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
@@ -71,8 +70,8 @@ object GameEngine {
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-            .addEntityComponent(player, VelocityComponent(Vector2(velocity.x, velocity.y)))
-            //.addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Center, Center, 0))
+            .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
+          //.addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Center, Center, 0))
         }
         case Enemy1(position, shape, direction, velocity) => {
           logger info "add enemy"
@@ -81,8 +80,8 @@ object GameEngine {
             .addEntityComponent(enemy, ShapeComponent(shape))
             .addEntityComponent(enemy, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(enemy, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-            .addEntityComponent(enemy, VelocityComponent(Vector2(velocity.x, velocity.y)))
-            //.addEntityComponent(enemy, CollisionComponent(5, isColliding = false, 0, Center, Center, 0))
+            .addEntityComponent(enemy, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
+          //.addEntityComponent(enemy, CollisionComponent(5, isColliding = false, 0, Center, Center, 0))
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
