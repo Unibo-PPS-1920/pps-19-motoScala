@@ -9,7 +9,7 @@ object InputSystem {
   def apply(coordinator: Coordinator,
             eventQueue: CommandQueue): System = new InputSystemImpl(coordinator, eventQueue)
   private class InputSystemImpl(coordinator: Coordinator, eventQueue: CommandQueue)
-    extends AbstractSystem(ECSSignature(classOf[VelocityComponent], classOf[DirectionComponent])) {
+    extends AbstractSystem(ECSSignature(classOf[VelocityComponent])) {
 
     def update(): Unit = {
       val events = eventQueue.dequeueAll()
