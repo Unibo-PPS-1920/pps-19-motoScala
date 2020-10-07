@@ -25,6 +25,7 @@ sealed case class Direction(value: Vector2) {
     case _ => -1
   }
 
+
   def opposite(): Direction = this match {
     case Center => Center //Direction(Vector2(-1 * math.random(), -1 * math.random()).unit())
     case North => South
@@ -39,6 +40,7 @@ sealed case class Direction(value: Vector2) {
   }
 }
 object Direction {
+  import scala.util.Try
   object Center extends Direction(Vector2(0, 0))
   object North extends Direction(Vector2(0, -1))
   object NorthWest extends Direction(Vector2(-1, -1))
@@ -48,5 +50,6 @@ object Direction {
   object SouthEast extends Direction(Vector2(1, 1))
   object West extends Direction(Vector2(-1, 0))
   object East extends Direction(Vector2(1, 0))
+  def velToDir(vec : Vector2): Direction = Direction(Vector2(if (vec.x!=0) vec.x / vec.x.abs else 0, if (vec.y!=0) vec.y / vec.y.abs else 0))
 }
 
