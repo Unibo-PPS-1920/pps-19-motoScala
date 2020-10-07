@@ -4,7 +4,7 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
-import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, DirectionComponent, PositionComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, Enemy1Entity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
@@ -18,7 +18,7 @@ import org.scalatestplus.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
 
-
+/*
   var coordinator: Coordinator = _
   var movement: System = _
   var collision: System = _
@@ -71,5 +71,5 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
     }
   }
 
-
+*/
 }
