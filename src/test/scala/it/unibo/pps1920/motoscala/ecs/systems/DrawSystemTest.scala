@@ -30,11 +30,10 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     drawSystem = DrawSystem(mediator, coordinator, pid)
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
-    val d = DirectionComponent(Direction.North)
-    val v = VelocityComponent(2)
+    val v : VelocityComponent = VelocityComponent(Vector2(0,-10), Vector2(20,20))
+
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
-    coordinator.registerComponentType(classOf[DirectionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerSystem(drawSystem)
 
@@ -43,8 +42,6 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     coordinator.addEntityComponent(entity, v)
     coordinator.addEntityComponent(entity, pos)
     coordinator.addEntityComponent(entity, shape)
-    coordinator.addEntityComponent(entity, d)
-
   }
   override def afterAll(): Unit = {
 
@@ -63,10 +60,10 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntity(entity2)
         val pos2: PositionComponent = PositionComponent(Vector2(3, 2))
         val shape2 = ShapeComponent(Circle(2))
-        val d2 = DirectionComponent(Direction.North)
+        val vel2 = VelocityComponent(Vector2(0,-5), Vector2(20,20))
         coordinator.addEntityComponent(entity2, pos2)
         coordinator.addEntityComponent(entity2, shape2)
-        coordinator.addEntityComponent(entity2, d2)
+        coordinator.addEntityComponent(entity2, vel2)
         drawSystem.update()
         resulta
           .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction

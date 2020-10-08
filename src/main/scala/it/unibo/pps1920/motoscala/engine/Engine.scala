@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.engine
 
+
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
@@ -8,7 +9,9 @@ import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
+
 import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, EndGameSystem, InputSystem, MovementSystem}
+
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
@@ -31,9 +34,9 @@ object GameEngine {
 
   private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
 
-
+    private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
-    private val gameLoop = GameLoop(60, this)
+    private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
     private val eventQueue: CommandQueue = CommandQueue()
 
@@ -43,8 +46,8 @@ object GameEngine {
       logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
+
       coordinator.registerComponentType(classOf[ShapeComponent])
-      coordinator.registerComponentType(classOf[DirectionComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator
         .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y)))
@@ -54,24 +57,23 @@ object GameEngine {
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
       level.entities.foreach {
+
         case Player(position, shape, direction, velocity) => {
           logger info "add player"
           coordinator.addEntity(player)
-          coordinator.addEntityComponent(player, ShapeComponent(shape))
-          coordinator.addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(player, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(player, VelocityComponent(velocity))
+            .addEntityComponent(player, ShapeComponent(shape))
+            .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
+            .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
+          //.addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Center, Center, 0))
         }
+
         case BlackPupa(position, shape, direction, velocity) => {
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
           coordinator.addEntityComponent(black, ShapeComponent(shape))
           coordinator.addEntityComponent(black, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(black, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(black, VelocityComponent(velocity))
+          coordinator.addEntityComponent(black, VelocityComponent( Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
         }
         case RedPupa(position, shape, direction, velocity) => {
           logger info "add red pupa"
@@ -79,9 +81,7 @@ object GameEngine {
           coordinator.addEntity(red)
           coordinator.addEntityComponent(red, ShapeComponent(shape))
           coordinator.addEntityComponent(red, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(red, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(red, VelocityComponent(velocity))
+          coordinator.addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
         }
         case BluePupa(position, shape, direction, velocity) => {
           logger info "add blue pupa"
@@ -89,9 +89,7 @@ object GameEngine {
           coordinator.addEntity(blue)
           coordinator.addEntityComponent(blue, ShapeComponent(shape))
           coordinator.addEntityComponent(blue, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(blue, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(blue, VelocityComponent(velocity))
+          coordinator.addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
         }
         case Polar(position, shape, direction, velocity) => {
           logger info "add polar"
@@ -99,9 +97,8 @@ object GameEngine {
           coordinator.addEntity(polar)
           coordinator.addEntityComponent(polar, ShapeComponent(shape))
           coordinator.addEntityComponent(polar, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator
-            .addEntityComponent(polar, DirectionComponent(util.Direction(Vector2(direction.x, direction.y))))
-          coordinator.addEntityComponent(polar, VelocityComponent(velocity))
+          coordinator.addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+
         }
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
