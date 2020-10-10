@@ -42,17 +42,13 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     assert(textStats != null, "fx:id=\"textStats\" was not injected: check your FXML file 'Home.fxml'.")
     assert(textExit != null, "fx:id=\"textExit\" was not injected: check your FXML file 'Home.fxml'.")
   }
-
-  override def whenDisplayed(): Unit = {}
-
   private def initializeButtons(): Unit = {
     this.textPlay.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLevels))
-    this.textPlayMultiplayer.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
+    this.textPlayMultiplayer.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoSelection))
     this.textSettings.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoSettings))
     this.textStats.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoStats))
     this.textExit.setOnAction(_ => System.exit(0))
   }
-
   private def initializeBackground(pane: Pane): Unit = {
     //Background setup
     val background: Rectangle = new Rectangle()
@@ -93,7 +89,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
       pane.getChildren.add(0, yLine)
     })
   }
-
+  override def whenDisplayed(): Unit = {}
   private[this] final object Constant {
     final val ANIMATION_DURATION = 5000
     final val PIXEL_LINE_LENGTH = 5000
