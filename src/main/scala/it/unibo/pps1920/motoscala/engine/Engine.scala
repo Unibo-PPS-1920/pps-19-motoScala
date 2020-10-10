@@ -3,15 +3,14 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
+import it.unibo.pps1920.motoscala.controller.Controller
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-
 import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, EndGameSystem, InputSystem, MovementSystem}
-
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
@@ -30,9 +29,10 @@ trait Engine extends UpdatableEngine with Commandable {
 object GameEngine {
 
 
-  def apply(mediator: Mediator, myUuid: UUID): Engine = new GameEngineImpl(mediator, myUuid)
+  def apply(mediator: Mediator, myUuid: UUID,
+            controller: Controller): Engine = new GameEngineImpl(mediator, myUuid, controller)
 
-  private class GameEngineImpl(mediator: Mediator, myUuid: UUID) extends Engine {
+  private class GameEngineImpl(mediator: Mediator, myUuid: UUID, controller: Controller) extends Engine {
 
     private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
@@ -50,7 +50,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator
-        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y)))
+        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
       coordinator.registerSystem(MovementSystem(coordinator))
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
@@ -74,7 +74,7 @@ object GameEngine {
           coordinator.addEntityComponent(black, ShapeComponent(shape))
           coordinator.addEntityComponent(black, PositionComponent(util.Vector2(position.x, position.y)))
 
-          coordinator.addEntityComponent(black, VelocityComponent( util.Vector2(velocity.x, velocity.y)))
+          coordinator.addEntityComponent(black, VelocityComponent(util.Vector2(velocity.x, velocity.y)))
         }
         case RedPupa(position, shape, direction, velocity) => {
           logger info "add red pupa"
@@ -116,6 +116,7 @@ object GameEngine {
     override def resume(): Unit = gameLoop.unPause()
 
     override def stop(): Unit = {
+      logger info "Engine Stopped"
       gameLoop.halt()
       mediator.unsubscribe(this)
     }
