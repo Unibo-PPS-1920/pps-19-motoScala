@@ -13,9 +13,10 @@ import it.unibo.pps1920.motoscala.view.ObserverUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import org.slf4j.LoggerFactory
-import it.unibo.pps1920.motoscala.multiplayer.messages.PlainMessage
+import it.unibo.pps1920.motoscala.multiplayer.messages.Message._
 import akka.actor.ExtendedActorSystem
 import it.unibo.pps1920.motoscala.multiplayer.actors.ServerActor
+import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor
 trait Controller extends ActorController with SoundController with ObservableUI {
 }
 
@@ -24,7 +25,11 @@ object Controller {
   import com.typesafe.config.ConfigFactory
   private class ControllerImpl private[Controller]() extends Controller {
     import it.unibo.pps1920.motoscala.controller.mediation.Event
-    import it.unibo.pps1920.motoscala.model.{MatchSetup, SinglePlayerSetup}
+    import it.unibo.pps1920.motoscala.model.{MatchSetup, MultiPlayerSetup, SinglePlayerSetup}
+    import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
+    import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
+    import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
+    import it.unibo.pps1920.motoscala.view.events.ViewEvent.LobbyDataEvent
     private val soundController: SoundController = null
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private var engine: Option[Engine] = None
@@ -38,7 +43,8 @@ object Controller {
     private val system = ActorSystem("MotoSystem", config)
     private var clientActor : Option[ActorRef] = None
     private var serverActor : Option[ActorRef] = None
-    private var matchSetup : Option[MatchSetup] = None
+    private var matchSetupMp : Option[MultiPlayerSetup] = None
+    private var matchSetupSp : Option[SinglePlayerSetup] = None
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -64,15 +70,13 @@ object Controller {
     }
 
     def clientMode(): Unit ={
-      import akka.actor.ActorPathExtractor
-      import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor
+
       clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
-      system.actorSelection("akka://MotoSystem@127.0.0.1:54071/user/Server*").tell(PlainMessage("LALALALALALALA", 10), clientActor.get)
+      system.actorSelection("akka://MotoSystem@127.0.0.1:54071/user/Server*").tell(PlainMessage("L", 10), clientActor.get)
 
     }
 
     def serverMode(gameEngine : Engine) ={
-      import it.unibo.pps1920.motoscala.model.MultiPlayerSetup
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
       serverActor.get.tell("", serverActor.get)
       val port = system.asInstanceOf[ExtendedActorSystem].provider.getDefaultAddress.port.get
@@ -80,15 +84,13 @@ object Controller {
     }
 
     /*Used by Server Actor*/
-    def notifyReady(ref: ActorRef): Unit = ???
-    override def notifyJoinRequest(ref: ActorRef): Boolean = ???
-    override def notifyUsersUpdate(event: Event): Unit = mediator.publishEvent(event)
+    def setReadyClient(ref: ActorRef): Unit = matchSetupMp.get.setReady(ref)
+    override def requestJoin(ref: ActorRef): Boolean = matchSetupMp.get.tryAddPlayer(ref)
     /*Used by Client Actor*/
-    override def notifyGameStart(): Unit = ???
-    override def notifyGameEnd(): Unit = ???
-    override def notifySettingsUpdate(setup: MatchSetup): Unit = matchSetup = Option(setup)
-    override def notifyNewWorld(event: Event): Unit = mediator.publishEvent(event)
-
+    override def gameStart(): Unit = ???
+    override def gameEnd(): Unit = ???
+    override def settingsUpdate(setup: LobbyData): Unit = observers.foreach(o => o.notify(LobbyDataEvent(setup)))
+    override def getLobbyData: DataType.LobbyData = LobbyData(matchSetupMp.get.difficulty, matchSetupMp.get.mode, matchSetupMp.get.readyPlayers)
   }
   def apply(): Controller = new ControllerImpl()
 }
