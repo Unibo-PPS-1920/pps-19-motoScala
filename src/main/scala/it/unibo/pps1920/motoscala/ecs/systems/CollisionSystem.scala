@@ -8,12 +8,11 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 
 object CollisionSystem {
-/*  def apply(coordinator: Coordinator, fps: Int): System = new CollisionSystemImpl(coordinator, fps)
+  def apply(coordinator: Coordinator, fps: Int): System = new CollisionSystemImpl(coordinator, fps)
   private class CollisionSystemImpl(coordinator: Coordinator, fps: Int)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent],
                                         classOf[DirectionComponent],
                                         classOf[ShapeComponent],
-                                        classOf[CollisionComponent],
                                         classOf[VelocityComponent])) {
 
     def update(): Unit = {
@@ -62,5 +61,5 @@ object CollisionSystem {
       //vel1.vel = 30
       col1.isColliding = true
     }
-  }*/
+  }
 }
