@@ -69,15 +69,16 @@ object Controller {
     override def loadStats(): Unit = observers
       .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
                                                             .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
-    override def getSetting(): Unit = observers
+    override def loadSetting(): Unit = observers
       .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
 
     override def saveStats(newSettings: SettingsData): Unit = {
       this.actualSettings = newSettings
       this.dataManager.saveSettings(this.actualSettings)
     }
+    override def setSelfReady(): Unit = ???
+    override def kickSomeone(): Unit = ???
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
-
   }
 }
 

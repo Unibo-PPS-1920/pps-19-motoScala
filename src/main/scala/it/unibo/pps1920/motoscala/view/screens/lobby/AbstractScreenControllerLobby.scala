@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.view.screens.lobby
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.model.ReadyTable.ReadyPlayers
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
@@ -30,11 +31,16 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   }
   private def initButtons(): Unit = {
     buttonStart.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoGame))
-    buttonStart.setOnAction(_ => {
-      //   controller.selfReady()
-
+    buttonReady.setOnAction(_ => {
+      controller.setSelfReady()
     })
+    buttonKick.setOnAction(_ => {
+      controller.kickSomeone()
+    })
+  }
 
+  private def initBackButton(): Unit = {
+    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Lobby.fxml'.")
@@ -50,8 +56,12 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
   }
 
-  private def initBackButton(): Unit = {
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+  protected def updatePlayers(playersStatus: ReadyPlayers): Unit = {
+    /*
+        this.listPlayer.getItems.set()
+    */
   }
+
+
 }
 

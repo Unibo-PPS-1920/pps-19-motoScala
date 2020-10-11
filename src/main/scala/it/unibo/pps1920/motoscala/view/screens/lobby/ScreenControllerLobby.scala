@@ -12,7 +12,7 @@ final class ScreenControllerLobby(protected override val viewFacade: ViewFacade,
   override def whenDisplayed(): Unit = {}
 
   override def notify(ev: ViewEvent): Unit = ev match {
-    case event: ViewEvent.LobbyEvent => logger info event.toString
+    case ViewEvent.updateReadyPlayer(playersStatus) => this.updatePlayers(playersStatus)
     case _ =>
   }
 }

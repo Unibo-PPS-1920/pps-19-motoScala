@@ -10,7 +10,7 @@ final class ScreenControllerSettings(protected override val viewFacade: ViewFaca
                                      protected override val controller: ObservableUI) extends AbstractScreenControllerSettings(viewFacade, controller) {
   logger info "Settings Screen"
 
-  override def whenDisplayed(): Unit = controller.getSetting()
+  override def whenDisplayed(): Unit = controller.loadSetting()
 
 
   override def notify(ev: ViewEvent): Unit = ev match {

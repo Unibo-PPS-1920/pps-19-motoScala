@@ -24,6 +24,7 @@ private[view] object ViewStateMachine {
       case (END, GotoHome) => HOME
       case (LEVELS, GoBack) => HOME
       case (LOBBY, GoBack) => HOME
+      case (LOBBY, GotoGame) => GAME
       case (STATS, GoBack) => HOME
       case (SETTINGS, GoBack) => HOME
     }).build()
