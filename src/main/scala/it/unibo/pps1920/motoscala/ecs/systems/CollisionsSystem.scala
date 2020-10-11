@@ -109,7 +109,7 @@ object CollisionsSystem {
     //Performs a collision step, decrementing the collision duration and handling termination
     private def collisionStep(collisionComp: CollisionComponent, velocityComp : VelocityComponent): Unit = {
       collisionComp.duration -= 1
-      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel = Vector2(0,0)}
+      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel = collisionComp.oldSpeed}
     }
   }
 
