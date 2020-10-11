@@ -18,9 +18,9 @@ trait Vector2 {
 
   def sub(vector2: Vector2): Vector2 = Vector2(x - vector2.x, y - vector2.y)
 
-  def unit(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)
+  def dir(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)
 
-  def mul(scalar: Double): Vector2 = Vector2(x * scalar, y * scalar)
+  def mul(v: Vector2): Vector2 = Vector2(x * v.x, y * v.y)
 
   def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)
 

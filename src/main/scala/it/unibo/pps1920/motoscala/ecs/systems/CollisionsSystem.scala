@@ -16,7 +16,7 @@ object CollisionsSystem {
                                         classOf[CollisionComponent])) {
 
 
-    private val CollisionDuration = fps / 2
+    private val CollisionDuration = (fps / 4)
     private val CollisionVelocity = Vector2(30, 30)
 
     override def update(): Unit = {
@@ -24,7 +24,8 @@ object CollisionsSystem {
       entitiesRef().foreach(e1 => {
         entitiesToCheck -= e1
         val collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
-        if (collisionCompE1.isColliding) collisionStep(collisionCompE1)
+        val velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
+        if (collisionCompE1.isColliding) collisionStep(collisionCompE1, velocityCompE1)
         entitiesToCheck.foreach(e2 => {
           if (isTouching(e1, e2)) {
             collide(e1, e2)
@@ -55,7 +56,7 @@ object CollisionsSystem {
       val velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
       val positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
       val positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
-      startCollision(collisionCompE1, collisionCompE2)
+      startCollision(collisionCompE1, collisionCompE2, velocityCompE1, velocityCompE2)
 
       /** **_____________________________________________________***** */
 
@@ -91,19 +92,24 @@ object CollisionsSystem {
     private def computeCollVel(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double =
       (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)
 
-    private def startCollision(collisionCompE1: CollisionComponent, collisionCompE2: CollisionComponent): Unit = {
+    private def startCollision(collisionCompE1: CollisionComponent, collisionCompE2: CollisionComponent, velCompE1 : VelocityComponent, velCompE2 : VelocityComponent): Unit = {
       collisionCompE1.isColliding = true
       collisionCompE2.isColliding = true
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
+      collisionCompE1.oldSpeed = velCompE1.vel
+      collisionCompE2.oldSpeed = velCompE2.vel
+      /*velCompE1.vel = CollisionVelocity mul CollisionVelocity.dir()
+      velCompE2.vel = CollisionVelocity mul CollisionVelocity.dir()*/
+
     }
     private def extractComponent[T <: Component](e: Entity, componentClass: Predef.Class[_]): T = {
       coordinator.getEntityComponent(e, componentClass).get.asInstanceOf[T]
     }
     //Performs a collision step, decrementing the collision duration and handling termination
-    private def collisionStep(collisionComp: CollisionComponent): Unit = {
+    private def collisionStep(collisionComp: CollisionComponent, velocityComp : VelocityComponent): Unit = {
       collisionComp.duration -= 1
-      if (collisionComp.duration <= 0) collisionComp.isColliding = false
+      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel = Vector2(0,0)}
     }
   }
 
