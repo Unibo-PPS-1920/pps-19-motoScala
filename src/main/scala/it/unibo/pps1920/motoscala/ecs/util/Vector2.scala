@@ -28,6 +28,8 @@ trait Vector2 {
 
   def dot(scalar: Double): Vector2 = Vector2(scalar*x, scalar*y)
 
+  def abs(): Vector2 = Vector2(x.abs, y.abs)
+
   def magnitude() : Double = sqrt(x*x + y*y)
 
   def unitVector() : Vector2 = {

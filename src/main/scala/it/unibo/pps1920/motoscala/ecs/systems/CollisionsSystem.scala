@@ -16,7 +16,7 @@ object CollisionsSystem {
                                         classOf[CollisionComponent])) {
 
 
-    private val CollisionDuration = (fps / 4)
+    private val CollisionDuration = (fps / 2)
     private val CollisionVelocity = Vector2(30, 30)
 
     override def update(): Unit = {
@@ -97,8 +97,8 @@ object CollisionsSystem {
       collisionCompE2.isColliding = true
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
-      collisionCompE1.oldSpeed = velCompE1.vel
-      collisionCompE2.oldSpeed = velCompE2.vel
+      collisionCompE1.oldSpeed = velCompE1.vel.abs()
+      collisionCompE2.oldSpeed = velCompE2.vel.abs()
       /*velCompE1.vel = CollisionVelocity mul CollisionVelocity.dir()
       velCompE2.vel = CollisionVelocity mul CollisionVelocity.dir()*/
 
@@ -109,7 +109,7 @@ object CollisionsSystem {
     //Performs a collision step, decrementing the collision duration and handling termination
     private def collisionStep(collisionComp: CollisionComponent, velocityComp : VelocityComponent): Unit = {
       collisionComp.duration -= 1
-      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel = collisionComp.oldSpeed}
+      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel =  collisionComp.oldSpeed mul velocityComp.vel.dir()}
     }
   }
 
