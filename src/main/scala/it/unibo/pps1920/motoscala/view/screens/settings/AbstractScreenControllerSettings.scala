@@ -26,10 +26,10 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
   }
 
   private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Stats.fxml'.")
-    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Stats.fxml'.")
-    assert(diffSlider != null, "fx:id=\"diffSlider\" was not injected: check your FXML file 'Stats.fxml'.")
-    assert(volumeSlider != null, "fx:id=\"volumeSlider\" was not injected: check your FXML file 'Stats.fxml'.")
+    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Settings.fxml'.")
+    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Settings.fxml'.")
+    assert(diffSlider != null, "fx:id=\"diffSlider\" was not injected: check your FXML file 'Settings.fxml'.")
+    assert(volumeSlider != null, "fx:id=\"volumeSlider\" was not injected: check your FXML file 'Settings.fxml'.")
   }
 
   private def initBackButton(): Unit = {

@@ -15,6 +15,7 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var grid: GridPane = _
 
+
   protected var buttonBack: Button = _
 
   @FXML override def initialize(): Unit = {
@@ -31,12 +32,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   private def initBackButton(): Unit = {
     buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => viewFacade.changeScreen(ScreenEvent.GoBack))
   }
-
-  private def selectLevel(level: Int): Unit = {
-    controller.setupGame(level)
-    viewFacade.changeScreen(ScreenEvent.GoNext)
-  }
-
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
@@ -44,5 +39,9 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
       grid.addRow(i, button)
     })
     grid.addRow(levels.size, buttonBack)
+  }
+  private def selectLevel(level: Int): Unit = {
+    controller.setupGame(level)
+    viewFacade.changeScreen(ScreenEvent.GoNext)
   }
 }

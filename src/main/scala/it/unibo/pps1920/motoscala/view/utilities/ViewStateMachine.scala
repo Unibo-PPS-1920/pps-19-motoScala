@@ -12,12 +12,16 @@ private[view] object ViewStateMachine {
     .transition({
       case (HOME, GotoGame) => GAME
       case (HOME, GotoLevels) => LEVELS
-      case (HOME, GotoLobby) => LOBBY
+      case (HOME, GotoSelection) => SELECTION
       case (HOME, GotoSettings) => SETTINGS
       case (HOME, GotoStats) => STATS
       case (HOME, GotoHome) => HOME
       case (LEVELS, GoNext) => GAME
+      case (SELECTION, GoBack) => HOME
+      case (SELECTION, GotoLobby) => LOBBY
       case (GAME, GoBack) => LEVELS
+      case (GAME, GotoEnd) => END
+      case (END, GotoHome) => HOME
       case (LEVELS, GoBack) => HOME
       case (LOBBY, GoBack) => HOME
       case (STATS, GoBack) => HOME

@@ -44,3 +44,33 @@
     -fx-stroke-width: 3;
     -fx-stroke: #ffffff;
 }
+
+#DropMenu .label {
+    -fx-font-size: 10px;
+}
+
+#DropMenu .arrow-button {
+    -fx-border-width: 0 0 0 5;
+    -fx-border-color: #d01010;
+}
+
+#DropMenu {
+    -fx-border-radius: 5px;
+    -fx-text-fill: #4f5ba7;
+    -fx-border-color: #d01010;
+    -fx-border-width: 2;
+}
+
+#DropMenu .label {
+    -fx-text-fill: #4f5ba7;
+}
+
+#DropMenu .menu-item:hover .label {
+    -fx-text-fill: white;
+}
+
+#DropMenu .arrow-button .arrow {
+    -fx-border-color: #d01010;
+    -fx-border-width: 3px;
+}
+

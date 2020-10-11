@@ -36,6 +36,7 @@
 }
 
 .root * {
+    -fx-font-size: 35px;
     -fx-background-color: #0c2d4a;
 }
 

@@ -29,6 +29,7 @@ object Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val mediator = Mediator()
     private val myUuid: UUID = randomUUID()
+
     private val soundAgent: SoundAgent = SoundAgent()
     private val dataManager: DataManager = new DataManager()
     private var engine: Option[Engine] = None
@@ -37,19 +38,23 @@ object Controller {
     private var actualSettings: SettingsData = loadSettings()
     this.soundAgent.start();
     this.dataManager.initAppDirectory()
+
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
-      engine = Option(motoscala.engine.GameEngine(mediator, myUuid))
+      engine = Option(motoscala.engine.GameEngine(mediator, myUuid, this))
       engine.get.init(levels.filter(data => data.index == level).head)
     }
+
     override def start(): Unit = engine.get.start()
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10),
-                                   Level.Enemy1(Coordinate(50, 50), Circle(25), Coordinate(0, 0), 10))))
+                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
+                                   Level
+                                     .RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)))))
+
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
@@ -58,6 +63,7 @@ object Controller {
       engine.get.stop()
       engine = None
     }
+
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
 
     override def loadStats(): Unit = observers
@@ -71,6 +77,7 @@ object Controller {
       this.dataManager.saveSettings(this.actualSettings)
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
+
   }
 }
 
