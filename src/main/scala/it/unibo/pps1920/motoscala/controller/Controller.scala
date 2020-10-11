@@ -19,20 +19,20 @@ trait Controller extends ActorController with SoundController with ObservableUI 
 }
 
 object Controller {
-  def apply(): Controller = new ControllerImpl()
   private class ControllerImpl private[Controller]() extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
-    private val mediator = Mediator()
-    private val myUuid: UUID = randomUUID()
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
+    private val mediator = Mediator()
     private var levels: List[LevelData] = List()
+    private val myUuid: UUID = randomUUID()
+
     override def redirectSoundEvent(me: MediaEvent): Unit = {}
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
-      engine = Option(motoscala.engine.GameEngine(mediator, myUuid, this))
+      engine = Option(motoscala.engine.GameEngine(mediator, myUuid))
       engine.get.init(levels.filter(data => data.index == level).head)
     }
 
@@ -40,9 +40,8 @@ object Controller {
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
-                                   Level
-                                     .RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)))))
+                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10,10)),
+                                   Level.RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(20,20)))))
 
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
@@ -53,6 +52,7 @@ object Controller {
       engine = None
     }
   }
+  def apply(): Controller = new ControllerImpl()
 }
 
 

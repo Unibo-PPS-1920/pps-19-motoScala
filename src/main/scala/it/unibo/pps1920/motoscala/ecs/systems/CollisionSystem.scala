@@ -8,12 +8,11 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 
 object CollisionSystem {
-/*  def apply(coordinator: Coordinator, fps: Int): System = new CollisionSystemImpl(coordinator, fps)
+  def apply(coordinator: Coordinator, fps: Int): System = new CollisionSystemImpl(coordinator, fps)
   private class CollisionSystemImpl(coordinator: Coordinator, fps: Int)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent],
                                         classOf[DirectionComponent],
                                         classOf[ShapeComponent],
-                                        classOf[CollisionComponent],
                                         classOf[VelocityComponent])) {
 
     def update(): Unit = {
@@ -24,7 +23,7 @@ object CollisionSystem {
         if (col.isColliding) {
           if (col.duration > 0) {
             col.duration -= 1
-            dir.dir = col.colDirection
+            //      dir.dir = col.colDirection
           } else {
             dir.dir = Direction.Center
             //coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent].vel = col
@@ -53,8 +52,8 @@ object CollisionSystem {
       val dir2 = coordinator.getEntityComponent(e2, classOf[DirectionComponent]).get.asInstanceOf[DirectionComponent]
       val col1 = coordinator.getEntityComponent(e1, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
       val col2 = coordinator.getEntityComponent(e2, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
-      col1.inputDirection = dir1.dir
-      col1.colDirection = dir2.dir + dir1.dir.opposite()
+      //  col1.inputDirection = dir1.dir
+      // col1.colDirection = dir2.dir + dir1.dir.opposite()
       val duration1: Int = (((col2.mass * fps) / (10 * fps)) * (fps / 5)).toInt
       col1.duration = duration1
       val vel1 = coordinator.getEntityComponent(e1, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
@@ -62,5 +61,5 @@ object CollisionSystem {
       //vel1.vel = 30
       col1.isColliding = true
     }
-  }*/
+  }
 }
