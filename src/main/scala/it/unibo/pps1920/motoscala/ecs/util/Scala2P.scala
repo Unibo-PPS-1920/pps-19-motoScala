@@ -7,6 +7,10 @@ object Scala2P {
 
   implicit def stringToTerm(s: String): Term = Term.createTerm(s)
   implicit def seqToTerm[T](s: Seq[T]): Term = s.mkString("[", ",", "]")
+  implicit def termToTuple(t: Term): (scala.Int, scala.Int) = {
+    val s = t.toString.stripPrefix("[','(")
+    (s.charAt(0).asDigit, s.charAt(2).asDigit)
+  }
 
   def mkPrologEngine(theory: Theory): Term => LazyList[Term] = {
     goal =>
