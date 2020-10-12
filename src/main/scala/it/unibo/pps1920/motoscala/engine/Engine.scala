@@ -9,9 +9,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-
-import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, EndGameSystem, InputSystem, MovementSystem}
-
+import it.unibo.pps1920.motoscala.ecs.systems._
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
@@ -49,11 +47,13 @@ object GameEngine {
 
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
+      coordinator.registerComponentType(classOf[AIComponent])
       coordinator
         .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y)))
       coordinator.registerSystem(MovementSystem(coordinator))
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+      coordinator.registerSystem(AISystem(coordinator, eventQueue))
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
       level.entities.foreach {
@@ -73,7 +73,7 @@ object GameEngine {
           coordinator.addEntity(black)
           coordinator.addEntityComponent(black, ShapeComponent(shape))
           coordinator.addEntityComponent(black, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator.addEntityComponent(black, VelocityComponent( Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+          coordinator.addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
         }
         case RedPupa(position, shape, direction, velocity) => {
           logger info "add red pupa"
@@ -82,6 +82,7 @@ object GameEngine {
           coordinator.addEntityComponent(red, ShapeComponent(shape))
           coordinator.addEntityComponent(red, PositionComponent(util.Vector2(position.x, position.y)))
           coordinator.addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+          coordinator.addEntityComponent(red, AIComponent(0, myUuid))
         }
         case BluePupa(position, shape, direction, velocity) => {
           logger info "add blue pupa"
