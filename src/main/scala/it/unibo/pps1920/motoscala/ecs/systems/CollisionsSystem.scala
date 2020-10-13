@@ -36,9 +36,12 @@ object CollisionsSystem {
           val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
           val velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
           if (isTouching(e1, e2) && collisionCompE1.duration < (CollisionDuration -1) && collisionCompE2.duration < (CollisionDuration-1)) {
-            collide(e1, e2)
-            collisionStep(collisionCompE1, velocityCompE1)
-            collisionStep(collisionCompE2, velocityCompE2)
+            if(!(velocityCompE2.vel.isZero() && velocityCompE1.vel.isZero())){
+              collide(e1, e2)
+              collisionStep(collisionCompE1, velocityCompE1)
+              collisionStep(collisionCompE2, velocityCompE2)
+            }
+
           }
         })
       })
