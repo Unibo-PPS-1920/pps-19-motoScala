@@ -17,7 +17,7 @@ object CollisionsSystem {
                                         classOf[CollisionComponent])) {
 
 
-    private val CollisionDuration = (fps / 5)
+    private val CollisionDuration = (fps / 6)
     private val CollisionVelocity = Vector2(5, 5)
 
     override def update(): Unit = {
@@ -32,10 +32,9 @@ object CollisionsSystem {
         } else {
           velocityCompE1.vel = velocityCompE1.newVel
         }
-        if (e1.isInstanceOf[BumperCarEntity]) logger warn "\n velocità" + velocityCompE1.toString + "\n entità" + e1
-          .toString
         entitiesToCheck.foreach(e2 => {
-          if (isTouching(e1, e2)) {
+          val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
+          if (isTouching(e1, e2) && collisionCompE1.duration < CollisionDuration && collisionCompE2.duration < CollisionDuration) {
             collide(e1, e2)
           }
         })
