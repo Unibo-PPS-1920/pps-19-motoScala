@@ -72,6 +72,10 @@ object CollisionsSystem {
 
       if (collisionCompE1.mass != 0 && collisionCompE2.mass != 0) {
         logger debug (s"Before collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
+        if(velocityCompE1.vel.isZero()&& velocityCompE2.vel.isZero()) {
+          velocityCompE1.vel sumabs Vector2(0.1,0.1)
+          logger debug (s"Before zero collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
+        }
 
         // Compute unit normal and unit tangent vectors
         val normalVector = positionCompE2.pos sub positionCompE1.pos
@@ -136,6 +140,7 @@ object CollisionsSystem {
     private def extractComponent[T <: Component](e: Entity, componentClass: Predef.Class[_]): T = {
       coordinator.getEntityComponent(e, componentClass).get.asInstanceOf[T]
     }
+
     //Performs a collision step, decrementing the collision duration and handling termination
     private def collisionStep(collisionComp: CollisionComponent, velocityComp: VelocityComponent): Unit = {
       collisionComp.duration -= 1
