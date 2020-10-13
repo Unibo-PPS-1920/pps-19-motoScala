@@ -44,4 +44,7 @@ object Versions {
 
     //JACKSON
     const val jackson = "2.11.2"
+
+    //TUPROLOG
+    const val tuprolog = "3.3.0"
 }
