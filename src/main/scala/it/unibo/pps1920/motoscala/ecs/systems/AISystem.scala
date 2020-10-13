@@ -25,24 +25,27 @@ object AISystem {
 
     val engine: Term => LazyList[Term] = mkPrologEngine(new Theory(new URL(loadFromJar(position)).openStream()))
 
+
+    var frames = 0
     def update(): Unit = {
-      entitiesRef().foreach(e => {
-        val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
-          .pos
-        val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
-        val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
-          .asInstanceOf[PositionComponent].pos
-        val in1 = (pos.x, pos.y).toString()
-        val in2 = (tPos.x, tPos.y).toString()
-        //        logger info s"in1: $in1, in2: $in2"
-        val in = new Struct("move2", in1, in2, new Var())
-        val t = extractTerm(engine(in).head, 2)
-        //        logger info s"t: ${t._1}, ${t._2}"
-        val v = Vector2(t._1.doubleValue(), t._2.doubleValue())
-        //        logger info s"evett ${v}"
-        queue
-          .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
-      })
+      frames = frames + 1
+      if (frames % 10 == 0) {
+        entitiesRef().foreach(e => {
+          val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
+            .pos
+          val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
+          val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
+            .asInstanceOf[PositionComponent].pos
+          val s = engine(new Struct("move2", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
+            .toString(), new Var(), new Var())).head
+
+          val v = Vector2(x = extractTerm(s, 2), y = extractTerm(s, 3))
+          queue
+            .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
+        })
+      }
+
     }
+
   }
 }

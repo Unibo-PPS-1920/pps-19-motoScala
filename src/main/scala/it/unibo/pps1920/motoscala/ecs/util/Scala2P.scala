@@ -8,10 +8,8 @@ object Scala2P {
 
   implicit def stringToTerm(s: String): Term = Term.createTerm(s)
   implicit def seqToTerm[T](s: Seq[T]): Term = s.mkString("[", ",", "]")
-  implicit def termToTuple(t: Term): (scala.Double, scala.Double) = {
-    val s = t.toString.stripPrefix("','(").reverse.stripPrefix(")").reverse.split(",")
-    (s(0).toDouble, s(1).toDouble)
-  }
+
+  implicit def termToDouble(t: Term): (scala.Double) = t.toString.toDouble
 
   def mkPrologEngine(theory: Theory): Term => LazyList[Term] = {
     goal =>
