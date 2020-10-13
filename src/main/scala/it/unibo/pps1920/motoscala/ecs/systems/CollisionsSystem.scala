@@ -2,8 +2,9 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
-import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Component, Entity, System}
 object CollisionsSystem {
 
@@ -17,7 +18,7 @@ object CollisionsSystem {
 
 
     private val CollisionDuration = (fps / 2)
-    private val CollisionVelocity = Vector2(30, 30)
+    private val CollisionVelocity = Vector2(5, 5)
 
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
@@ -25,7 +26,14 @@ object CollisionsSystem {
         entitiesToCheck -= e1
         val collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
         val velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
-        if (collisionCompE1.isColliding) collisionStep(collisionCompE1, velocityCompE1)
+        if (collisionCompE1.isColliding) {
+          collisionStep(collisionCompE1, velocityCompE1)
+
+        } else {
+          velocityCompE1.vel = velocityCompE1.newVel
+        }
+        if (e1.isInstanceOf[BumperCarEntity]) logger warn "\n velocità" + velocityCompE1.toString + "\n entità" + e1
+          .toString
         entitiesToCheck.foreach(e2 => {
           if (isTouching(e1, e2)) {
             collide(e1, e2)
@@ -82,8 +90,8 @@ object CollisionsSystem {
         val newTanVec2 = unitTangentVector.dot(tangProj2)
 
         // Set new velocities in x and y coordinates
-        velocityCompE1.vel = newNorVec1 add newTanVec1
-        velocityCompE2.vel = newNorVec2 add newTanVec2
+        velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).value.mul(CollisionVelocity)
+        velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value.mul(CollisionVelocity)
 
       }
 
@@ -92,7 +100,8 @@ object CollisionsSystem {
     private def computeCollVel(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double =
       (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)
 
-    private def startCollision(collisionCompE1: CollisionComponent, collisionCompE2: CollisionComponent, velCompE1 : VelocityComponent, velCompE2 : VelocityComponent): Unit = {
+    private def startCollision(collisionCompE1: CollisionComponent, collisionCompE2: CollisionComponent,
+                               velCompE1: VelocityComponent, velCompE2: VelocityComponent): Unit = {
       collisionCompE1.isColliding = true
       collisionCompE2.isColliding = true
       collisionCompE1.duration = CollisionDuration
@@ -107,9 +116,12 @@ object CollisionsSystem {
       coordinator.getEntityComponent(e, componentClass).get.asInstanceOf[T]
     }
     //Performs a collision step, decrementing the collision duration and handling termination
-    private def collisionStep(collisionComp: CollisionComponent, velocityComp : VelocityComponent): Unit = {
+    private def collisionStep(collisionComp: CollisionComponent, velocityComp: VelocityComponent): Unit = {
       collisionComp.duration -= 1
-      if (collisionComp.duration <= 0) {collisionComp.isColliding = false; velocityComp.vel =  collisionComp.oldSpeed mul velocityComp.vel.dir()}
+      if (collisionComp.duration <= 0) {
+        collisionComp.isColliding = false;
+        velocityComp.vel = collisionComp.oldSpeed mul velocityComp.vel.dir()
+      }
     }
   }
 
