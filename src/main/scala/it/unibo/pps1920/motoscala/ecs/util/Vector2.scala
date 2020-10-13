@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.util
 
 import scala.math.{pow, sqrt}
-
+import org.slf4j.LoggerFactory
 /**
  * 2d vector
  */
@@ -9,7 +9,7 @@ trait Vector2 {
 
   var x: Double
   var y: Double
-
+  private val logger = LoggerFactory getLogger classOf[Vector2]
   def add(vector2: Vector2): Vector2 = Vector2(x + vector2.x, y + vector2.y)
 
   def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)
@@ -30,7 +30,11 @@ trait Vector2 {
 
   def abs(): Vector2 = Vector2(x.abs, y.abs)
 
-  def sumabs(v : Vector2) : Vector2 = Vector2(x.abs + v.x.abs,y.abs + v.y.abs) mul clip()
+  def sumabs(v : Vector2) : Vector2 = {
+    val vc = Vector2(x.abs + v.x.abs,y.abs + v.y.abs) mul clip()
+    logger debug (s"Before zero collision: velocity ent1: ${vc}")
+    vc
+  }
 
   def magnitude() : Double = sqrt(x*x + y*y)
 
