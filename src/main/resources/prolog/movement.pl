@@ -8,6 +8,15 @@ move((SX,SY),(TX,TY),[(DX,DY)|N]):-
   pos_dir((SX,SY),(NX,NY),(DX,DY)),
   move((NX,NY),(TX,TY),N).
 
+move2(T,T,T):- !.
+
+move2((SX,SY),(TX,TY),(DX,DY)):-
+  step(SX,TX,NX),
+  step(SY,TY,NY),
+  pos_dir((SX,SY),(NX,NY),(DX,DY)).
+  %move2((NX,NY),(TX,TY),N).
+
+
 step(P,P,P).
 
 step(P,T,A):-

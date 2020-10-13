@@ -2,12 +2,12 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.EventData
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{AIComponent, PositionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
+import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.CommandQueue
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
@@ -26,7 +26,7 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   val e = RedPupaEntity(eid)
   val pos: PositionComponent = PositionComponent(Vector2(0, 0))
   val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
-  val pos2: PositionComponent = PositionComponent(Vector2(10, 10))
+  val pos2: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
   val aic: AIComponent = AIComponent(skill = 0, target = pid)
   override def beforeAll(): Unit = {
@@ -45,11 +45,23 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
     coordinator.addEntityComponent(e, vel2)
     coordinator.addEntityComponent(e, aic)
   }
-  "an ai System" when {
-    "updating" in {
-      coordinator.updateSystems()
-      val ev = q.dequeueAll()
-      ev.head.cmd shouldBe EventData.CommandData(RedPupaEntity(eid), Direction(Vector2(-1, -1)))
+  "an aiSystem" should {
+    "make the controlled entity go north" when {
+      "updating" in {
+        coordinator.updateSystems()
+        val ev = q.dequeueAll()
+        ev.head.cmd.direction shouldBe North
+      }
     }
+    "make the controlled entity go south" when {
+      "updating" in {
+
+        pos.pos = Vector2(0, 20)
+        coordinator.updateSystems()
+        val ev = q.dequeueAll()
+        ev.head.cmd.direction shouldBe South
+      }
+    }
+
   }
 }

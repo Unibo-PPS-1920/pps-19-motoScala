@@ -23,20 +23,25 @@ object AISystem {
 
     val position = "/prolog/movement.pl"
 
-    val engine: Term => LazyList[Term] = mkPrologEngine(new Theory(new URL(loadFromJar(position))
-                                                                     .openStream()))
+    val engine: Term => LazyList[Term] = mkPrologEngine(new Theory(new URL(loadFromJar(position)).openStream()))
 
     def update(): Unit = {
       entitiesRef().foreach(e => {
-        val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos
+        val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
+          .pos
         val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
         val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
           .asInstanceOf[PositionComponent].pos
-
-        val in = new Struct("move", (pos.x, pos.y).toString(), (tPos.x, tPos.y).toString(), new Var())
+        val in1 = (pos.x, pos.y).toString()
+        val in2 = (tPos.x, tPos.y).toString()
+        //        logger info s"in1: $in1, in2: $in2"
+        val in = new Struct("move2", in1, in2, new Var())
         val t = extractTerm(engine(in).head, 2)
+        //        logger info s"t: ${t._1}, ${t._2}"
+        val v = Vector2(t._1.doubleValue(), t._2.doubleValue())
+        //        logger info s"evett ${v}"
         queue
-          .enqueue(CommandEvent(EventData.CommandData(e, Direction(Vector2(t._1.doubleValue(), t._2.doubleValue())))))
+          .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
       })
     }
   }
