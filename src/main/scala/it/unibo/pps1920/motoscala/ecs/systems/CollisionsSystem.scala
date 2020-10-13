@@ -4,7 +4,7 @@ import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
-import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Component, Entity, System}
 object CollisionsSystem {
 
@@ -17,7 +17,7 @@ object CollisionsSystem {
                                         classOf[CollisionComponent])) {
 
 
-    private val CollisionDuration = (fps / 2)
+    private val CollisionDuration = (fps / 5)
     private val CollisionVelocity = Vector2(5, 5)
 
     override def update(): Unit = {
@@ -80,8 +80,8 @@ object CollisionsSystem {
         val tangProj2 = unitTangentVector dot velocityCompE2.vel
 
         // Compute new normal velocities using one-dimensional elastic collision equations in the normal direction
-        val newNormProj1 = computeCollVel(normProj1, normProj2, collisionCompE1.mass, collisionCompE2.mass)
-        val newNormProj2 = computeCollVel(normProj2, normProj1, collisionCompE2.mass, collisionCompE1.mass)
+        val newNormProj1 = computeCollVel(normProj1, normProj2, collisionCompE1.mass + 1, collisionCompE2.mass)
+        val newNormProj2 = computeCollVel(normProj2, normProj1, collisionCompE2.mass, collisionCompE1.mass + 1)
 
         // Compute new normal and tangential velocity vectors
         val newNorVec1 = unitNormalVector.dot(newNormProj1)
@@ -90,8 +90,19 @@ object CollisionsSystem {
         val newTanVec2 = unitTangentVector.dot(tangProj2)
 
         // Set new velocities in x and y coordinates
-        velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).value.mul(CollisionVelocity)
-        velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value.mul(CollisionVelocity)
+        /*        if (Direction.velToDir(newNorVec1 add newTanVec1) == Direction.velToDir(newNorVec2 add newTanVec2)) {
+                  velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).opposite().value.mul(CollisionVelocity)
+                  velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value
+                    .mul(CollisionVelocity)
+                } else {
+                  velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).value.mul(CollisionVelocity)
+                  velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value
+                    .mul(CollisionVelocity)
+                }*/
+
+
+        velocityCompE1.vel = newNorVec1 add newTanVec1
+        velocityCompE2.vel = newNorVec2 add newTanVec2
 
       }
 
@@ -106,8 +117,8 @@ object CollisionsSystem {
       collisionCompE2.isColliding = true
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
-      collisionCompE1.oldSpeed = velCompE1.vel.abs()
-      collisionCompE2.oldSpeed = velCompE2.vel.abs()
+      /*      collisionCompE1.oldSpeed = velCompE1.vel.abs()
+            collisionCompE2.oldSpeed = velCompE2.vel.abs()*/
       /*velCompE1.vel = CollisionVelocity mul CollisionVelocity.dir()
       velCompE2.vel = CollisionVelocity mul CollisionVelocity.dir()*/
 
@@ -120,7 +131,9 @@ object CollisionsSystem {
       collisionComp.duration -= 1
       if (collisionComp.duration <= 0) {
         collisionComp.isColliding = false;
-        velocityComp.vel = collisionComp.oldSpeed mul velocityComp.vel.dir()
+        /*
+                velocityComp.vel = collisionComp.oldSpeed mul velocityComp.vel.dir()
+        */
       }
     }
   }
