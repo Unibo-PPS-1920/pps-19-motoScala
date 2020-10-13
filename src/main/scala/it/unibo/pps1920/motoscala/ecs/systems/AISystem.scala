@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.net.URL
 
-import alice.tuprolog.{Prolog, Struct, Theory, Var}
+import alice.tuprolog._
 import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData
@@ -30,16 +30,21 @@ object AISystem {
     def update(): Unit = {
       frames = frames + 1
       if (frames % 1 == 0) {
+        val positions = entitiesRef().map(e => {
+          val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos
+          (p.x, p.y)
+        }).toSeq
         entitiesRef().foreach(e => {
           val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
             .pos
           val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
           val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
             .asInstanceOf[PositionComponent].pos
-          val s = engine.solve(new Struct("move2", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
-            .toString(), new Var(), new Var()))
-          val t = s.getSolution
-          val v = Vector2(x = extractTerm(t, 2), y = extractTerm(t, 3))
+
+          val query = new Struct("move_avoiding", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
+            .toString(), positions, new Var(), new Var())
+          val s = engine.solve(query).getSolution
+          val v = Vector2(x = extractTerm(s, 3), y = extractTerm(s, 4))
           queue
             .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
         })

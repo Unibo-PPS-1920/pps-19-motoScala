@@ -22,13 +22,18 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   var q: CommandQueue = _
   val pid = UUID.randomUUID()
   val eid = UUID.randomUUID()
+  val eid2 = UUID.randomUUID()
   val p = BumperCarEntity(pid)
   val e = RedPupaEntity(eid)
+  val e2 = RedPupaEntity(eid2)
   val pos: PositionComponent = PositionComponent(Vector2(0, 0))
   val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
   val pos2: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
   val aic: AIComponent = AIComponent(skill = 0, target = pid)
+  val pos3: PositionComponent = PositionComponent(Vector2(0, 10))
+  val vel3: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
+  val aic2: AIComponent = AIComponent(skill = 0, target = pid)
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     q = CommandQueue()
@@ -44,6 +49,10 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
     coordinator.addEntityComponent(e, pos2)
     coordinator.addEntityComponent(e, vel2)
     coordinator.addEntityComponent(e, aic)
+    coordinator.addEntity(e2)
+    coordinator.addEntityComponent(e2, pos3)
+    coordinator.addEntityComponent(e2, vel3)
+    coordinator.addEntityComponent(e2, aic2)
   }
   "an aiSystem" should {
     "make the controlled entity go north" when {
