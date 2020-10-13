@@ -48,6 +48,7 @@ abstract class AbstractScreenControllerGame(
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)
     viewFacade.getStage.setFullScreen(false)
+    controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
   }
   private def assertNodeInjected(): Unit = {
@@ -104,7 +105,6 @@ abstract class AbstractScreenControllerGame(
 
   override def whenDisplayed(): Unit = {
     root.requestFocus()
-    controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
   }
 

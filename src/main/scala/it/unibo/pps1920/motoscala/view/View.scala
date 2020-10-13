@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.view
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PauseMusic, PlayMusicEvent}
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusicEvent
 import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
@@ -52,7 +52,6 @@ object View {
         changeScreen(ScreenEvent.GotoHome)
         this.stage = Some(stage)
         logger info s"View started on ${Thread.currentThread()}"
-        controller.redirectSoundEvent(PauseMusic())
         controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
       })
     }
