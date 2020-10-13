@@ -34,8 +34,11 @@ object CollisionsSystem {
         }
         entitiesToCheck.foreach(e2 => {
           val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
-          if (isTouching(e1, e2) && collisionCompE1.duration < CollisionDuration && collisionCompE2.duration < CollisionDuration) {
+          val velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
+          if (isTouching(e1, e2) && collisionCompE1.duration < (CollisionDuration -1) && collisionCompE2.duration < (CollisionDuration-1)) {
             collide(e1, e2)
+            collisionStep(collisionCompE1, velocityCompE1)
+            collisionStep(collisionCompE2, velocityCompE2)
           }
         })
       })
