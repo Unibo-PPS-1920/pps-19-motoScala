@@ -3,8 +3,8 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
-import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Component, Entity, System}
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 object CollisionsSystem {
 
   def apply(coordinator: Coordinator, fps: Int): System = new CollisionsSystemImpl(coordinator, fps)
@@ -49,7 +49,7 @@ object CollisionsSystem {
     }
 
     private def collide(e1: Entity, e2: Entity): Unit = {
-      import it.unibo.pps1920.motoscala.ecs.util.Vector2
+
       val collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
       val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
       val velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
@@ -61,6 +61,8 @@ object CollisionsSystem {
       /** **_____________________________________________________***** */
 
       if (collisionCompE1.mass != 0 && collisionCompE2.mass != 0) {
+        logger debug(s"Before collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
+
         // Compute unit normal and unit tangent vectors
         val normalVector = positionCompE2.pos sub positionCompE1.pos
         val unitNormalVector = normalVector.unitVector()
@@ -84,6 +86,7 @@ object CollisionsSystem {
         // Set new velocities in x and y coordinates
         velocityCompE1.vel = newNorVec1 add newTanVec1
         velocityCompE2.vel = newNorVec2 add newTanVec2
+        logger debug(s"Computed collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
 
       }
 
