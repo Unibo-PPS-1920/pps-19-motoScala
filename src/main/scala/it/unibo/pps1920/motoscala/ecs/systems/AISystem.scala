@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.net.URL
 
-import alice.tuprolog.{Struct, Term, Theory, Var}
+import alice.tuprolog.{Prolog, Struct, Theory, Var}
 import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData
@@ -17,29 +17,29 @@ import it.unibo.pps1920.motoscala.engine.CommandQueue
 import scala.language.postfixOps
 
 object AISystem {
-  def apply(coordinator: Coordinator, queue: CommandQueue): System = new InputSystemImpl(coordinator, queue)
-  private class InputSystemImpl(coordinator: Coordinator, queue: CommandQueue)
+  def apply(coordinator: Coordinator, queue: CommandQueue): System = new AISystemImpl(coordinator, queue)
+  private class AISystemImpl(coordinator: Coordinator, queue: CommandQueue)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[AIComponent])) {
 
     val position = "/prolog/movement.pl"
 
-    val engine: Term => LazyList[Term] = mkPrologEngine(new Theory(new URL(loadFromJar(position)).openStream()))
-
+    val engine = new Prolog()
+    engine.setTheory(new Theory(new URL(loadFromJar(position)).openStream()))
 
     var frames = 0
     def update(): Unit = {
       frames = frames + 1
-      if (frames % 10 == 0) {
+      if (frames % 1 == 0) {
         entitiesRef().foreach(e => {
           val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
             .pos
           val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
           val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
             .asInstanceOf[PositionComponent].pos
-          val s = engine(new Struct("move2", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
-            .toString(), new Var(), new Var())).head
-
-          val v = Vector2(x = extractTerm(s, 2), y = extractTerm(s, 3))
+          val s = engine.solve(new Struct("move2", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
+            .toString(), new Var(), new Var()))
+          val t = s.getSolution
+          val v = Vector2(x = extractTerm(t, 2), y = extractTerm(t, 3))
           queue
             .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
         })
