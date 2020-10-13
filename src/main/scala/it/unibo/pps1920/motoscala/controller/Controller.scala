@@ -51,10 +51,10 @@ object Controller {
     override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+
                               List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
                                    Level
-                                     .RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)))))
-
+                                     .RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(20, 20)))))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
