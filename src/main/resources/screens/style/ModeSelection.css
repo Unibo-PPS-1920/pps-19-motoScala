@@ -45,23 +45,20 @@
     -fx-stroke: #ffffff;
 }
 
-#ipTextField {
+
+#TextField {
 
     -fx-border-color: #22374b;
     -fx-border-width: 5px;
     -fx-text-fill: #97b3ce;
     -fx-font-size: 30px;
-
-}
-
-#ipTextField {
-
     -fx-background-insets: 1 0 1 1, 1 0 1 1, 3 2 3 3;
     -fx-background-radius: 2 0 0 2, 1 0 0 1, 0;
+
 }
 
 
-#ipTextField:focused {
+#TextField:focused {
     -fx-border-color: #2e5276;
     -fx-border-width: 7px;
 }

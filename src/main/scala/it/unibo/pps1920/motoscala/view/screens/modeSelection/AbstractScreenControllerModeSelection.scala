@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.view.screens.modeSelection
 import java.util.function.UnaryOperator
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.model.NetworkAddr
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
@@ -18,6 +19,9 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
   @FXML protected var buttonHost: Button = _
   @FXML protected var buttonJoin: Button = _
   @FXML protected var ipTextField: TextField = _
+  @FXML protected var portTextField: TextField = _
+  private var ipReady: Boolean = false
+  private var portReady: Boolean = false
 
 
   @FXML override def initialize(): Unit = {
@@ -33,12 +37,20 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     assert(buttonHost != null, "fx:id=\"buttonHost\" was not injected: check your FXML file 'ModeSelection.fxml'.")
     assert(buttonJoin != null, "fx:id=\"buttonJoin\" was not injected: check your FXML file 'ModeSelection.fxml'.")
     assert(ipTextField != null, "fx:id=\"ipTextField\" was not injected: check your FXML file 'ModeSelection.fxml'.")
+    assert(portTextField != null, "fx:id=\"portTextField\" was not injected: check your FXML file 'ModeSelection.fxml'.")
+
   }
 
   private def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
-    buttonHost.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
-    buttonJoin.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
+    buttonHost.setOnAction(_ => {
+      viewFacade.changeScreen(ScreenEvent.GotoLobby)
+      this.controller.becomeHost()
+    })
+    buttonJoin.setOnAction(_ => {
+      this.controller.tryJoinLobby()
+      viewFacade.changeScreen(ScreenEvent.GotoLobby)
+    })
   }
 
   private def initTextField(): Unit = {
@@ -57,12 +69,32 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
 
     this.ipTextField.textProperty().addListener((observable, oldValue, newValue) => {
-      if (newValue.count(c => c == '.') >= 3 && newValue.length >= 7) {
-        this.buttonJoin.setDisable(false)
+      if (NetworkAddr.validateIPV4Address(newValue)) {
+        this.ipReady = true
       } else {
+        this.ipReady = false
         this.buttonJoin.setDisable(true)
       }
     })
+
+    this.portTextField.textProperty().addListener((observable, oldValue, newValue) => {
+      if (NetworkAddr.validatePort(newValue.toInt)) {
+        this.ipReady = true
+
+      } else {
+        this.ipReady = false
+      }
+    })
   }
+
+  private def checkIpAndPort(): Unit = {
+    if (this.ipReady && this.portReady) {
+      this.buttonJoin.setDisable(true)
+
+    } else {
+      this.buttonJoin.setDisable(false)
+    }
+  }
+
 }
 

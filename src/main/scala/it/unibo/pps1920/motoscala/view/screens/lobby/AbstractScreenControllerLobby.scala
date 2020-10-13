@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.model.ReadyTable.ReadyPlayers
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
-import javafx.scene.control.{Button, ListView, SplitMenuButton}
+import javafx.scene.control.{Button, Label, ListView, SplitMenuButton}
 import javafx.scene.layout.BorderPane
 
 abstract class AbstractScreenControllerLobby(protected override val viewFacade: ViewFacade,
@@ -20,6 +20,8 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   @FXML protected var dropMenuDifficult: SplitMenuButton = _
   @FXML protected var dropMenuLevel: SplitMenuButton = _
   @FXML protected var listPlayer: ListView[String] = _
+  @FXML protected var ipLabel: Label = _
+  @FXML protected var portLabel: Label = _
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
     initBackButton()
@@ -53,6 +55,8 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(dropMenuDifficult != null, "fx:id=\"dropMenuDifficult\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(dropMenuLevel != null, "fx:id=\"dropMenuLevel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(listPlayer != null, "fx:id=\"listPlayer\" was not injected: check your FXML file 'Lobby.fxml'.")
+    assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
+    assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
 
   }
 
@@ -60,6 +64,12 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     /*
         this.listPlayer.getItems.set()
     */
+  }
+
+
+  protected def setIpAndPort(ip: String, port: String): Unit = {
+    this.ipLabel.setText(s"${this.ipLabel.getText}${ip}")
+    this.portLabel.setText(s"${this.portLabel.getText} ${port}")
   }
 
 

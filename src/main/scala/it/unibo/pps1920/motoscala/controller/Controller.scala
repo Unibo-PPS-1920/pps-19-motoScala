@@ -10,14 +10,14 @@ import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
-import it.unibo.pps1920.motoscala.model.Level
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
+import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.Message._
 import it.unibo.pps1920.motoscala.view.ObserverUI
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, ScoreDataEvent, SettingsDataEvent}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, ScoreDataEvent, SettingsDataEvent, SetupLobby}
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import org.slf4j.LoggerFactory
 
@@ -97,19 +97,7 @@ object Controller {
     }
     override def setSelfReady(): Unit = ???
     override def kickSomeone(): Unit = ???
-    def clientMode(): Unit = {
 
-      clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
-      system.actorSelection("akka://MotoSystem@127.0.0.1:54071/user/Server*")
-        .tell(PlainMessage("L", 10), clientActor.get)
-
-    }
-    def serverMode(gameEngine: Engine) = {
-      serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
-      serverActor.get.tell("", serverActor.get)
-      val port = system.asInstanceOf[ExtendedActorSystem].provider.getDefaultAddress.port.get
-      println("POOOOOOOOOOOOOOOOOOOOOOOOOOOOOOORT " + port)
-    }
     /*Used by Server Actor*/
     def setReadyClient(ref: ActorRef): Unit = matchSetupMp.get.setReady(ref)
     override def requestJoin(ref: ActorRef): Boolean = matchSetupMp.get.tryAddPlayer(ref)
@@ -119,6 +107,19 @@ object Controller {
     override def settingsUpdate(setup: LobbyData): Unit = observers.foreach(o => o.notify(LobbyDataEvent(setup)))
     override def getLobbyData: DataType.LobbyData = LobbyData(matchSetupMp.get.difficulty, matchSetupMp.get
       .mode, matchSetupMp.get.readyPlayers)
+
+    override def tryJoinLobby(): Unit = {
+      clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
+      system.actorSelection("akka://MotoSystem@127.0.0.1:54071/user/Server*")
+        .tell(PlainMessage("L", 10), clientActor.get)
+    }
+    override def becomeHost(): Unit = {
+      serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
+      observers
+        .foreach(observer => observer
+          .notify(SetupLobby(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
+            .getDefaultAddress.port.get.toString)))
+    }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
 }

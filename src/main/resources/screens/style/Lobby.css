@@ -51,13 +51,13 @@
 
 #DropMenu .arrow-button {
     -fx-border-width: 0 0 0 5;
-    -fx-border-color: #d01010;
+    -fx-border-color: #d43d0a;
 }
 
 #DropMenu {
     -fx-border-radius: 5px;
     -fx-text-fill: #4f5ba7;
-    -fx-border-color: #d01010;
+    -fx-border-color: #d43d0a;
     -fx-border-width: 2;
 }
 
@@ -70,7 +70,7 @@
 }
 
 #DropMenu .arrow-button .arrow {
-    -fx-border-color: #d01010;
+    -fx-border-color: #d43d0a;
     -fx-border-width: 3px;
 }
 
@@ -102,4 +102,11 @@
     -fx-text-fill: white;
 }
 
+#IP {
+    -fx-text-fill: #4f5ba7;
+}
+
+#Port {
+    -fx-text-fill: #4f5ba7;
+}
 
