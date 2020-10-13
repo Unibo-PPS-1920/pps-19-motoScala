@@ -68,19 +68,19 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     }
     ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
 
-    this.ipTextField.textProperty().addListener((observable, oldValue, newValue) => {
+    this.ipTextField.textProperty().addListener((_, _, newValue) => {
       if (NetworkAddr.validateIPV4Address(newValue)) {
         this.ipReady = true
+        this.checkIpAndPort()
       } else {
         this.ipReady = false
-        this.buttonJoin.setDisable(true)
       }
     })
 
-    this.portTextField.textProperty().addListener((observable, oldValue, newValue) => {
+    this.portTextField.textProperty().addListener((_, _, newValue) => {
       if (NetworkAddr.validatePort(newValue.toInt)) {
         this.ipReady = true
-
+        this.checkIpAndPort()
       } else {
         this.ipReady = false
       }
@@ -89,10 +89,10 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
   private def checkIpAndPort(): Unit = {
     if (this.ipReady && this.portReady) {
-      this.buttonJoin.setDisable(true)
+      this.buttonJoin.setDisable(false)
 
     } else {
-      this.buttonJoin.setDisable(false)
+      this.buttonJoin.setDisable(true)
     }
   }
 

@@ -14,5 +14,6 @@ final class ScreenControllerLobby(protected override val viewFacade: ViewFacade,
   override def notify(ev: ViewEvent): Unit = ev match {
     case ViewEvent.UpdateReadyPlayer(playersStatus) => this.updatePlayers(playersStatus)
     case ViewEvent.SetupLobby(ip, port) => this.setIpAndPort(ip, port)
+    case _ =>
   }
 }
