@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.view
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusicEvent
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PauseMusic, PlayMusicEvent}
 import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
@@ -52,16 +52,18 @@ object View {
         changeScreen(ScreenEvent.GotoHome)
         this.stage = Some(stage)
         logger info s"View started on ${Thread.currentThread()}"
-        controller.redirectSoundEvent(PlayMusicEvent(Music.Menu))
+        controller.redirectSoundEvent(PauseMusic())
+        controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
       })
-
-
     }
+
     override def changeScreen(event: ScreenEvent): Unit = {
       screenLoader.applyScreen(stateMachine.consume(event), root)
       screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
     }
+
     override def getStage: Stage = stage.get
+
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)
@@ -70,6 +72,7 @@ object View {
       case event: ViewEvent.SettingsEvent => logger info event.getClass.toString
       case event: ViewEvent.StatsEvent => logger info event.getClass.toString
     }
+
     private def loadScreens(): Unit = {
       loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))
       loadFXMLNode(FXMLScreens.SETTINGS, new ScreenControllerSettings(this, controller))
@@ -78,6 +81,7 @@ object View {
       loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
     }
+
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
       .loadFXMLNode(screen, controller)
   }

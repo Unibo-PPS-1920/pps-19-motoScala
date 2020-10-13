@@ -2,6 +2,8 @@ package it.unibo.pps1920.motoscala.view.screens.game
 
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, StopMusic}
+import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
@@ -46,6 +48,7 @@ abstract class AbstractScreenControllerGame(
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)
     viewFacade.getStage.setFullScreen(false)
+    controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
@@ -99,7 +102,12 @@ abstract class AbstractScreenControllerGame(
     Drawables.PlayerDrawable.draw(player)
   }
 
-  override def whenDisplayed(): Unit = root.requestFocus()
+  override def whenDisplayed(): Unit = {
+    root.requestFocus()
+    controller.redirectSoundEvent(StopMusic())
+    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
+  }
+
   def sendCommandEvent(event: CommandEvent): Unit
 
   private object Drawables {
