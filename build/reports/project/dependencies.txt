@@ -204,15 +204,15 @@ compileClasspath - Compile classpath for source set 'main'.
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0
 |    +--- org.apache.commons:commons-lang3:3.0
 |    \--- com.google.code.gson:gson:2.6.2
-+--- org.openjfx:javafx-media:15
++--- org.openjfx:javafx-controls:15
 |    \--- org.openjfx:javafx-graphics:15
 |         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15 (*)
 +--- org.openjfx:javafx-fxml:15
-|    \--- org.openjfx:javafx-controls:15
-|         \--- org.openjfx:javafx-graphics:15 (*)
+|    \--- org.openjfx:javafx-controls:15 (*)
 +--- org.openjfx:javafx-base:15
-+--- org.openjfx:javafx-graphics:15 (*)
-\--- org.openjfx:javafx-controls:15 (*)
+\--- org.openjfx:javafx-graphics:15 (*)
 
 compileOnly - Compile only dependencies for source set 'main'. (n)
 No dependencies
@@ -258,11 +258,11 @@ implementation - Implementation only dependencies for source set 'main'. (n)
 +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 (n)
 +--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 (n)
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0 (n)
++--- org.openjfx:javafx-controls:15 (n)
 +--- org.openjfx:javafx-media:15 (n)
 +--- org.openjfx:javafx-fxml:15 (n)
 +--- org.openjfx:javafx-base:15 (n)
-+--- org.openjfx:javafx-graphics:15 (n)
-\--- org.openjfx:javafx-controls:15 (n)
+\--- org.openjfx:javafx-graphics:15 (n)
 
 incrementalScalaAnalysisElements - Incremental compilation analysis files (n)
 No dependencies
@@ -305,11 +305,11 @@ incrementalScalaAnalysisFormain - Incremental compilation analysis files for mai
 +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
 +--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 FAILED
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0 FAILED
++--- org.openjfx:javafx-controls:15 FAILED
 +--- org.openjfx:javafx-media:15 FAILED
 +--- org.openjfx:javafx-fxml:15 FAILED
 +--- org.openjfx:javafx-base:15 FAILED
-+--- org.openjfx:javafx-graphics:15 FAILED
-\--- org.openjfx:javafx-controls:15 FAILED
+\--- org.openjfx:javafx-graphics:15 FAILED
 
 incrementalScalaAnalysisForscoverage - Incremental compilation analysis files for scoverage
 No dependencies
@@ -352,11 +352,11 @@ incrementalScalaAnalysisFortest - Incremental compilation analysis files for tes
 +--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
 +--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 FAILED
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0 FAILED
++--- org.openjfx:javafx-controls:15 FAILED
 +--- org.openjfx:javafx-media:15 FAILED
 +--- org.openjfx:javafx-fxml:15 FAILED
 +--- org.openjfx:javafx-base:15 FAILED
-+--- org.openjfx:javafx-graphics:15 FAILED
-\--- org.openjfx:javafx-controls:15 FAILED
+\--- org.openjfx:javafx-graphics:15 FAILED
 
 jacocoAgent - The Jacoco agent to use to get coverage data.
 \--- org.jacoco:org.jacoco.agent:0.8.6
@@ -568,15 +568,15 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0
 |    +--- org.apache.commons:commons-lang3:3.0
 |    \--- com.google.code.gson:gson:2.6.2
-+--- org.openjfx:javafx-media:15
++--- org.openjfx:javafx-controls:15
 |    \--- org.openjfx:javafx-graphics:15
 |         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15 (*)
 +--- org.openjfx:javafx-fxml:15
-|    \--- org.openjfx:javafx-controls:15
-|         \--- org.openjfx:javafx-graphics:15 (*)
+|    \--- org.openjfx:javafx-controls:15 (*)
 +--- org.openjfx:javafx-base:15
-+--- org.openjfx:javafx-graphics:15 (*)
-\--- org.openjfx:javafx-controls:15 (*)
+\--- org.openjfx:javafx-graphics:15 (*)
 
 runtimeElements - Elements of runtime for main. (n)
 No dependencies
@@ -814,15 +814,15 @@ testCompileClasspath - Compile classpath for source set 'test'.
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0
 |    +--- org.apache.commons:commons-lang3:3.0
 |    \--- com.google.code.gson:gson:2.6.2
-+--- org.openjfx:javafx-media:15
++--- org.openjfx:javafx-controls:15
 |    \--- org.openjfx:javafx-graphics:15
 |         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15 (*)
 +--- org.openjfx:javafx-fxml:15
-|    \--- org.openjfx:javafx-controls:15
-|         \--- org.openjfx:javafx-graphics:15 (*)
+|    \--- org.openjfx:javafx-controls:15 (*)
 +--- org.openjfx:javafx-base:15
-+--- org.openjfx:javafx-graphics:15 (*)
-\--- org.openjfx:javafx-controls:15 (*)
+\--- org.openjfx:javafx-graphics:15 (*)
 
 testCompileOnly - Compile only dependencies for source set 'test'. (n)
 No dependencies
@@ -1019,15 +1019,15 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 +--- it.unibo.alice.tuprolog:tuprolog:3.3.0
 |    +--- org.apache.commons:commons-lang3:3.0
 |    \--- com.google.code.gson:gson:2.6.2
-+--- org.openjfx:javafx-media:15
++--- org.openjfx:javafx-controls:15
 |    \--- org.openjfx:javafx-graphics:15
 |         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15 (*)
 +--- org.openjfx:javafx-fxml:15
-|    \--- org.openjfx:javafx-controls:15
-|         \--- org.openjfx:javafx-graphics:15 (*)
+|    \--- org.openjfx:javafx-controls:15 (*)
 +--- org.openjfx:javafx-base:15
-+--- org.openjfx:javafx-graphics:15 (*)
-\--- org.openjfx:javafx-controls:15 (*)
+\--- org.openjfx:javafx-graphics:15 (*)
 
 testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
 No dependencies

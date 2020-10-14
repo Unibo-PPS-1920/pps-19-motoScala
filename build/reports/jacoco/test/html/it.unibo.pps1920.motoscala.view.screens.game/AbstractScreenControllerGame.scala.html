@@ -43,7 +43,7 @@ import org.kordamp.ikonli.material.Material
 <span class="nc" id="L43">    context = canvas.getGraphicsContext2D</span>
   }
   private def dismiss(): Unit = {
-<span class="nc" id="L46">    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))</span>
+<span class="nc" id="L46">    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
 <span class="nc" id="L47">    gameEventHandler.foreach(_.dismiss())</span>
 <span class="nc" id="L48">    controller.stop()</span>
 <span class="nc" id="L49">    viewFacade.changeScreen(ScreenEvent.GoBack)</span>

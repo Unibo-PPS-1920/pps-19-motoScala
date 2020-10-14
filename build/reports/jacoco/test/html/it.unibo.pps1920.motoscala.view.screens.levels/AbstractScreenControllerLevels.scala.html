@@ -28,15 +28,15 @@ import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
   }
 
   private def selectLevel(level: Int): Unit = {
-<span class="nc" id="L31">    controller.setupGame(level)</span>
-<span class="nc" id="L32">    viewFacade.changeScreen(ScreenEvent.GoNext)</span>
+<span class="nc" id="L31">    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
+<span class="nc" id="L32">    controller.setupGame(level)</span>
+<span class="nc" id="L33">    viewFacade.changeScreen(ScreenEvent.GoNext)</span>
   }
 
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
-<span class="nc" id="L36">    grid.getChildren.clear()</span>
-<span class="nc" id="L37">    levels.map(_.index).sorted.foreach(i =&gt; {</span>
-<span class="nc" id="L38">      val button = ViewUtils.buttonFactory(bText = s&quot;Level $i&quot;, _ =&gt; selectLevel(i), _ =&gt; controller</span>
-<span class="nc" id="L39">        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))</span>
+<span class="nc" id="L37">    grid.getChildren.clear()</span>
+<span class="nc" id="L38">    levels.map(_.index).sorted.foreach(i =&gt; {</span>
+<span class="nc" id="L39">      val button = ViewUtils.buttonFactory(bText = s&quot;Level $i&quot;, _ =&gt; selectLevel(i))</span>
 <span class="nc" id="L40">      grid.addRow(i, button)</span>
     })
 <span class="nc" id="L42">    grid.addRow(levels.size, buttonBack)</span>

@@ -16,10 +16,9 @@ import org.slf4j.{Logger, LoggerFactory}
   @FXML def initialize(): Unit
   def initBackButton(): Unit = {
 <span class="nc" id="L18">    buttonBack.setOnAction(_ =&gt; {</span>
-<span class="nc" id="L19">      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))</span>
+<span class="nc" id="L19">      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
 <span class="nc" id="L20">      viewFacade.changeScreen(ScreenEvent.GoBack)</span>
     })
-<span class="nc" id="L22">    buttonBack.setOnMouseEntered(_ =&gt; controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

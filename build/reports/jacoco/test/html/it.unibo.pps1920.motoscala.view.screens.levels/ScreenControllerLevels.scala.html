@@ -11,11 +11,13 @@ import javafx.application.Platform
 <span class="nc" id="L11">                                   protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {</span>
 <span class="nc" id="L12">  logger info &quot;Level Screen&quot;</span>
 
-<span class="nc" id="L14">  override def whenDisplayed(): Unit = controller.loadAllLevels()</span>
+  override def whenDisplayed(): Unit = {
+<span class="nc" id="L15">    controller.loadAllLevels()</span>
+  }
 
-<span class="nc" id="L16">  override def notify(ev: ViewEvent): Unit = ev match {</span>
-<span class="nc bnc" id="L17" title="All 2 branches missed.">    case LevelDataEvent(levels) =&gt; Platform.runLater(() =&gt; populateLevels(levels))</span>
-<span class="nc" id="L18">    case _ =&gt;</span>
+<span class="nc" id="L18">  override def notify(ev: ViewEvent): Unit = ev match {</span>
+<span class="nc bnc" id="L19" title="All 2 branches missed.">    case LevelDataEvent(levels) =&gt; Platform.runLater(() =&gt; populateLevels(levels))</span>
+<span class="nc" id="L20">    case _ =&gt;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
