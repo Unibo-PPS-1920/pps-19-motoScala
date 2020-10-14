@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Vector2.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.util</a> &gt; <span class="el_source">Vector2.scala</span></div><h1>Vector2.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.util
+
+import scala.math.{pow, sqrt}
+
+/**
+ * 2d vector
+ */
+<span class="fc" id="L8">trait Vector2 {</span>
+
+  var x: Double
+  var y: Double
+
+<span class="fc" id="L13">  def add(vector2: Vector2): Vector2 = Vector2(x + vector2.x, y + vector2.y)</span>
+
+<span class="fc" id="L15">  def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)</span>
+
+<span class="fc" id="L17">  def dist(vector2: Vector2): Double = sqrt(pow(x - vector2.x, 2) + pow(y - vector2.y, 2))</span>
+<span class="nc" id="L18">  def sub(vector2: Vector2): Vector2 = Vector2(x - vector2.x, y - vector2.y)</span>
+
+<span class="fc bfc" id="L20" title="All 4 branches covered.">  def unit(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)</span>
+
+<span class="fc" id="L22">  def mul(scalar: Double): Vector2 = Vector2(x * scalar, y * scalar)</span>
+
+<span class="fc" id="L24">  def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)</span>
+
+<span class="nc" id="L26">  def dot(v1: Vector2, v2: Vector2): Double = v1.x * v2.x + v1.y * v2.y</span>
+}
+
+<span class="fc" id="L29">object Vector2 {</span>
+
+<span class="nc" id="L31">  implicit def tuple2ToVector2(tuple2: (Double, Double)): Vector2 = Vector2(tuple2._1, tuple2._2)</span>
+
+<span class="fc" id="L33">  def apply(x: Double, y: Double): Vector2 = Vector2Impl(x, y)</span>
+
+<span class="pc bpc" id="L35" title="11 of 22 branches missed.">  private case class Vector2Impl(override var x: Double, override var y: Double) extends Vector2 {</span>
+  }
+
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

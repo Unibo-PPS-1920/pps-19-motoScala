@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComponentManager.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.managers</a> &gt; <span class="el_source">ComponentManager.scala</span></div><h1>ComponentManager.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.managers
+
+import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
+import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
+
+private[managers] trait ComponentManager {
+  def registerComponentType(compType: ComponentType): Unit
+  def checkRegisteredComponent(compType: ComponentType): Boolean
+  def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
+  def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
+  def getEntitySignature(entity: Entity): ECSSignature
+  def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
+  def entityDestroyed(entity: Entity): Unit
+}
+
+<span class="fc" id="L16">private[managers] object ComponentManager {</span>
+<span class="fc" id="L17">  private class ComponentManagerImpl extends ComponentManager {</span>
+<span class="fc" id="L18">    private var registered: Set[ComponentType] = Set()</span>
+<span class="fc" id="L19">    private var entityComponent: Map[Entity, Map[ComponentType, Component]] = Map()</span>
+
+    import ImplicitConversions._
+<span class="fc" id="L22">    override def registerComponentType(compType: ComponentType): Unit = registered = registered + compType</span>
+<span class="fc" id="L23">    override def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType</span>
+    override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
+<span class="fc" id="L25">      require(checkRegisteredComponent(component), &quot;Cannot use an unregistered component&quot;)</span>
+<span class="pc" id="L26">      entityComponent = entityComponent.updatedWith(entity)({</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        case None =&gt; Option(Map((component, component)))</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        case Some(map) =&gt; Option(map + ((component, component)))</span>
+      })
+<span class="fc" id="L30">      getEntitySignature(entity)</span>
+    }
+    override def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature = {
+<span class="pc" id="L33">      require(checkRegisteredComponent(component), &quot;Cannot use an unregistered component&quot;)</span>
+<span class="pc" id="L34">      entityComponent = entityComponent.updatedWith(entity)({</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        case None =&gt; Option(Map())</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        case Some(map) =&gt; Option(map - component)</span>
+      })
+<span class="fc" id="L38">      getEntitySignature(entity)</span>
+    }
+    override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
+<span class="fc" id="L41">      entityComponent.get(entity).flatMap(_.get(compType))</span>
+<span class="fc" id="L42">    override def entityDestroyed(entity: Entity): Unit = entityComponent -= entity</span>
+
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">    object ImplicitConversions {</span>
+<span class="fc" id="L45">      implicit def componentToComponentType(component: Component): ComponentType = component.getClass</span>
+    }
+<span class="fc" id="L47">    override def getEntitySignature(entity: Entity): ECSSignature = ECSSignature(entityComponent(entity).keySet)</span>
+  }
+<span class="fc" id="L49">  def apply(): ComponentManager = new ComponentManagerImpl()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

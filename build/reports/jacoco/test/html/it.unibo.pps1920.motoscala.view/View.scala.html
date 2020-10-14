@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>View.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.view</a> &gt; <span class="el_source">View.scala</span></div><h1>View.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.view
+
+import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusicEvent
+import it.unibo.pps1920.motoscala.controller.managers.audio.Music
+import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.screens._
+import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
+import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
+import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
+import it.unibo.pps1920.motoscala.view.screens.lobby.ScreenControllerLobby
+import it.unibo.pps1920.motoscala.view.screens.settings.ScreenControllerSettings
+import it.unibo.pps1920.motoscala.view.screens.stats.ScreenControllerStats
+import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
+import javafx.application.Platform
+import javafx.scene.Scene
+import javafx.stage.Stage
+import org.slf4j.LoggerFactory
+import scalafx.scene.layout.StackPane
+
+private[view] trait ViewFacade {
+  def getStage: Stage
+  def changeScreen(screen: ScreenEvent): Unit
+  def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
+}
+
+trait View extends ObserverUI {
+  def start(): Unit
+}
+
+<span class="nc" id="L31">object View {</span>
+  def apply(controller: ObservableUI): View = {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    require(controller != null)</span>
+<span class="nc" id="L34">    Platform.startup(() =&gt; {})</span>
+<span class="nc" id="L35">    new ViewImpl(controller)</span>
+  }
+
+<span class="nc" id="L38">  private class ViewImpl(controller: ObservableUI) extends View with ViewFacade {</span>
+<span class="nc" id="L39">    private val logger = LoggerFactory getLogger classOf[View]</span>
+<span class="nc" id="L40">    private val stateMachine = ViewStateMachine.buildStateMachine()</span>
+<span class="nc" id="L41">    private val screenLoader = ScreenLoader()</span>
+<span class="nc" id="L42">    private val root = new StackPane()</span>
+<span class="nc" id="L43">    private val scene = new Scene(root)</span>
+<span class="nc" id="L44">    private var stage: Option[Stage] = None</span>
+
+<span class="nc" id="L46">    controller attachUI this //Controller will observe me</span>
+<span class="nc" id="L47">    loadScreens() //Loading all screens in cache</span>
+
+    override def start(): Unit = {
+<span class="nc" id="L50">      Platform.runLater(() =&gt; {</span>
+<span class="nc" id="L51">        val stage = ViewUtils.createStage(scene)</span>
+<span class="nc" id="L52">        changeScreen(ScreenEvent.GotoHome)</span>
+<span class="nc" id="L53">        this.stage = Some(stage)</span>
+<span class="nc" id="L54">        logger info s&quot;View started on ${Thread.currentThread()}&quot;</span>
+<span class="nc" id="L55">        controller.redirectSoundEvent(PlayMusicEvent(Music.Home))</span>
+      })
+    }
+
+    override def changeScreen(event: ScreenEvent): Unit = {
+<span class="nc" id="L60">      screenLoader.applyScreen(stateMachine.consume(event), root)</span>
+<span class="nc" id="L61">      screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()</span>
+    }
+
+<span class="nc" id="L64">    override def getStage: Stage = stage.get</span>
+
+<span class="nc" id="L66">    override def notify(ev: ViewEvent): Unit = ev match {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">      case event: ViewEvent.HomeEvent =&gt; screenLoader.getScreenController(FXMLScreens.HOME).notify(event)</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">      case event: ViewEvent.GameEvent =&gt; screenLoader.getScreenController(FXMLScreens.GAME).notify(event)</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">      case event: ViewEvent.LevelEvent =&gt; screenLoader.getScreenController(FXMLScreens.LEVELS).notify(event)</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      case event: ViewEvent.LobbyEvent =&gt; logger info event.getClass.toString</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">      case event: ViewEvent.SettingsEvent =&gt; logger info event.getClass.toString</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      case event: ViewEvent.StatsEvent =&gt; logger info event.getClass.toString</span>
+    }
+
+    private def loadScreens(): Unit = {
+<span class="nc" id="L76">      loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))</span>
+<span class="nc" id="L77">      loadFXMLNode(FXMLScreens.SETTINGS, new ScreenControllerSettings(this, controller))</span>
+<span class="nc" id="L78">      loadFXMLNode(FXMLScreens.LOBBY, new ScreenControllerLobby(this, controller))</span>
+<span class="nc" id="L79">      loadFXMLNode(FXMLScreens.GAME, new ScreenControllerGame(this, controller))</span>
+<span class="nc" id="L80">      loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))</span>
+<span class="nc" id="L81">      loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))</span>
+    }
+
+<span class="nc" id="L84">    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader</span>
+<span class="nc" id="L85">      .loadFXMLNode(screen, controller)</span>
+  }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

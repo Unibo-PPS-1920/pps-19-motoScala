@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataManager.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.controller.managers.file</a> &gt; <span class="el_source">DataManager.scala</span></div><h1>DataManager.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.controller.managers.file
+
+import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{APP_MAIN_FOLDER, APP_SCORE_FOLDER, APP_SETTINGS_FOLDER, APP_USER_LEVEL_FOLDER}
+import it.unibo.pps1920.motoscala.controller.managers.file.ResourcesPaths.{SCORE_FILE, SETTINGS_FILE}
+import it.unibo.pps1920.motoscala.model.Level.LevelData
+import it.unibo.pps1920.motoscala.model.Scores.Score
+import it.unibo.pps1920.motoscala.model.Settings.Setting
+import org.slf4j.LoggerFactory
+
+<span class="nc" id="L10">final class DataManager {</span>
+
+<span class="nc" id="L12">  private final val logger = LoggerFactory getLogger classOf[DataManager]</span>
+<span class="nc" id="L13">  private val yamlManager: YamlManager = new YamlManager</span>
+<span class="nc" id="L14">  def loadSettings(): Option[Setting] = yamlManager.loadYaml(SETTINGS_FILE)(classOf[Setting])</span>
+<span class="nc" id="L15">  def saveSettings(sett: Setting): Boolean = yamlManager.saveYaml(SETTINGS_FILE)(sett)</span>
+<span class="nc" id="L16">  def loadScore(): Option[Score] = yamlManager.loadYaml(SCORE_FILE)(classOf[Score])</span>
+<span class="nc" id="L17">  def saveScore(scores: Score): Boolean = yamlManager.saveYaml(SCORE_FILE)(scores)</span>
+  def initAppDirectory(): Boolean = {
+<span class="nc" id="L19">    tryAndBoolResult(FileManager.createLocalDirectoryTreeFromFile(APP_MAIN_FOLDER),</span>
+<span class="nc" id="L20">                     FileManager.createLocalDirectory(APP_SETTINGS_FOLDER),</span>
+<span class="nc" id="L21">                     FileManager.createLocalDirectory(APP_SCORE_FOLDER),</span>
+<span class="nc" id="L22">                     FileManager.createLocalDirectory(APP_USER_LEVEL_FOLDER))((this.logger))</span>
+
+  }
+  def loadUserLvl(): List[LevelData] = {
+<span class="nc" id="L26">    FileManager.getListFiles(APP_USER_LEVEL_FOLDER)</span>
+<span class="nc" id="L27">      .map(pf =&gt; this.yamlManager.loadYaml(APP_USER_LEVEL_FOLDER + pf)(classOf[LevelData]))</span>
+<span class="nc" id="L28">      .filter(_.isDefined).map(_.get)</span>
+  }
+
+<span class="nc" id="L31">  def loadLvl(): List[LevelData] = ???</span>
+
+<span class="nc" id="L33">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

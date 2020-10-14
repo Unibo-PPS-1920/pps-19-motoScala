@@ -17,15 +17,15 @@ No dependencies
 
 compileClasspath - Compile classpath for source set 'main'.
 +--- com.jfoenix:jfoenix:8.0.8
-+--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
++--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
 +--- eu.hansolo.enzo:Enzo:0.3.6
 +--- org.scalafx:scalafx_2.13:14-R19
 |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
@@ -46,6 +46,7 @@ compileClasspath - Compile classpath for source set 'main'.
 |         |    +--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 |         |    \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
 |         \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
++--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scala-lang:scala-library:2.13.3
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -56,8 +57,8 @@ compileClasspath - Compile classpath for source set 'main'.
 |    |    |    +--- org.scala-lang:scala-library:2.13.3
 |    |    |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 |    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
-|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0
-|    |         \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0 -> 1.3.0
+|    |         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -79,13 +80,56 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- org.scalatest:scalatest-core_2.13:3.2.2 (*)
 |    \--- junit:junit:4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 (*)
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1
 |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0
 |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1
 |    \--- org.scala-lang:scala-library:2.13.3
++--- org.driangle:simple-state-machine_2.13:0.1.0
+|    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
++--- eu.timepit:refined_2.13:0.9.16
+|    +--- org.scala-lang:scala-compiler:2.13.3
+|    |    +--- org.scala-lang:scala-library:2.13.3
+|    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    |    +--- org.jline:jline:3.15.0
+|    |    \--- net.java.dev.jna:jna:5.3.1
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    +--- com.chuusai:shapeless_2.13:2.3.3
+|    |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    \--- org.scala-lang.modules:scala-xml_2.13:1.3.0 (*)
++--- org.typelevel:cats-core_2.13:2.2.0
+|    +--- org.scala-lang:scala-library:2.13.3
+|    \--- org.typelevel:cats-kernel_2.13:2.2.0
+|         \--- org.scala-lang:scala-library:2.13.3
++--- io.monix:monix_2.13:3.2.2
+|    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    +--- io.monix:monix-execution_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:implicitbox_2.13:0.2.0
+|    |    |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- org.jctools:jctools-core:2.1.2
+|    |    \--- org.reactivestreams:reactive-streams:1.0.3
+|    +--- io.monix:monix-catnap_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- org.typelevel:cats-effect_2.13:2.1.3
+|    |         +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |         \--- org.typelevel:cats-core_2.13:2.1.1 -> 2.2.0 (*)
+|    +--- io.monix:monix-eval_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-tail_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-reactive_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-eval_2.13:3.2.2 (*)
+|    \--- io.monix:monix-java_2.13:3.2.2
+|         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe:config:1.4.0
@@ -127,7 +171,9 @@ compileClasspath - Compile classpath for source set 'main'.
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.9 (*)
 |    \--- org.slf4j:slf4j-api:1.7.30
-+--- ch.qos.logback:logback-parent:1.2.3
++--- ch.qos.logback:logback-classic:1.2.3
+|    +--- ch.qos.logback:logback-core:1.2.3
+|    \--- org.slf4j:slf4j-api:1.7.25 -> 1.7.30
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5
 |    +--- org.scala-lang:scala-library:2.13.2 -> 2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.4 -> 2.6.9 (*)
@@ -143,10 +189,30 @@ compileClasspath - Compile classpath for source set 'main'.
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
 |    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
-     +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
-     +--- org.yaml:snakeyaml:1.26
-     \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    +--- org.yaml:snakeyaml:1.26
+|    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    \--- com.fasterxml.jackson.module:jackson-module-paranamer:2.11.2
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|         \--- com.thoughtworks.paranamer:paranamer:2.8
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0
+|    +--- org.apache.commons:commons-lang3:3.0
+|    \--- com.google.code.gson:gson:2.6.2
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15
+|         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-fxml:15
+|    \--- org.openjfx:javafx-controls:15
+|         \--- org.openjfx:javafx-graphics:15 (*)
++--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-graphics:15 (*)
+\--- org.openjfx:javafx-controls:15 (*)
 
 compileOnly - Compile only dependencies for source set 'main'. (n)
 No dependencies
@@ -156,141 +222,174 @@ No dependencies
 
 implementation - Implementation only dependencies for source set 'main'. (n)
 +--- com.jfoenix:jfoenix:8.0.8 (n)
-+--- org.kordamp.ikonli:ikonli-core:2.4.0 (n)
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0 (n)
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0 (n)
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0 (n)
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0 (n)
++--- org.kordamp.ikonli:ikonli-core:11.5.0 (n)
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0 (n)
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0 (n)
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0 (n)
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0 (n)
 +--- eu.hansolo.enzo:Enzo:0.3.6 (n)
 +--- org.scalafx:scalafx_2.13:14-R19 (n)
 +--- org.scalafx:scalafx-extras_2.13:0.3.4 (n)
++--- org.scala-lang:scala-reflect:2.13.3 (n)
 +--- org.scala-lang:scala-library:2.13.3 (n)
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2 (n)
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2 (n)
 +--- org.scalatest:scalatest-mustmatchers_2.13:3.2.2 (n)
 +--- org.scalatest:scalatest-shouldmatchers_2.13:3.2.2 (n)
 +--- org.scalatestplus:junit-4-12_2.13:3.2.2.0 (n)
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 (n)
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1 (n)
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0 (n)
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1 (n)
++--- org.driangle:simple-state-machine_2.13:0.1.0 (n)
++--- eu.timepit:refined_2.13:0.9.16 (n)
++--- org.typelevel:cats-core_2.13:2.2.0 (n)
++--- io.monix:monix_2.13:3.2.2 (n)
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9 (n)
 +--- com.typesafe.akka:akka-remote_2.13:2.6.9 (n)
 +--- com.typesafe.akka:akka-cluster_2.13:2.6.9 (n)
 +--- com.typesafe.akka:akka-cluster-tools_2.13:2.6.9 (n)
 +--- com.typesafe.akka:akka-testkit_2.13:2.6.9 (n)
 +--- com.typesafe.akka:akka-slf4j_2.13:2.6.9 (n)
-+--- ch.qos.logback:logback-parent:1.2.3 (n)
++--- ch.qos.logback:logback-classic:1.2.3 (n)
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5 (n)
 +--- com.fasterxml.jackson.core:jackson-core:2.11.2 (n)
 +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2 (n)
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (n)
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 (n)
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 (n)
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 (n)
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0 (n)
++--- org.openjfx:javafx-media:15 (n)
++--- org.openjfx:javafx-fxml:15 (n)
++--- org.openjfx:javafx-base:15 (n)
++--- org.openjfx:javafx-graphics:15 (n)
+\--- org.openjfx:javafx-controls:15 (n)
 
 incrementalScalaAnalysisElements - Incremental compilation analysis files (n)
 No dependencies
 
 incrementalScalaAnalysisFormain - Incremental compilation analysis files for main
 +--- com.jfoenix:jfoenix:8.0.8 FAILED
-+--- org.kordamp.ikonli:ikonli-core:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0 FAILED
++--- org.kordamp.ikonli:ikonli-core:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0 FAILED
 +--- eu.hansolo.enzo:Enzo:0.3.6 FAILED
 +--- org.scalafx:scalafx_2.13:14-R19 FAILED
 +--- org.scalafx:scalafx-extras_2.13:0.3.4 FAILED
++--- org.scala-lang:scala-reflect:2.13.3 FAILED
 +--- org.scala-lang:scala-library:2.13.3 FAILED
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-mustmatchers_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-shouldmatchers_2.13:3.2.2 FAILED
 +--- org.scalatestplus:junit-4-12_2.13:3.2.2.0 FAILED
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 FAILED
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1 FAILED
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0 FAILED
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1 FAILED
++--- org.driangle:simple-state-machine_2.13:0.1.0 FAILED
++--- eu.timepit:refined_2.13:0.9.16 FAILED
++--- org.typelevel:cats-core_2.13:2.2.0 FAILED
++--- io.monix:monix_2.13:3.2.2 FAILED
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-remote_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-cluster_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-cluster-tools_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-testkit_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-slf4j_2.13:2.6.9 FAILED
-+--- ch.qos.logback:logback-parent:1.2.3 FAILED
++--- ch.qos.logback:logback-classic:1.2.3 FAILED
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5 FAILED
 +--- com.fasterxml.jackson.core:jackson-core:2.11.2 FAILED
 +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2 FAILED
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 FAILED
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 FAILED
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0 FAILED
++--- org.openjfx:javafx-media:15 FAILED
++--- org.openjfx:javafx-fxml:15 FAILED
++--- org.openjfx:javafx-base:15 FAILED
++--- org.openjfx:javafx-graphics:15 FAILED
+\--- org.openjfx:javafx-controls:15 FAILED
 
 incrementalScalaAnalysisForscoverage - Incremental compilation analysis files for scoverage
 No dependencies
 
 incrementalScalaAnalysisFortest - Incremental compilation analysis files for test
 +--- com.jfoenix:jfoenix:8.0.8 FAILED
-+--- org.kordamp.ikonli:ikonli-core:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0 FAILED
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0 FAILED
++--- org.kordamp.ikonli:ikonli-core:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0 FAILED
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0 FAILED
 +--- eu.hansolo.enzo:Enzo:0.3.6 FAILED
 +--- org.scalafx:scalafx_2.13:14-R19 FAILED
 +--- org.scalafx:scalafx-extras_2.13:0.3.4 FAILED
++--- org.scala-lang:scala-reflect:2.13.3 FAILED
 +--- org.scala-lang:scala-library:2.13.3 FAILED
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-mustmatchers_2.13:3.2.2 FAILED
 +--- org.scalatest:scalatest-shouldmatchers_2.13:3.2.2 FAILED
 +--- org.scalatestplus:junit-4-12_2.13:3.2.2.0 FAILED
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 FAILED
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1 FAILED
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0 FAILED
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1 FAILED
++--- org.driangle:simple-state-machine_2.13:0.1.0 FAILED
++--- eu.timepit:refined_2.13:0.9.16 FAILED
++--- org.typelevel:cats-core_2.13:2.2.0 FAILED
++--- io.monix:monix_2.13:3.2.2 FAILED
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-remote_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-cluster_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-cluster-tools_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-testkit_2.13:2.6.9 FAILED
 +--- com.typesafe.akka:akka-slf4j_2.13:2.6.9 FAILED
-+--- ch.qos.logback:logback-parent:1.2.3 FAILED
++--- ch.qos.logback:logback-classic:1.2.3 FAILED
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5 FAILED
 +--- com.fasterxml.jackson.core:jackson-core:2.11.2 FAILED
 +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2 FAILED
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 FAILED
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2 FAILED
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2 FAILED
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0 FAILED
++--- org.openjfx:javafx-media:15 FAILED
++--- org.openjfx:javafx-fxml:15 FAILED
++--- org.openjfx:javafx-base:15 FAILED
++--- org.openjfx:javafx-graphics:15 FAILED
+\--- org.openjfx:javafx-controls:15 FAILED
 
 jacocoAgent - The Jacoco agent to use to get coverage data.
-\--- org.jacoco:org.jacoco.agent:0.8.5
+\--- org.jacoco:org.jacoco.agent:0.8.6
 
 jacocoAnt - The Jacoco ant tasks to use to get execute Gradle tasks.
-\--- org.jacoco:org.jacoco.ant:0.8.5
-     +--- org.jacoco:org.jacoco.core:0.8.5
-     |    +--- org.ow2.asm:asm:7.2
-     |    +--- org.ow2.asm:asm-commons:7.2
-     |    |    +--- org.ow2.asm:asm:7.2
-     |    |    +--- org.ow2.asm:asm-tree:7.2
-     |    |    |    \--- org.ow2.asm:asm:7.2
-     |    |    \--- org.ow2.asm:asm-analysis:7.2
-     |    |         \--- org.ow2.asm:asm-tree:7.2 (*)
-     |    \--- org.ow2.asm:asm-tree:7.2 (*)
-     +--- org.jacoco:org.jacoco.report:0.8.5
-     |    \--- org.jacoco:org.jacoco.core:0.8.5 (*)
-     \--- org.jacoco:org.jacoco.agent:0.8.5
+\--- org.jacoco:org.jacoco.ant:0.8.6
+     +--- org.jacoco:org.jacoco.core:0.8.6
+     |    +--- org.ow2.asm:asm:8.0.1
+     |    +--- org.ow2.asm:asm-commons:8.0.1
+     |    |    +--- org.ow2.asm:asm:8.0.1
+     |    |    +--- org.ow2.asm:asm-tree:8.0.1
+     |    |    |    \--- org.ow2.asm:asm:8.0.1
+     |    |    \--- org.ow2.asm:asm-analysis:8.0.1
+     |    |         \--- org.ow2.asm:asm-tree:8.0.1 (*)
+     |    \--- org.ow2.asm:asm-tree:8.0.1 (*)
+     +--- org.jacoco:org.jacoco.report:0.8.6
+     |    \--- org.jacoco:org.jacoco.core:0.8.6 (*)
+     \--- org.jacoco:org.jacoco.agent:0.8.6
 
 javadocElements - javadoc elements for main. (n)
 No dependencies
 
 runtimeClasspath - Runtime classpath of source set 'main'.
 +--- com.jfoenix:jfoenix:8.0.8
-+--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
++--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
 +--- eu.hansolo.enzo:Enzo:0.3.6
 +--- org.scalafx:scalafx_2.13:14-R19
 |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
@@ -311,6 +410,7 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 |         |    +--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 |         |    \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
 |         \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
++--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scala-lang:scala-library:2.13.3
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -321,8 +421,8 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 |    |    |    +--- org.scala-lang:scala-library:2.13.3
 |    |    |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 |    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
-|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0
-|    |         \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0 -> 1.3.0
+|    |         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -344,13 +444,56 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 |    +--- org.scalatest:scalatest-core_2.13:3.2.2 (*)
 |    \--- junit:junit:4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 (*)
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1
 |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0
 |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1
 |    \--- org.scala-lang:scala-library:2.13.3
++--- org.driangle:simple-state-machine_2.13:0.1.0
+|    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
++--- eu.timepit:refined_2.13:0.9.16
+|    +--- org.scala-lang:scala-compiler:2.13.3
+|    |    +--- org.scala-lang:scala-library:2.13.3
+|    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    |    +--- org.jline:jline:3.15.0
+|    |    \--- net.java.dev.jna:jna:5.3.1
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    +--- com.chuusai:shapeless_2.13:2.3.3
+|    |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    \--- org.scala-lang.modules:scala-xml_2.13:1.3.0 (*)
++--- org.typelevel:cats-core_2.13:2.2.0
+|    +--- org.scala-lang:scala-library:2.13.3
+|    \--- org.typelevel:cats-kernel_2.13:2.2.0
+|         \--- org.scala-lang:scala-library:2.13.3
++--- io.monix:monix_2.13:3.2.2
+|    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    +--- io.monix:monix-execution_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:implicitbox_2.13:0.2.0
+|    |    |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- org.jctools:jctools-core:2.1.2
+|    |    \--- org.reactivestreams:reactive-streams:1.0.3
+|    +--- io.monix:monix-catnap_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- org.typelevel:cats-effect_2.13:2.1.3
+|    |         +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |         \--- org.typelevel:cats-core_2.13:2.1.1 -> 2.2.0 (*)
+|    +--- io.monix:monix-eval_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-tail_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-reactive_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-eval_2.13:3.2.2 (*)
+|    \--- io.monix:monix-java_2.13:3.2.2
+|         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe:config:1.4.0
@@ -392,7 +535,9 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.9 (*)
 |    \--- org.slf4j:slf4j-api:1.7.30
-+--- ch.qos.logback:logback-parent:1.2.3
++--- ch.qos.logback:logback-classic:1.2.3
+|    +--- ch.qos.logback:logback-core:1.2.3
+|    \--- org.slf4j:slf4j-api:1.7.25 -> 1.7.30
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5
 |    +--- org.scala-lang:scala-library:2.13.2 -> 2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.4 -> 2.6.9 (*)
@@ -408,10 +553,30 @@ runtimeClasspath - Runtime classpath of source set 'main'.
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
 |    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
-     +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
-     +--- org.yaml:snakeyaml:1.26
-     \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    +--- org.yaml:snakeyaml:1.26
+|    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    \--- com.fasterxml.jackson.module:jackson-module-paranamer:2.11.2
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|         \--- com.thoughtworks.paranamer:paranamer:2.8
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0
+|    +--- org.apache.commons:commons-lang3:3.0
+|    \--- com.google.code.gson:gson:2.6.2
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15
+|         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-fxml:15
+|    \--- org.openjfx:javafx-controls:15
+|         \--- org.openjfx:javafx-graphics:15 (*)
++--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-graphics:15 (*)
+\--- org.openjfx:javafx-controls:15 (*)
 
 runtimeElements - Elements of runtime for main. (n)
 No dependencies
@@ -462,15 +627,15 @@ No dependencies
 
 testCompileClasspath - Compile classpath for source set 'test'.
 +--- com.jfoenix:jfoenix:8.0.8
-+--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
++--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
 +--- eu.hansolo.enzo:Enzo:0.3.6
 +--- org.scalafx:scalafx_2.13:14-R19
 |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
@@ -491,6 +656,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |         |    +--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 |         |    \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
 |         \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
++--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scala-lang:scala-library:2.13.3
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -501,8 +667,8 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    |    |    +--- org.scala-lang:scala-library:2.13.3
 |    |    |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 |    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
-|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0
-|    |         \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0 -> 1.3.0
+|    |         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -524,13 +690,56 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.scalatest:scalatest-core_2.13:3.2.2 (*)
 |    \--- junit:junit:4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 (*)
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1
 |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0
 |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1
 |    \--- org.scala-lang:scala-library:2.13.3
++--- org.driangle:simple-state-machine_2.13:0.1.0
+|    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
++--- eu.timepit:refined_2.13:0.9.16
+|    +--- org.scala-lang:scala-compiler:2.13.3
+|    |    +--- org.scala-lang:scala-library:2.13.3
+|    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    |    +--- org.jline:jline:3.15.0
+|    |    \--- net.java.dev.jna:jna:5.3.1
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    +--- com.chuusai:shapeless_2.13:2.3.3
+|    |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    \--- org.scala-lang.modules:scala-xml_2.13:1.3.0 (*)
++--- org.typelevel:cats-core_2.13:2.2.0
+|    +--- org.scala-lang:scala-library:2.13.3
+|    \--- org.typelevel:cats-kernel_2.13:2.2.0
+|         \--- org.scala-lang:scala-library:2.13.3
++--- io.monix:monix_2.13:3.2.2
+|    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    +--- io.monix:monix-execution_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:implicitbox_2.13:0.2.0
+|    |    |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- org.jctools:jctools-core:2.1.2
+|    |    \--- org.reactivestreams:reactive-streams:1.0.3
+|    +--- io.monix:monix-catnap_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- org.typelevel:cats-effect_2.13:2.1.3
+|    |         +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |         \--- org.typelevel:cats-core_2.13:2.1.1 -> 2.2.0 (*)
+|    +--- io.monix:monix-eval_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-tail_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-reactive_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-eval_2.13:3.2.2 (*)
+|    \--- io.monix:monix-java_2.13:3.2.2
+|         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe:config:1.4.0
@@ -572,7 +781,9 @@ testCompileClasspath - Compile classpath for source set 'test'.
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.9 (*)
 |    \--- org.slf4j:slf4j-api:1.7.30
-+--- ch.qos.logback:logback-parent:1.2.3
++--- ch.qos.logback:logback-classic:1.2.3
+|    +--- ch.qos.logback:logback-core:1.2.3
+|    \--- org.slf4j:slf4j-api:1.7.25 -> 1.7.30
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5
 |    +--- org.scala-lang:scala-library:2.13.2 -> 2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.4 -> 2.6.9 (*)
@@ -588,10 +799,30 @@ testCompileClasspath - Compile classpath for source set 'test'.
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
 |    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
-     +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
-     +--- org.yaml:snakeyaml:1.26
-     \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    +--- org.yaml:snakeyaml:1.26
+|    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    \--- com.fasterxml.jackson.module:jackson-module-paranamer:2.11.2
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|         \--- com.thoughtworks.paranamer:paranamer:2.8
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0
+|    +--- org.apache.commons:commons-lang3:3.0
+|    \--- com.google.code.gson:gson:2.6.2
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15
+|         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-fxml:15
+|    \--- org.openjfx:javafx-controls:15
+|         \--- org.openjfx:javafx-graphics:15 (*)
++--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-graphics:15 (*)
+\--- org.openjfx:javafx-controls:15 (*)
 
 testCompileOnly - Compile only dependencies for source set 'test'. (n)
 No dependencies
@@ -601,15 +832,15 @@ No dependencies
 
 testRuntimeClasspath - Runtime classpath of source set 'test'.
 +--- com.jfoenix:jfoenix:8.0.8
-+--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-javafx:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-devicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-material-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
-+--- org.kordamp.ikonli:ikonli-ionicons-pack:2.4.0
-|    \--- org.kordamp.ikonli:ikonli-core:2.4.0
++--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-javafx:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-devicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-material-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
++--- org.kordamp.ikonli:ikonli-ionicons-pack:11.5.0
+|    \--- org.kordamp.ikonli:ikonli-core:11.5.0
 +--- eu.hansolo.enzo:Enzo:0.3.6
 +--- org.scalafx:scalafx_2.13:14-R19
 |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
@@ -630,6 +861,7 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |         |    +--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 |         |    \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
 |         \--- org.scalafx:scalafx_2.13:12.0.2-R18 -> 14-R19 (*)
++--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scala-lang:scala-library:2.13.3
 +--- org.scalatest:scalatest-wordspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -640,8 +872,8 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |    |    |    +--- org.scala-lang:scala-library:2.13.3
 |    |    |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 |    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
-|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0
-|    |         \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    |    \--- org.scala-lang.modules:scala-xml_2.13:1.2.0 -> 1.3.0
+|    |         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 |    \--- org.scala-lang:scala-reflect:2.13.3 (*)
 +--- org.scalatest:scalatest-funspec_2.13:3.2.2
 |    +--- org.scala-lang:scala-library:2.13.3
@@ -663,13 +895,56 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |    +--- org.scalatest:scalatest-core_2.13:3.2.2 (*)
 |    \--- junit:junit:4.12
 |         \--- org.hamcrest:hamcrest-core:1.3
-+--- org.scala-lang.modules:scala-xml_2.13:1.2.0 (*)
 +--- org.scala-lang.modules:scala-collection-contrib_2.13:0.2.1
 |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- org.scala-lang.modules:scala-parallel-collections_2.13:0.2.0
 |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
 +--- org.scala-lang.modules:scala-async_2.13:1.0.0-M1
 |    \--- org.scala-lang:scala-library:2.13.3
++--- org.driangle:simple-state-machine_2.13:0.1.0
+|    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
++--- eu.timepit:refined_2.13:0.9.16
+|    +--- org.scala-lang:scala-compiler:2.13.3
+|    |    +--- org.scala-lang:scala-library:2.13.3
+|    |    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    |    +--- org.jline:jline:3.15.0
+|    |    \--- net.java.dev.jna:jna:5.3.1
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- org.scala-lang:scala-reflect:2.13.3 (*)
+|    +--- com.chuusai:shapeless_2.13:2.3.3
+|    |    \--- org.scala-lang:scala-library:2.13.0 -> 2.13.3
+|    \--- org.scala-lang.modules:scala-xml_2.13:1.3.0 (*)
++--- org.typelevel:cats-core_2.13:2.2.0
+|    +--- org.scala-lang:scala-library:2.13.3
+|    \--- org.typelevel:cats-kernel_2.13:2.2.0
+|         \--- org.scala-lang:scala-library:2.13.3
++--- io.monix:monix_2.13:3.2.2
+|    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    +--- io.monix:monix-execution_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:implicitbox_2.13:0.2.0
+|    |    |    \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- org.jctools:jctools-core:2.1.2
+|    |    \--- org.reactivestreams:reactive-streams:1.0.3
+|    +--- io.monix:monix-catnap_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- org.typelevel:cats-effect_2.13:2.1.3
+|    |         +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |         \--- org.typelevel:cats-core_2.13:2.1.1 -> 2.2.0 (*)
+|    +--- io.monix:monix-eval_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-tail_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    \--- io.monix:monix-catnap_2.13:3.2.2 (*)
+|    +--- io.monix:monix-reactive_2.13:3.2.2
+|    |    +--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
+|    |    +--- io.monix:monix-execution_2.13:3.2.2 (*)
+|    |    \--- io.monix:monix-eval_2.13:3.2.2 (*)
+|    \--- io.monix:monix-java_2.13:3.2.2
+|         \--- org.scala-lang:scala-library:2.13.1 -> 2.13.3
 +--- com.typesafe.akka:akka-actor_2.13:2.6.9
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe:config:1.4.0
@@ -711,7 +986,9 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |    +--- org.scala-lang:scala-library:2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.9 (*)
 |    \--- org.slf4j:slf4j-api:1.7.30
-+--- ch.qos.logback:logback-parent:1.2.3
++--- ch.qos.logback:logback-classic:1.2.3
+|    +--- ch.qos.logback:logback-core:1.2.3
+|    \--- org.slf4j:slf4j-api:1.7.25 -> 1.7.30
 +--- io.altoo:akka-kryo-serialization_2.13:1.1.5
 |    +--- org.scala-lang:scala-library:2.13.2 -> 2.13.3
 |    +--- com.typesafe.akka:akka-actor_2.13:2.6.4 -> 2.6.9 (*)
@@ -727,10 +1004,30 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 +--- com.fasterxml.jackson.core:jackson-databind:2.11.2
 |    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
 |    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
-\--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
-     +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
-     +--- org.yaml:snakeyaml:1.26
-     \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    +--- org.yaml:snakeyaml:1.26
+|    \--- com.fasterxml.jackson.core:jackson-core:2.11.2
++--- com.fasterxml.jackson.module:jackson-module-scala_2.13:2.11.2
+|    +--- org.scala-lang:scala-library:2.13.3
+|    +--- com.fasterxml.jackson.core:jackson-core:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-annotations:2.11.2
+|    +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|    \--- com.fasterxml.jackson.module:jackson-module-paranamer:2.11.2
+|         +--- com.fasterxml.jackson.core:jackson-databind:2.11.2 (*)
+|         \--- com.thoughtworks.paranamer:paranamer:2.8
++--- it.unibo.alice.tuprolog:tuprolog:3.3.0
+|    +--- org.apache.commons:commons-lang3:3.0
+|    \--- com.google.code.gson:gson:2.6.2
++--- org.openjfx:javafx-media:15
+|    \--- org.openjfx:javafx-graphics:15
+|         \--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-fxml:15
+|    \--- org.openjfx:javafx-controls:15
+|         \--- org.openjfx:javafx-graphics:15 (*)
++--- org.openjfx:javafx-base:15
++--- org.openjfx:javafx-graphics:15 (*)
+\--- org.openjfx:javafx-controls:15 (*)
 
 testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
 No dependencies

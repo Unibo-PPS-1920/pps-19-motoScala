@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntityManager.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.managers</a> &gt; <span class="el_source">EntityManager.scala</span></div><h1>EntityManager.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.managers
+
+import it.unibo.pps1920.motoscala.ecs.Entity
+
+private[managers] trait EntityManager {
+  def addEntity(entity: Entity): Unit
+  def removeEntity(entity: Entity): Unit
+  def entities: Set[Entity]
+}
+<span class="fc" id="L10">private[managers] object EntityManager {</span>
+<span class="fc" id="L11">  private class EntityManagerImpl extends EntityManager {</span>
+<span class="fc" id="L12">    private var _entities: Set[Entity] = Set()</span>
+
+<span class="fc" id="L14">    override def addEntity(entity: Entity): Unit = _entities += entity</span>
+<span class="pc bpc" id="L15" title="3 of 6 branches missed.">    override def removeEntity(entity: Entity): Unit = _entities = _entities filter (_ != entity)</span>
+<span class="fc" id="L16">    override def entities: Set[Entity] = _entities</span>
+  }
+<span class="fc" id="L18">  def apply(): EntityManager = new EntityManagerImpl()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

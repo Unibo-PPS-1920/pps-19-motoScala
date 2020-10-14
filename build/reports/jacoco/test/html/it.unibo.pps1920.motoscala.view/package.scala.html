@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>package.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.view</a> &gt; <span class="el_source">package.scala</span></div><h1>package.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala
+
+import com.jfoenix.controls.{JFXDialog, JFXDialogLayout}
+import eu.hansolo.enzo.notification.{Notification, NotificationEvent}
+import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController}
+import javafx.event.EventHandler
+import javafx.fxml.FXMLLoader
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.StackPane
+import javafx.scene.text.Text
+import javafx.scene.{CacheHint, Node, Scene}
+import javafx.util.Duration
+import org.kordamp.ikonli.Ikon
+import org.kordamp.ikonli.javafx.FontIcon
+
+<span class="nc" id="L16">package object view {</span>
+  def loadFxml(fxml: FXMLScreens, controller: ScreenController): Node = {
+<span class="nc" id="L18">    val loader = new FXMLLoader(View.getClass.getResource(fxml.resourcePath))</span>
+<span class="nc" id="L19">    loader.setController(controller)</span>
+<span class="nc" id="L20">    loader.load()</span>
+  }
+
+<span class="nc" id="L23">  def chargeSceneSheets(scene: Scene, screen: FXMLScreens): Unit = scene.getStylesheets</span>
+<span class="nc" id="L24">    .add(View.getClass.getResource(screen.cssPath).toString)</span>
+
+
+  /**
+   * A simple method for charging icon in node.
+   *
+   * @param icon     the icon
+   * @param fontSize the font size
+   * @return [[FontIcon]]
+   */
+  def iconSetter(icon: Ikon, fontSize: JavafxEnums.IconDimension): FontIcon = {
+<span class="nc" id="L35">    val tempIcon = new FontIcon(icon)</span>
+<span class="nc" id="L36">    tempIcon.setIconSize(fontSize.dim)</span>
+<span class="nc" id="L37">    tempIcon</span>
+  }
+
+  /**
+   * Show a dialog into the main pane.
+   *
+   * @param mainPane    the main [[StackPane]]
+   * @param title       the String title dialog
+   * @param description the String description
+   * @param size        the  size
+   * @param ev          the [[MouseEvent]]
+   */
+  def showDialog(mainPane: StackPane, title: String, description: String, size: JavafxEnums.DimDialog,
+                 ev: EventHandler[MouseEvent]): Unit = {
+<span class="nc" id="L51">    var css = &quot;&quot;</span>
+<span class="nc" id="L52">    val content = new JFXDialogLayout</span>
+<span class="nc" id="L53">    val _title = new Text(title)</span>
+<span class="nc" id="L54">    val _description = new Text(description)</span>
+<span class="nc" id="L55">    size match {</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">      case JavafxEnums.SMALL_DIALOG =&gt;</span>
+<span class="nc" id="L57">        css = &quot;dialogTextSmall&quot;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">      case JavafxEnums.MEDIUM_DIALOG =&gt;</span>
+<span class="nc" id="L59">        css = &quot;dialogTextMedium&quot;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">      case JavafxEnums.BIG_DIALOG =&gt;</span>
+<span class="nc" id="L61">        css = &quot;dialogTextBig&quot;</span>
+<span class="nc" id="L62">      case _ =&gt;</span>
+    }
+<span class="nc" id="L64">    _description.getStyleClass.add(css)</span>
+<span class="nc" id="L65">    _title.getStyleClass.add(css)</span>
+<span class="nc" id="L66">    content.setHeading(_title)</span>
+<span class="nc" id="L67">    content.setBody(_description)</span>
+<span class="nc" id="L68">    content.getStyleClass.add(&quot;dialogContentBackground&quot;)</span>
+<span class="nc" id="L69">    val dialog = new JFXDialog(mainPane, content, JFXDialog.DialogTransition.CENTER)</span>
+<span class="nc" id="L70">    dialog.getStyleClass.add(&quot;dialogBackground&quot;)</span>
+<span class="nc" id="L71">    dialog.show()</span>
+<span class="nc" id="L72">    content.setCache(true)</span>
+<span class="nc" id="L73">    content.setCacheHint(CacheHint.SPEED)</span>
+<span class="nc" id="L74">    dialog.setOnMouseClicked(ev)</span>
+  }
+
+  /**
+   * Show a notification popup into the main windows of the operating system.
+   *
+   * @param title            the String title of the notification
+   * @param message          the String text of the notification
+   * @param secondsDuration  the number of  of the notification
+   * @param notificationType the type of the notification
+   * @param ev               the [[EventHandler]] ev, lambda
+   */
+  def showNotificationPopup(title: String, message: String, secondsDuration: JavafxEnums.Notification_Duration,
+                            notificationType: JavafxEnums.NotificationType,
+                            ev: EventHandler[NotificationEvent]): Unit = { // _____________________________PATTERN STRATEGY
+<span class="nc" id="L89">    val no = Notification.Notifier.INSTANCE</span>
+<span class="nc" id="L90">    val notification = new Notification(title, message)</span>
+<span class="nc" id="L91">    no.setPopupLifetime(Duration.seconds(secondsDuration.time))</span>
+<span class="nc" id="L92">    notificationType match {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">      case JavafxEnums.ERROR_NOTIFICATION =&gt;</span>
+<span class="nc" id="L94">        no.notifyError(title, message)</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">      case JavafxEnums.WARNING_NOTIFICATION =&gt;</span>
+<span class="nc" id="L96">        no.notifyWarning(title, message)</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">      case JavafxEnums.SUCCESS_NOTIFICATION =&gt;</span>
+<span class="nc" id="L98">        no.notifySuccess(title, message)</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      case JavafxEnums.INFO_NOTIFICATION =&gt;</span>
+<span class="nc" id="L100">        no.notifyInfo(title, message)</span>
+      case _ =&gt;
+<span class="nc" id="L102">        no.notify(notification)</span>
+    }
+<span class="nc" id="L104">    no.setOnNotificationPressed(ev)</span>
+  }
+
+<span class="nc" id="L107">  object JavafxEnums {</span>
+
+<span class="nc" id="L109">    sealed abstract class DimDialog(val dim: Int) {}</span>
+
+<span class="nc" id="L111">    sealed abstract class IconDimension(val dim: Int) {}</span>
+
+<span class="nc" id="L113">    sealed abstract class NotificationType(val code: Int) {}</span>
+
+<span class="nc" id="L115">    sealed abstract class Notification_Duration(val time: Int) {}</span>
+
+<span class="nc" id="L117">    case object BIG_DIALOG extends DimDialog(3)</span>
+
+<span class="nc" id="L119">    case object MEDIUM_DIALOG extends DimDialog(2)</span>
+
+<span class="nc" id="L121">    case object SMALL_DIALOG extends DimDialog(1)</span>
+
+<span class="nc" id="L123">    case object BIGGEST_ICON extends IconDimension(80)</span>
+
+<span class="nc" id="L125">    case object BIGGER_ICON extends IconDimension(60)</span>
+
+<span class="nc" id="L127">    case object BIG_ICON extends IconDimension(40)</span>
+
+<span class="nc" id="L129">    case object MEDIUM_ICON extends IconDimension(30)</span>
+
+<span class="nc" id="L131">    case object SMALL_ICON extends IconDimension(20)</span>
+
+<span class="nc" id="L133">    case object SMALLER_ICON extends IconDimension(15)</span>
+
+<span class="nc" id="L135">    case object SMALLEST_ICON extends IconDimension(10)</span>
+
+<span class="nc" id="L137">    case object ERROR_NOTIFICATION extends NotificationType(1)</span>
+
+<span class="nc" id="L139">    case object WARNING_NOTIFICATION extends NotificationType(2)</span>
+
+<span class="nc" id="L141">    case object SUCCESS_NOTIFICATION extends NotificationType(3)</span>
+
+<span class="nc" id="L143">    case object INFO_NOTIFICATION extends NotificationType(4)</span>
+
+<span class="nc" id="L145">    case object LONG_DURATION extends Notification_Duration(7)</span>
+
+<span class="nc" id="L147">    case object MEDIUM_DURATION extends Notification_Duration(5)</span>
+
+<span class="nc" id="L149">    case object SHORT_DURATION extends Notification_Duration(3)</span>
+
+  }
+
+<span class="nc" id="L153">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

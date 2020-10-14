@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Mediator.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.controller.mediation</a> &gt; <span class="el_source">Mediator.scala</span></div><h1>Mediator.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.controller.mediation
+
+import scala.reflect.ClassTag
+
+trait Mediator extends EventSubject
+<span class="fc" id="L6">object Mediator {</span>
+  import Types._
+<span class="fc" id="L8">  private class MediatorImpl extends Mediator {</span>
+<span class="fc" id="L9">    private var observers: Map[Observer, EventType] = Map()</span>
+
+<span class="fc" id="L11">    override def publishEvent[T: ClassTag](ev: T): Unit = observers</span>
+<span class="fc" id="L12">      .filter(o =&gt; o._2.isAssignableFrom(implicitly[ClassTag[T]].runtimeClass))</span>
+<span class="fc" id="L13">      .map(_._1.asInstanceOf[EventObserver[T]])</span>
+<span class="fc" id="L14">      .foreach(_.notify(ev))</span>
+    override def subscribe[T: ClassTag](observer: EventObserver[T]*): Unit =
+<span class="fc" id="L16">      observers = observers ++ observer.map(o =&gt; o -&gt; implicitly[ClassTag[T]].runtimeClass).toSet</span>
+<span class="fc" id="L17">    override def unsubscribe[T](observer: EventObserver[T]*): Unit = observers = observers -- observer</span>
+  }
+<span class="nc" id="L19">  object Types {</span>
+    type EventType = Class[_]
+    type Observer = EventObserver[_]
+  }
+<span class="pc" id="L23">  def apply(): Mediator = new MediatorImpl()</span>
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

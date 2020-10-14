@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DrawSystem.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.systems</a> &gt; <span class="el_source">DrawSystem.scala</span></div><h1>DrawSystem.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.systems
+
+import java.util.UUID
+
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
+import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
+import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent}
+import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
+
+<span class="fc" id="L11">object DrawSystem {</span>
+  import it.unibo.pps1920.motoscala.ecs.components.VelocityComponent
+  def apply(mediator: Mediator, coordinator: Coordinator,
+<span class="fc" id="L14">            myUuid: UUID): System = new DrawSystemImpl(mediator, coordinator, myUuid)</span>
+
+<span class="fc" id="L16">  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator, myUuid: UUID)</span>
+<span class="fc" id="L17">    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent], classOf[ShapeComponent])) {</span>
+    override def update(): Unit = {
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">      val entitiesToView = entitiesRef().collect(e =&gt; {</span>
+        import it.unibo.pps1920.motoscala.ecs.components.VelocityComponent
+        import it.unibo.pps1920.motoscala.ecs.util.Direction
+<span class="fc" id="L22">        val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]</span>
+<span class="fc" id="L23">        val s = coordinator.getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]</span>
+<span class="fc" id="L24">        val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]</span>
+<span class="fc" id="L25">        DrawEntityData(p.pos, Direction.velToDir(v.vel), s.shape, e)</span>
+<span class="pc bpc" id="L26" title="3 of 6 branches missed.">      }).partition(_.entity.uuid == myUuid)</span>
+<span class="fc" id="L27">      mediator.publishEvent(Event.DrawEntityEvent(entitiesToView._1.head, entitiesToView._2.toSeq))</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

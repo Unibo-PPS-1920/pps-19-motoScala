@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EndGameSystem.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.systems</a> &gt; <span class="el_source">EndGameSystem.scala</span></div><h1>EndGameSystem.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.systems
+
+import it.unibo.pps1920.motoscala.controller.mediation.Event.LevelEndEvent
+import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
+import it.unibo.pps1920.motoscala.ecs.components.PositionComponent
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
+import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
+
+<span class="fc" id="L11">object EndGameSystem {</span>
+  def apply(coordinator: Coordinator, mediator: Mediator,
+<span class="fc" id="L13">            canvasSize: Vector2): System = new EndGameSystemImpl(coordinator, mediator, canvasSize)</span>
+<span class="fc" id="L14">  private class EndGameSystemImpl(coordinator: Coordinator, mediator: Mediator, canvasSize: Vector2)</span>
+<span class="fc" id="L15">    extends AbstractSystem(ECSSignature(classOf[PositionComponent])) {</span>
+    override def update(): Unit = {
+<span class="fc" id="L17">      entitiesRef()</span>
+<span class="fc" id="L18">        .filter(e =&gt; {</span>
+<span class="fc" id="L19">          val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos</span>
+<span class="pc bpc" id="L20" title="3 of 8 branches missed.">          p.x &lt; 0 || p.y &lt; 0 || p.x &gt; canvasSize.x || p.y &gt; canvasSize.y</span>
+<span class="fc" id="L21">        }).foreach(e =&gt; {</span>
+<span class="pc bpc" id="L22" title="3 of 6 branches missed.">        if (e.getClass == classOf[BumperCarEntity]) {</span>
+<span class="fc" id="L23">          coordinator.removeEntity(e)</span>
+<span class="fc" id="L24">          mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))</span>
+        } else {
+<span class="fc" id="L26">          coordinator.removeEntity(e)</span>
+        }
+      })
+<span class="pc bpc" id="L29" title="4 of 8 branches missed.">      if (entitiesRef().size == 1 &amp;&amp; entitiesRef().head.getClass == classOf[BumperCarEntity]) {</span>
+<span class="fc" id="L30">        mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
