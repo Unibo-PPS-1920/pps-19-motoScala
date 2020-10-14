@@ -1,10 +1,12 @@
 package it.unibo.pps1920.motoscala.model
 
-import scala.collection.immutable.HashMap
+import akka.actor.ActorRef
+
+import scala.collection.mutable
 
 object ReadyTable {
   sealed trait ReadyTable
-  case class ReadyPlayers(list: HashMap[String, Boolean] = HashMap()) extends ReadyTable
+  case class ReadyPlayers(list: mutable.Map[ActorRef, PlayerData] = mutable.LinkedHashMap()) extends ReadyTable
 
 }
 

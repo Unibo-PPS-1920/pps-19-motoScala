@@ -13,25 +13,25 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
   private val logger = LoggerFactory getLogger classOf[ServerActor]
   private var clients: Set[ActorRef] = Set()
   def handle(displayEvent: DisplayableEvent): Unit = clients
-    .foreach(c => c.tell(DisplayMessage(displayEvent), this.self))
+    .foreach(c => c ! (DisplayMessage(displayEvent), this.self))
 
   override def receive: Receive = idleBehaviour
   def idleBehaviour: Receive = {
     case PlainMessage(text, num) => println("TESTO: " + text + "NUM:" + num)
-    case JoinRequestMessage() => handleJoinRequest()
+    case JoinRequestMessage(name) => handleJoinRequest(name)
     case ReadyMessage => controller.setReadyClient(this.sender())
     case msg => logger warn s"Received unexpected message ${msg}"
   }
-  private def handleJoinRequest(): Unit = {
+  private def handleJoinRequest(name: String): Unit = {
     /*
         val resp = this.controller.requestJoin(this.sender())
     */
     val resp = this.controller.sendToLobbyStrategy[Boolean](s => {
-      s.tryAddPlayer(this.sender())
+      s.tryAddPlayer(this.sender(), name)
     })
     if (resp) {
-      this.sender().tell(JoinResponseMessage(resp), this.self)
-      this.sender().tell(LobbyDataMessage(controller.getLobbyData), this.self)
+      this.sender() ! (JoinResponseMessage(resp), this.self)
+      this.sender() ! (LobbyDataMessage(controller.getLobbyData), this.self)
     }
   }
   def inGameBehaviour: Receive = {

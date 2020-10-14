@@ -2,10 +2,12 @@ package it.unibo.pps1920.motoscala.multiplayer.messages
 
 import akka.actor.ActorRef
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandableEvent, DisplayableEvent}
-import it.unibo.pps1920.motoscala.model.{MatchSetup, MultiPlayerSetup}
+import it.unibo.pps1920.motoscala.model.PlayerData
+
+import scala.collection.mutable
 
 sealed trait Message
-object DataType{
+object DataType {
   type LobbyData = MessageData.LobbyData
 
 }
@@ -31,13 +33,13 @@ object Message {
 
   /*CLIENT to server MESSAGES*/
   /*connection messages*/
-  case class JoinRequestMessage() extends Message
+  case class JoinRequestMessage(name: String) extends Message
   case class ReadyMessage() extends Message
 
   /*in game messages*/
-  case class CommandMessage(event:CommandableEvent) extends Message
+  case class CommandMessage(event: CommandableEvent) extends Message
 }
 
-object MessageData{
-  final case class LobbyData(difficulty : Int, mode : Boolean, readyPlayers: Map[ActorRef, Boolean])
+object MessageData {
+  final case class LobbyData(difficulty: Int, mode: Boolean, readyPlayers: mutable.Map[ActorRef, PlayerData])
 }

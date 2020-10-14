@@ -13,18 +13,22 @@ private class ClientActor(protected val actorController: ActorController) extend
   private val logger = LoggerFactory getLogger classOf[ClientActor]
   private var serverActor: Option[ActorRef] = None
   //def connectToServer() = ???
-  def handle(commandEvent: CommandEvent): Unit = serverActor.get.tell(CommandMessage(commandEvent), this.self)
+  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! (CommandMessage(commandEvent), this.self)
 
   override def receive: Receive = idleBehaviour
   private def idleBehaviour: Receive = {
-    case reqMsg: JoinRequestMessage => serverActor.get.tell(reqMsg, this.self)
-    case JoinResponseMessage(true) => this.context.become(initMatchBehaviour); this.actorController.joinResult(true)
+    case reqMsg: JoinRequestMessage => serverActor.get ! (reqMsg, this.self)
+    case JoinResponseMessage(true) => {
+      this.context.become(initMatchBehaviour);
+      this.serverActor = Some(this.sender())
+      this.actorController.joinResult(true)
+    }
     case JoinResponseMessage(false) => this.actorController.joinResult(false)
     case msg => logger warn s"Received unexpected message ${msg}"
   }
   private def initMatchBehaviour: Receive = {
     case LobbyDataMessage(lobbyData) => controller.settingsUpdate(lobbyData)
-    case readyMsg: ReadyMessage => serverActor.get.tell(readyMsg, this.self)
+    case readyMsg: ReadyMessage => serverActor.get ! (readyMsg, this.self)
     case GameStartMessage => controller.gameStart(); this.context.become(inGameBehaviour)
     case msg => logger warn s"Received unexpected message ${msg}"
   }
@@ -33,6 +37,8 @@ private class ClientActor(protected val actorController: ActorController) extend
     case DisplayMessage(event) => controller.getMediator.publishEvent(event)
     case msg => logger warn s"Received unexpected message ${msg}"
   }
+
+
 }
 
 object ClientActor {

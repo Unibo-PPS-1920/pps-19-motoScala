@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.model.ReadyTable.ReadyPlayers
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
-import javafx.scene.control.{Button, Label, ListView, SplitMenuButton}
+import javafx.scene.control._
 import javafx.scene.layout.BorderPane
 
 abstract class AbstractScreenControllerLobby(protected override val viewFacade: ViewFacade,
@@ -39,9 +39,11 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     buttonKick.setOnAction(_ => {
       controller.kickSomeone()
     })
+    this.buttonReady.setDisable(false)
   }
 
   private def initBackButton(): Unit = {
+    this.controller.shutdownMultiplayer()
     buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
   }
   private def assertNodeInjected(): Unit = {
@@ -67,9 +69,28 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   }
 
 
-  protected def setIpAndPort(ip: String, port: String): Unit = {
+  protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
     this.ipLabel.setText(s"${this.ipLabel.getText}${ip}")
     this.portLabel.setText(s"${this.portLabel.getText} ${port}")
+    this.listPlayer.getItems.add(name)
+
+    this.listPlayer.setCellFactory(x => {
+      new ListCell[String]() {
+        override protected def updateItem(item: String, empty: Boolean): Unit = {
+          super.updateItem(item, empty)
+          if (item != null) {
+            setText(item)
+            getIndex
+            /*            if(){
+                          setStyle("-fx-background-color: red;")
+                        }else{
+                          setStyle("-fx-background-color: blue;")
+                        }*/
+          }
+        }
+      }
+    })
+
   }
 
 

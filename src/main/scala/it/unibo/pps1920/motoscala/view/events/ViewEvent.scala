@@ -18,7 +18,7 @@ object ViewEvent {
   final case class JoinResult(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
   final case class UpdateReadyPlayer(playersStatus: ReadyPlayers) extends LobbyEvent
-  final case class SetupLobby(ip: String, port: String) extends LobbyEvent
+  final case class SetupLobby(ip: String, port: String, name: String) extends LobbyEvent
   final case class LevelDataEvent(levels: Seq[LevelData]) extends LevelEvent
   final case class SettingsDataEvent(settings: SettingsData) extends SettingsEvent
   final case class ScoreDataEvent(scores: ScoresData) extends StatsEvent
