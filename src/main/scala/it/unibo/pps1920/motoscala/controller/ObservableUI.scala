@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.view.ObserverUI
 trait ObservableUI extends SoundController {
   type Level = Int
   def becomeHost(): Unit
-  def tryJoinLobby(): Unit
+  def tryJoinLobby(ip: String, port: String): Unit
   def kickSomeone(): Unit
   def setSelfReady(): Unit
   def attachUI(obs: ObserverUI*): Unit

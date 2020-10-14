@@ -12,8 +12,10 @@ object ViewEvent {
   sealed trait LevelEvent extends ViewEvent
   sealed trait GameEvent extends ViewEvent
   sealed trait LobbyEvent extends ViewEvent
+  sealed trait SelectionEvent extends ViewEvent
   sealed trait SettingsEvent extends ViewEvent
   sealed trait StatsEvent extends ViewEvent
+  final case class JoinResult(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
   final case class UpdateReadyPlayer(playersStatus: ReadyPlayers) extends LobbyEvent
   final case class SetupLobby(ip: String, port: String) extends LobbyEvent

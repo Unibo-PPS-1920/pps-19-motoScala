@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller
 import java.util.UUID
 import java.util.UUID.randomUUID
 
-import akka.actor.ExtendedActorSystem
+import akka.actor.{ActorSelection, ExtendedActorSystem}
 import it.unibo.pps1920.motoscala
 import it.unibo.pps1920.motoscala.controller.managers.audio._
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
@@ -15,9 +15,10 @@ import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
-import it.unibo.pps1920.motoscala.multiplayer.messages.Message._
+import it.unibo.pps1920.motoscala.multiplayer.messages.Message.JoinRequestMessage
 import it.unibo.pps1920.motoscala.view.ObserverUI
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, ScoreDataEvent, SettingsDataEvent, SetupLobby}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import org.slf4j.LoggerFactory
 
@@ -108,17 +109,30 @@ object Controller {
     override def getLobbyData: DataType.LobbyData = LobbyData(matchSetupMp.get.difficulty, matchSetupMp.get
       .mode, matchSetupMp.get.readyPlayers)
 
-    override def tryJoinLobby(): Unit = {
+    override def tryJoinLobby(ip: String, port: String): Unit = {
       clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
-      system.actorSelection("akka://MotoSystem@127.0.0.1:54071/user/Server*")
-        .tell(PlainMessage("L", 10), clientActor.get)
+      val actor: ActorSelection = system.actorSelection(s"akka://MotoSystem@${ip}:${port}/user/Server*")
+      actor.tell(JoinRequestMessage(), clientActor.get)
     }
     override def becomeHost(): Unit = {
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
+      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, 10))
       observers
         .foreach(observer => observer
           .notify(SetupLobby(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
             .getDefaultAddress.port.get.toString)))
+    }
+    override def joinResult(result: Boolean): Unit = {
+      observers
+        .foreach(observer => observer
+          .notify(ViewEvent.JoinResult(result)))
+
+    }
+    override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
+      strategy.apply(this.matchSetupMp.get)
+    }
+    override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = {
+
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }

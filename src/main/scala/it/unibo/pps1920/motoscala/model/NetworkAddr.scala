@@ -28,12 +28,12 @@ object NetworkAddr {
   private def validateIPV4Block(block: String): Boolean = {
     block.nonEmpty && block.forall(_.isDigit) && (0 to 254 contains block.toInt)
   }
-  /** Validates a non well-known network port.
+  /** Validates a network port, well-known network port are included.
    *
    * @param port The port.
    * @return True, if the port is valid; otherwise false.
    */
-  def validatePort(port: Int): Boolean = 1024 to 65535 contains port
+  def validatePort(port: Int): Boolean = 0 to 65535 contains port
 
 
 }

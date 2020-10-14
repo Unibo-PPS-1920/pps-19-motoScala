@@ -60,8 +60,10 @@ object View {
 
     }
     override def changeScreen(event: ScreenEvent): Unit = {
-      screenLoader.applyScreen(stateMachine.consume(event), root)
-      screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
+      Platform.runLater(() => {
+        screenLoader.applyScreen(stateMachine.consume(event), root)
+        screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
+      })
     }
     override def getStage: Stage = stage.get
     override def notify(ev: ViewEvent): Unit = ev match {
@@ -71,6 +73,8 @@ object View {
       case event: ViewEvent.LobbyEvent => screenLoader.getScreenController(FXMLScreens.LOBBY).notify(event)
       case event: ViewEvent.SettingsEvent => screenLoader.getScreenController(FXMLScreens.SETTINGS).notify(event)
       case event: ViewEvent.StatsEvent => screenLoader.getScreenController(FXMLScreens.STATS).notify(event)
+      case event: ViewEvent.SelectionEvent => screenLoader.getScreenController(FXMLScreens.SELECTION).notify(event)
+      case _ => logger warn s"Strange message ${ev}"
     }
     private def loadScreens(): Unit = {
       loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))
