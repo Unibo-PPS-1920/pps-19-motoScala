@@ -2,8 +2,8 @@ package it.unibo.pps1920.motoscala.view.screens.game
 
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, StopMusic}
-import it.unibo.pps1920.motoscala.controller.managers.audio.Music
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
+import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
@@ -44,6 +44,7 @@ abstract class AbstractScreenControllerGame(
     context = canvas.getGraphicsContext2D
   }
   private def dismiss(): Unit = {
+    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)

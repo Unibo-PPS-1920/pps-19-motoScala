@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.view.screens.settings
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.fxml.FXML
@@ -24,6 +26,9 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
   }
 
   private def initBackButton(): Unit = {
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+    buttonBack.setOnAction(_ => {
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
+      viewFacade.changeScreen(ScreenEvent.GoBack)
+    })
   }
 }

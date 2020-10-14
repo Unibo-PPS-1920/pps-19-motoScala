@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.view.screens.levels
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
@@ -29,10 +31,14 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   }
 
   private def initBackButton(): Unit = {
-    buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => viewFacade.changeScreen(ScreenEvent.GoBack))
+    buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => {
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
+      viewFacade.changeScreen(ScreenEvent.GoBack)
+    })
   }
 
   private def selectLevel(level: Int): Unit = {
+    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
     controller.setupGame(level)
     viewFacade.changeScreen(ScreenEvent.GoNext)
   }

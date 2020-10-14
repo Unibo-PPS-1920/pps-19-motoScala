@@ -22,7 +22,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
   private var actualMusicPlayer: Option[MediaPlayer] = None
   private var actualClipPlayer: AudioClip = _
-  private var volumeMusic: Double = 1.0
+  private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
 
   override def run(): Unit = {
