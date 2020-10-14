@@ -72,10 +72,11 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
         null
       }
     }
+    ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
 
 
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
-      var text: String = formatter.getControlNewText
+      val text: String = formatter.getControlNewText
 
       if ((text.length <= 5 && Try(NetworkAddr.validatePort(text.toInt)).getOrElse(false)) || text.isEmpty) {
         formatter
@@ -84,10 +85,8 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
       }
 
     }
-
-    ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
-
     portTextField.setTextFormatter(new TextFormatter(portFormatter))
+
 
     this.ipTextField.textProperty().addListener((_, _, newValue) => {
       if (NetworkAddr.validateIPV4Address(newValue)) {
