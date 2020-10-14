@@ -24,7 +24,7 @@ object DrawSystem {
         val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
         val s = coordinator.getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]
         val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-        DrawEntityData(p.pos, Direction.vecToDir(v.vel), s.shape, e)
+        DrawEntityData(p.pos, Direction.vecToDir(v.currentVel), s.shape, e)
       }).partition(_.entity.uuid == myUuid)
       Try(Event.DrawEntityEvent(entitiesToView._1.head, entitiesToView._2.toSeq))
         .fold(err => logger info err.getMessage, value => mediator.publishEvent(value))

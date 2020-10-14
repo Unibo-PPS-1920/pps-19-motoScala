@@ -16,8 +16,8 @@ object InputSystem {
       entitiesRef().foreach(e => {
         val vC = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
         events.filter(_.cmd.entity == e).map(_.cmd.direction).lastOption match {
-          case Some(dir) => vC.newVel.x = (dir.value.x * vC.defVel.x);
-            vC.newVel.y = (dir.value.y * vC.defVel
+          case Some(dir) => vC.inputVel.x = (dir.value.x * vC.defVel.x);
+            vC.inputVel.y = (dir.value.y * vC.defVel
               .y) //optimized
           case None => //leave old direction
         }

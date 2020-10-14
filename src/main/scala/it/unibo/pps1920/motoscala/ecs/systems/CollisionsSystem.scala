@@ -2,7 +2,6 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Component, Entity, System}
@@ -16,28 +15,45 @@ object CollisionsSystem {
                                         classOf[VelocityComponent],
                                         classOf[CollisionComponent])) {
 
+    private val CollisionDuration = fps / 6
+    //not used because we chose to keep the realistic collision velocity until the end of the collision
+    private val CollisionVelocity = Vector2(30, 30)
 
-    private val CollisionDuration = (fps / 6)
-    private val CollisionVelocity = Vector2(5, 5)
+    private var positionCompE1: PositionComponent = _
+    private var shapeCompE1: ShapeComponent = _
+    private var velocityCompE1: VelocityComponent = _
+    private var collisionCompE1: CollisionComponent = _
+
+    private var positionCompE2: PositionComponent = _
+    private var shapeCompE2: ShapeComponent = _
+    private var velocityCompE2: VelocityComponent = _
+    private var collisionCompE2: CollisionComponent = _
+
+
+
 
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
       entitiesRef().foreach(e1 => {
         entitiesToCheck -= e1
-        val collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
-        val velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
+         collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
+         velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
         if (collisionCompE1.isColliding) {
           collisionStep(collisionCompE1, velocityCompE1)
 
         } else {
-          velocityCompE1.vel = velocityCompE1.newVel
+          velocityCompE1.currentVel = velocityCompE1.inputVel
         }
         entitiesToCheck.foreach(e2 => {
-          val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
-          val velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
-          if (isTouching(e1, e2) && collisionCompE1.duration < (CollisionDuration -1) && collisionCompE2.duration < (CollisionDuration-1)) {
-            if(!(velocityCompE2.vel.isZero() && velocityCompE1.vel.isZero())){
-              collide(e1, e2)
+           collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
+           velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
+           shapeCompE1 = extractComponent[ShapeComponent](e1, classOf[ShapeComponent])
+           shapeCompE2 = extractComponent[ShapeComponent](e2, classOf[ShapeComponent])
+           positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
+           positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
+          if (areTouching()) {
+            if(!(velocityCompE2.currentVel.isZero() && velocityCompE1.currentVel.isZero())){
+              collide()
               collisionStep(collisionCompE1, velocityCompE1)
               collisionStep(collisionCompE2, velocityCompE2)
             }
@@ -47,78 +63,50 @@ object CollisionsSystem {
       })
     }
 
-    private def isTouching(e1: Entity, e2: Entity): Boolean = {
-      val e1ShapeC = extractComponent[ShapeComponent](e1, classOf[ShapeComponent])
-      val e2ShapeC = extractComponent[ShapeComponent](e2, classOf[ShapeComponent])
-      val e1PosC = extractComponent[PositionComponent](e1, classOf[PositionComponent])
-      val e2PosC = extractComponent[PositionComponent](e2, classOf[PositionComponent])
-
-      (e1ShapeC.shape, e2ShapeC.shape) match {
-        case (Circle(e1Radius), Circle(e2Radius)) => (e1PosC.pos dist e2PosC.pos) <= (e1Radius + e2Radius)
+    private def areTouching(): Boolean = {
+      (shapeCompE1.shape, shapeCompE2.shape) match {
+        case (Circle(e1Radius), Circle(e2Radius)) => (positionCompE1.pos dist positionCompE2.pos) <= (e1Radius + e2Radius)
         case (Circle(radius), Rectangle(dimX, dimY)) => ???
-        case _ => logger warn s"unexpected shape collision: ${e1ShapeC.shape} and ${e1ShapeC.shape}"; false
+        case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"; false
       }
 
     }
 
-    private def collide(e1: Entity, e2: Entity): Unit = {
+    private def collide(): Unit = {
+      startCollision()
 
-      val collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
-      val collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
-      val velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
-      val velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
-      val positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
-      val positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
-      startCollision(collisionCompE1, collisionCompE2, velocityCompE1, velocityCompE2)
-
-      /** **_____________________________________________________***** */
+      /* COLLISION CORE */
 
       if (collisionCompE1.mass != 0 && collisionCompE2.mass != 0) {
-        logger debug (s"Before collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
-        if(velocityCompE1.vel.isZero()&& velocityCompE2.vel.isZero()) {
-          velocityCompE1.vel sumabs Vector2(10,10)
-          logger debug (s"Before zero collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${velocityCompE2.vel}")
-        }
+        logger debug s"Before collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${velocityCompE2.currentVel}"
 
         // Compute unit normal and unit tangent vectors
         val normalVector = positionCompE2.pos sub positionCompE1.pos
         val unitNormalVector = normalVector.unitVector()
         val unitTangentVector = Vector2(-unitNormalVector.y, unitNormalVector.x)
+
         // Compute scalar projections of velocities onto unitNormalVector and unitTangentVector
-        val normProj1 = unitNormalVector dot velocityCompE1.vel
-        val tangProj1 = unitTangentVector dot velocityCompE1.vel
-        val normProj2 = unitNormalVector dot velocityCompE2.vel
-        val tangProj2 = unitTangentVector dot velocityCompE2.vel
+        val normProjection1 = unitNormalVector dot velocityCompE1.currentVel
+        val tangProjection1 = unitTangentVector dot velocityCompE1.currentVel
+        val normProjection2 = unitNormalVector dot velocityCompE2.currentVel
+        val tangProjection2 = unitTangentVector dot velocityCompE2.currentVel
 
         // Compute new normal velocities using one-dimensional elastic collision equations in the normal direction
-        val newNormProj1 = computeCollVel(normProj1, normProj2, collisionCompE1.mass + 1, collisionCompE2.mass)
-        val newNormProj2 = computeCollVel(normProj2, normProj1, collisionCompE2.mass, collisionCompE1.mass + 1)
+        val newNormProjection1 = computeCollVel(normProjection1, normProjection2, collisionCompE1.mass + 1, collisionCompE2.mass)
+        val newNormProjection2 = computeCollVel(normProjection2, normProjection1, collisionCompE2.mass, collisionCompE1.mass + 1)
 
         // Compute new normal and tangential velocity vectors
-        val newNorVec1 = unitNormalVector.dot(newNormProj1)
-        val newTanVec1 = unitTangentVector.dot(tangProj1)
-        val newNorVec2 = unitNormalVector.dot(newNormProj2)
-        val newTanVec2 = unitTangentVector.dot(tangProj2)
+        val newNorVec1 = unitNormalVector.dot(newNormProjection1)
+        val newTanVec1 = unitTangentVector.dot(tangProjection1)
+        val newNorVec2 = unitNormalVector.dot(newNormProjection2)
+        val newTanVec2 = unitTangentVector.dot(tangProjection2)
 
         // Set new velocities in x and y coordinates
-        /*        if (Direction.velToDir(newNorVec1 add newTanVec1) == Direction.velToDir(newNorVec2 add newTanVec2)) {
-                  velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).opposite().value.mul(CollisionVelocity)
-                  velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value
-                    .mul(CollisionVelocity)
-                } else {
-                  velocityCompE1.vel = Direction.velToDir(newNorVec1 add newTanVec1).value.mul(CollisionVelocity)
-                  velocityCompE2.vel = Direction.velToDir(newNorVec2 add newTanVec2).value
-                    .mul(CollisionVelocity)
-                }*/
-
-
-
-
-        velocityCompE1.vel = newNorVec1 add newTanVec1
-        velocityCompE2.vel = newNorVec2 add newTanVec2
-        logger debug (s"Computed collision: velocity ent1: ${velocityCompE1.vel}  velocity ent2 = ${
-          velocityCompE2.vel
-        }")
+        velocityCompE1.currentVel = newNorVec1 add newTanVec1
+        velocityCompE2.currentVel = newNorVec2 add newTanVec2
+        logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
+          velocityCompE2.currentVel
+        }"
 
 
       }
@@ -128,14 +116,13 @@ object CollisionsSystem {
     private def computeCollVel(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double =
       (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)
 
-    private def startCollision(collisionCompE1: CollisionComponent, collisionCompE2: CollisionComponent,
-                               velCompE1: VelocityComponent, velCompE2: VelocityComponent): Unit = {
+    private def startCollision(): Unit = {
       collisionCompE1.isColliding = true
       collisionCompE2.isColliding = true
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
-      /*      collisionCompE1.oldSpeed = velCompE1.vel.abs()
-            collisionCompE2.oldSpeed = velCompE2.vel.abs()*/
+      /*collisionCompE1.oldSpeed = velCompE1.vel.abs()
+        collisionCompE2.oldSpeed = velCompE2.vel.abs()*/
       /*velCompE1.vel = CollisionVelocity mul CollisionVelocity.dir()
       velCompE2.vel = CollisionVelocity mul CollisionVelocity.dir()*/
 
@@ -148,10 +135,7 @@ object CollisionsSystem {
     private def collisionStep(collisionComp: CollisionComponent, velocityComp: VelocityComponent): Unit = {
       collisionComp.duration -= 1
       if (collisionComp.duration <= 0) {
-        collisionComp.isColliding = false;
-        /*
-                velocityComp.vel = collisionComp.oldSpeed mul velocityComp.vel.dir()
-        */
+        collisionComp.isColliding = false
       }
     }
   }
