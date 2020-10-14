@@ -72,7 +72,8 @@ dependencies {
     implementation(Libs.Parsers.jackson_databind)
     implementation(Libs.Parsers.jackson_yaml)
     implementation(Libs.Parsers.jackson_module)
-
+    //TUPROLOG
+    implementation(Libs.TuProlog.tuprolog)
 }
 
 application {

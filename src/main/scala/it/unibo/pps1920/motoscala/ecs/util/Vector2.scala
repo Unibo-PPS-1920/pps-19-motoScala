@@ -28,6 +28,8 @@ trait Vector2 {
 
 object Vector2 {
 
+  implicit def tuple2ToVector2(tuple2: (Double, Double)): Vector2 = Vector2(tuple2._1, tuple2._2)
+
   def apply(x: Double, y: Double): Vector2 = Vector2Impl(x, y)
 
   private case class Vector2Impl(override var x: Double, override var y: Double) extends Vector2 {
