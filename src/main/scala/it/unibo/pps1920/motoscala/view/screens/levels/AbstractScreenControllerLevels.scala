@@ -8,7 +8,6 @@ import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
-import javafx.scene.control.Button
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
 
 abstract class AbstractScreenControllerLevels(protected override val viewFacade: ViewFacade,
@@ -16,8 +15,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var grid: GridPane = _
-
-  protected var buttonBack: Button = _
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
@@ -28,13 +25,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Levels.fxml'.")
     assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Levels.fxml'.")
     assert(grid != null, "fx:id=\"grid\" was not injected: check your FXML file 'Levels.fxml'.")
-  }
-
-  private def initBackButton(): Unit = {
-    buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
-      viewFacade.changeScreen(ScreenEvent.GoBack)
-    })
   }
 
   private def selectLevel(level: Int): Unit = {

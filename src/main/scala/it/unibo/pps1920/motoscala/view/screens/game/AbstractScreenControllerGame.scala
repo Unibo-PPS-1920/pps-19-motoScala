@@ -32,7 +32,6 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var canvas: Canvas = _
   @FXML protected var canvasStack: StackPane = _
   @FXML protected var buttonStart: Button = _
-  @FXML protected var buttonBack: Button = _
   @FXML protected var labelTitle: Label = _
   private var context: GraphicsContext = _
 
