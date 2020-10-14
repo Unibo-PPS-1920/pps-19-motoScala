@@ -43,7 +43,7 @@ abstract class AbstractScreenControllerGame(
     context = canvas.getGraphicsContext2D
   }
   private def dismiss(): Unit = {
-    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
+    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)

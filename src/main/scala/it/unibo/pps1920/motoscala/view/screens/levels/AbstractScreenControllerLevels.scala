@@ -28,7 +28,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   }
 
   private def selectLevel(level: Int): Unit = {
-    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
     controller.setupGame(level)
     viewFacade.changeScreen(ScreenEvent.GoNext)
   }
@@ -36,7 +35,8 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i))
+      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i), _ => controller
+        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })
     grid.addRow(levels.size, buttonBack)
