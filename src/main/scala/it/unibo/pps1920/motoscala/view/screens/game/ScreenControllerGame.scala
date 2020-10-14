@@ -11,9 +11,8 @@ import javafx.application.Platform
 class ScreenControllerGame(protected override val viewFacade: ViewFacade,
                            protected override val controller: ObservableUI)
   extends AbstractScreenControllerGame(viewFacade, controller) with Displayable {
-  logger info "Game Screen"
   private val mediator: Mediator = controller.getMediator
-
+  logger info "Game Screen"
   mediator.subscribe(this)
 
   override def notifyLevelSetup(data: LevelSetupData): Unit = Platform.runLater(() => handleSetup(data))
