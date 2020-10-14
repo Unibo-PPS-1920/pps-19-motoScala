@@ -49,10 +49,14 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
 
   private def initializeButtons(): Unit = {
     def buttonClicked(screenEvent: ScreenEvent): Unit = {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       viewFacade.changeScreen(screenEvent)
     }
 
+    def buttonHovered(button: Button*): Unit = button
+      .foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
+
+    buttonHovered(textPlay, textPlayMultiplayer, textSettings, textStats, textExit)
     this.textPlay.setOnAction(_ => buttonClicked(ScreenEvent.GotoLevels))
     this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ScreenEvent.GotoLobby))
     this.textSettings.setOnAction(_ => buttonClicked(ScreenEvent.GotoSettings))

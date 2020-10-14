@@ -8,7 +8,8 @@ sealed abstract class Clips(override val entryName: String) extends EnumEntry
 object Clips extends Enum[Clips] {
   override def values: IndexedSeq[Clips] = findValues
   case object Hit extends Clips("/clips/Hit.wav")
-  case object Button extends Clips("/clips/switch.wav")
+  case object ButtonClick extends Clips("/clips/buttonClick.wav")
+  case object ButtonHover extends Clips("/clips/buttonHover.wav")
   case object Whip extends Clips("/clips/whip.wav")
   case object Collision extends Clips("/clips/collision.wav")
   case object Witch extends Clips("/clips/witch.wav")
@@ -18,5 +19,6 @@ object Clips extends Enum[Clips] {
   case object PowerUp3 extends Clips("/clips/powerUp3.wav")
   case object PowerUp4 extends Clips("/clips/powerUp4.wav")
   case object PowerUp5 extends Clips("/clips/powerUp5.wav")
+  case object Levels extends Clips("/clips/levels.wav")
 
 }

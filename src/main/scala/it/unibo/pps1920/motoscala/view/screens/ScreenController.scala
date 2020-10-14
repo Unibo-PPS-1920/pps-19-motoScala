@@ -16,8 +16,9 @@ abstract class ScreenController(protected val viewFacade: ViewFacade,
   @FXML def initialize(): Unit
   def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       viewFacade.changeScreen(ScreenEvent.GoBack)
     })
+    buttonBack.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
   }
 }
