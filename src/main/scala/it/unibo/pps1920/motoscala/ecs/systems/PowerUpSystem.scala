@@ -7,6 +7,10 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
 import scala.language.postfixOps
 
+/**
+ * System handling the application of powerup effects to the targeted entities
+ */
+
 object PowerUpSystem {
   def apply(coordinator: Coordinator): System = new PowerUpSystemImpl(coordinator)
   private class PowerUpSystemImpl(coordinator: Coordinator)
