@@ -45,13 +45,13 @@ object GameEngine {
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator.registerComponentType(classOf[AIComponent])
-      coordinator
-        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
-      coordinator.registerSystem(MovementSystem(coordinator))
+
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
-      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
-      coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
       coordinator.registerSystem(AISystem(coordinator, eventQueue))
+      coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+      coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
+      coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
 
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
