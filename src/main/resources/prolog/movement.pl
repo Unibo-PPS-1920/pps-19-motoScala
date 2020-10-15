@@ -28,15 +28,17 @@ move_avoiding((SX,SY),(TX,TY),O,DX,DY):-
   step(SX,TX,NX),
   step(SY,TY,NY),
   \+ allowed_move((NX,NY),O),
-  step_right(SX,EX),
-  step_right(SY,EY),
+  step(NX,TX,EX),
+  step(NY,TY,EY),
+%  step_right(SX,EX),
+%  step_right(SY,EY),
   pos_dir((EX,EY),(NX,NY),(DX,DY)).
 
 allowed_move((X,Y),O):-
   \+ member((X,Y),O).
 
 step_right(X0,X1):-
-	X1 is X0 + 1.
+	X1 is X0 + 10.
 
 
 step(P,P,P).

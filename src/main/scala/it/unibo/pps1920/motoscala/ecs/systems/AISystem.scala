@@ -30,16 +30,19 @@ object AISystem {
     def update(): Unit = {
       frames = frames + 1
       if (frames % 1 == 0) {
-        val positions = entitiesRef().map(e => {
-          val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos
-          (p.x, p.y)
-        }).toSeq
         entitiesRef().foreach(e => {
+          val positions = entitiesRef().filter(_.uuid != e.uuid).map(e2 => {
+            val p = coordinator.getEntityComponent(e2, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
+              .pos
+            (p.x, p.y)
+          }).toSeq
           val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
             .pos
           val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
-          val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get
-            .asInstanceOf[PositionComponent].pos
+          val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]) match {
+            case Some(pos) => pos.asInstanceOf[PositionComponent].pos
+            case None => Vector2(0, 0)
+          }
 
           val query = new Struct("move_avoiding", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
             .toString(), positions, new Var(), new Var())
