@@ -7,11 +7,13 @@ import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
+import it.unibo.pps1920.motoscala.engine.Engine
 
 object EndGameSystem {
   def apply(coordinator: Coordinator, mediator: Mediator,
-            canvasSize: Vector2): System = new EndGameSystemImpl(coordinator, mediator, canvasSize)
-  private class EndGameSystemImpl(coordinator: Coordinator, mediator: Mediator, canvasSize: Vector2)
+            canvasSize: Vector2,
+            engine: Engine): System = new EndGameSystemImpl(coordinator, mediator, canvasSize, engine: Engine)
+  private class EndGameSystemImpl(coordinator: Coordinator, mediator: Mediator, canvasSize: Vector2, engine: Engine)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent])) {
     override def update(): Unit = {
       entitiesRef()
@@ -20,14 +22,16 @@ object EndGameSystem {
           p.x < 0 || p.y < 0 || p.x > canvasSize.x || p.y > canvasSize.y
         }).foreach(e => {
         if (e.getClass == classOf[BumperCarEntity]) {
-          coordinator.removeEntity(e)
-          mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))
+          this.engine.stop()
+          this.coordinator.removeEntity(e)
+          this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))
         } else {
-          coordinator.removeEntity(e)
+          this.coordinator.removeEntity(e)
         }
       })
       if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
-        mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))
+        this.engine.stop()
+        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))
       }
     }
   }

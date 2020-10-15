@@ -9,6 +9,7 @@ import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
 import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
 import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
 import it.unibo.pps1920.motoscala.view.screens.lobby.ScreenControllerLobby
+import it.unibo.pps1920.motoscala.view.screens.modeSelection.ScreenControllerModeSelection
 import it.unibo.pps1920.motoscala.view.screens.settings.ScreenControllerSettings
 import it.unibo.pps1920.motoscala.view.screens.stats.ScreenControllerStats
 import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
@@ -79,6 +80,7 @@ object View {
       loadFXMLNode(FXMLScreens.GAME, new ScreenControllerGame(this, controller))
       loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
+      loadFXMLNode(FXMLScreens.SELECTION, new ScreenControllerModeSelection(this, controller))
     }
 
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader

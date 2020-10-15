@@ -58,7 +58,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
 
     buttonHovered(textPlay, textPlayMultiplayer, textSettings, textStats, textExit)
     this.textPlay.setOnAction(_ => buttonClicked(ScreenEvent.GotoLevels))
-    this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ScreenEvent.GotoLobby))
+    this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ScreenEvent.GotoSelection))
     this.textSettings.setOnAction(_ => buttonClicked(ScreenEvent.GotoSettings))
     this.textStats.setOnAction(_ => buttonClicked(ScreenEvent.GotoStats))
     this.textExit.setOnAction(_ => System.exit(0))

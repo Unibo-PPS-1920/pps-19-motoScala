@@ -18,7 +18,7 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   override def notifyLevelSetup(data: LevelSetupData): Unit = Platform.runLater(() => handleSetup(data))
   override def notifyDrawEntities(player: EntityData, entities: Seq[EntityData]): Unit = Platform
     .runLater(() => drawEntities(player, entities))
-  override def notifyLevelEnd(data: LevelEndData): Unit = ???
+  override def notifyLevelEnd(data: LevelEndData): Unit = {}
 
   override def notify(ev: ViewEvent): Unit = ???
   override def sendCommandEvent(event: Event.CommandEvent): Unit = mediator.publishEvent(event)

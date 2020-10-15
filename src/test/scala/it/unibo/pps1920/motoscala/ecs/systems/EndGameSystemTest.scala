@@ -10,6 +10,7 @@ import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionCo
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
+import it.unibo.pps1920.motoscala.engine.GameEngine
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
@@ -29,7 +30,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = new MediatorImpl()
-    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20))
+    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(mediator, UUID.randomUUID()))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val v = VelocityComponent(Vector2(0,-10))

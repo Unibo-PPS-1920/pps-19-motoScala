@@ -9,7 +9,7 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction._
 
 
 sealed case class Direction(value: Vector2) {
-  def +(dir: Direction): Direction = Direction((dir.value add value).unit())
+  def +(dir: Direction): Direction = Direction((dir.value add value).clip())
 
 
   def angle(): Int = this match {
@@ -27,7 +27,7 @@ sealed case class Direction(value: Vector2) {
 
 
   def opposite(): Direction = this match {
-    case Center => Center //Direction(Vector2(-1 * math.random(), -1 * math.random()).unit())
+    case Center => Center
     case North => South
     case NorthWest => SouthEast
     case NorthEast => SouthWest
@@ -50,6 +50,6 @@ object Direction {
   object SouthEast extends Direction(Vector2(1, 1))
   object West extends Direction(Vector2(-1, 0))
   object East extends Direction(Vector2(1, 0))
-  def velToDir(vec : Vector2): Direction = Direction(Vector2(if (vec.x!=0) vec.x / vec.x.abs else 0, if (vec.y!=0) vec.y / vec.y.abs else 0))
+  def vecToDir(vec : Vector2): Direction = Direction(vec.clip())
 }
 
