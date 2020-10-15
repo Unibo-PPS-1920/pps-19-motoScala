@@ -5,7 +5,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
 import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
-import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
@@ -30,7 +30,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     drawSystem = DrawSystem(mediator, coordinator, pid)
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
-    val v : VelocityComponent = VelocityComponent(Vector2(0,-10), Vector2(20,20))
+    val v: VelocityComponent = VelocityComponent(Vector2(0, -10), Vector2(20, 20))
 
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
@@ -52,7 +52,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
       "emit the correct event" in {
         drawSystem.update()
         resulta.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Seq())
+          .North, Circle(3), TestEntity(pid)), Set())
       }
       "emit the correct event for multiple entities" in {
         val entity2id = UUID.randomUUID()
@@ -60,14 +60,14 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntity(entity2)
         val pos2: PositionComponent = PositionComponent(Vector2(3, 2))
         val shape2 = ShapeComponent(Circle(2))
-        val vel2 = VelocityComponent(Vector2(0,-5), Vector2(20,20))
+        val vel2 = VelocityComponent(Vector2(0, -5), Vector2(20, 20))
         coordinator.addEntityComponent(entity2, pos2)
         coordinator.addEntityComponent(entity2, shape2)
         coordinator.addEntityComponent(entity2, vel2)
         drawSystem.update()
         resulta
           .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Seq(DrawEntityData(Vector2(3, 2), Direction
+          .North, Circle(3), TestEntity(pid)), Set(DrawEntityData(Vector2(3, 2), Direction
           .North, Circle(2), TestEntity(entity2id))))
       }
     }

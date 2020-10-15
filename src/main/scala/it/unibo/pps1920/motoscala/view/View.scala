@@ -32,7 +32,6 @@ trait View extends ObserverUI {
 object View {
   def apply(controller: ObservableUI): View = {
     require(controller != null)
-    Platform.startup(() => {})
     new ViewImpl(controller)
   }
 

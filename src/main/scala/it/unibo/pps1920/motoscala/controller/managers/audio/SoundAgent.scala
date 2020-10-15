@@ -24,6 +24,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private var actualClipPlayer: AudioClip = _
   private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
+  cacheSounds()
 
   override def run(): Unit = {
     while (true) {
@@ -73,6 +74,16 @@ private final class ConcreteSoundAgent extends SoundAgent {
     })
   }
   override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() => {this.blockingQueue.add(ev) })
+
+  private def cacheSounds(): Unit = {
+    //Increase loading speed with cache
+    this.medias += (Music.Home -> new MediaPlayer(new Media(loadFromJar(Music.Home.entryName))))
+    this.medias += (Music.Game -> new MediaPlayer(new Media(loadFromJar(Music.Game.entryName))))
+    this.medias(Music.Home).play()
+    this.medias(Music.Home).stop()
+    this.medias(Music.Game).play()
+    this.medias(Music.Game).stop()
+  }
 }
 
 object SoundAgent {
