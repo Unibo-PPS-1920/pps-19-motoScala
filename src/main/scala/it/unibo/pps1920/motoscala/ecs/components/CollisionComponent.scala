@@ -1,8 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.components
 
 import it.unibo.pps1920.motoscala.ecs.Component
-import it.unibo.pps1920.motoscala.ecs.util.Direction.Center
-import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 
 /**
  *
@@ -13,5 +12,6 @@ import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 final case class CollisionComponent(var mass: Double,
                                     var isColliding: Boolean = false,
                                     var duration: Int = 0,
-                                    var oldSpeed: Vector2) extends Component
+                                    var oldSpeed: Vector2
+                                   ) extends Component
 
