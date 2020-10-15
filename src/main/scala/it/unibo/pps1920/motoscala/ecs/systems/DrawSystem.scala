@@ -23,7 +23,7 @@ object DrawSystem {
         val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
         DrawEntityData(p.pos, Direction.vecToDir(v.currentVel), s.shape, e)
       }).partition(_.entity.uuid == myUuid)
-      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.head, entitiesToView._2))
+      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.headOption, entitiesToView._2))
     }
   }
 }

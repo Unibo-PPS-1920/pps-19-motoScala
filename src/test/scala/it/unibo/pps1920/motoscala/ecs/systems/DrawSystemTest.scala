@@ -23,7 +23,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
   var coordinator: Coordinator = _
   var drawSystem: System = _
   var mediator: Mediator = _
-  val pid = UUID.randomUUID()
+  val pid: UUID = UUID.randomUUID()
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = new MediatorImpl()
@@ -51,8 +51,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        resulta.event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Set())
+        resulta.event shouldBe Event.DrawEntityEvent(Option(DrawEntityData(Vector2(1, 2), Direction
+          .North, Circle(3), TestEntity(pid))), Set())
       }
       "emit the correct event for multiple entities" in {
         val entity2id = UUID.randomUUID()
@@ -66,8 +66,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntityComponent(entity2, vel2)
         drawSystem.update()
         resulta
-          .event shouldBe Event.DrawEntityEvent(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)), Set(DrawEntityData(Vector2(3, 2), Direction
+          .event shouldBe Event.DrawEntityEvent(Option(DrawEntityData(Vector2(1, 2), Direction
+          .North, Circle(3), TestEntity(pid))), Set(DrawEntityData(Vector2(3, 2), Direction
           .North, Circle(2), TestEntity(entity2id))))
       }
     }

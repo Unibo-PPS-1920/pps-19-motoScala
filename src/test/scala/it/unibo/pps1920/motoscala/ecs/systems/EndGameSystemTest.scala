@@ -91,7 +91,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
 
 object EndGameSystemTestClasses {
   final class DisplayMock extends Displayable {
-    override def notifyDrawEntities(player: EntityData,
+    override def notifyDrawEntities(player: Option[EntityData],
                                     entities: Set[EntityData]): Unit = {}
     override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
