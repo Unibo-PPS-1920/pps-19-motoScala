@@ -22,13 +22,13 @@ class Vector2Test extends AnyWordSpec with Matchers {
     }
 
     "unit" in {
-      Vector2(5, 6).unit() shouldBe Vector2(1, 1)
-      Vector2(0, 4).unit() shouldBe Vector2(0, 1)
-      Vector2(-5, -5).unit() shouldBe Vector2(-1, -1)
+      Vector2(5, 6).clip() shouldBe Vector2(1, 1)
+      Vector2(0, 4).clip() shouldBe Vector2(0, 1)
+      Vector2(-5, -5).clip() shouldBe Vector2(-1, -1)
     }
 
-    "mul" in {
-      Vector2(3, 4) mul 2 shouldBe Vector2(6, 8)
+    "dot" in {
+      Vector2(3, 4) dot 2 shouldBe Vector2(6, 8)
     }
     "dist" in {
       Vector2(0, 0) dist Vector2(1, 1) shouldBe math.sqrt(2)

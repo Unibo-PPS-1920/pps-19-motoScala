@@ -47,8 +47,8 @@ class InputSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         eventQueue.enqueue(CommandEvent(CommandData(entity, North)))
         coordinator.updateSystems()
         val vVec = coordinator.getEntityComponent(entity, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
-          .vel
-          Direction.velToDir(vVec) shouldBe North
+          .inputVel
+          Direction.vecToDir(vVec) shouldBe North
       }
 
     }

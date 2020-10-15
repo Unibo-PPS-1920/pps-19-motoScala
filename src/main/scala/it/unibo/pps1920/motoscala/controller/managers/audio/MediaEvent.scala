@@ -9,7 +9,7 @@ object MediaEvent {
   final case class PlayMusicEvent(media: Music) extends MediaEvent {
     override def handle(sl: SoundAgentLogic): Unit = sl.playMusic(media)
   }
-  final case class PlayMusicEffect(clip: Clips) extends MediaEvent {
+  final case class PlaySoundEffect(clip: Clips) extends MediaEvent {
     override def handle(sl: SoundAgentLogic): Unit = sl.playClip(clip)
   }
   final case class SetVolumeMusic(value: Double) extends MediaEvent {

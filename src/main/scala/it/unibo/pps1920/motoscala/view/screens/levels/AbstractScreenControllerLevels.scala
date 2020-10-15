@@ -1,12 +1,13 @@
 package it.unibo.pps1920.motoscala.view.screens.levels
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
-import javafx.scene.control.Button
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
 
 abstract class AbstractScreenControllerLevels(protected override val viewFacade: ViewFacade,
@@ -14,8 +15,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var grid: GridPane = _
-
-  protected var buttonBack: Button = _
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
@@ -28,10 +27,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
     assert(grid != null, "fx:id=\"grid\" was not injected: check your FXML file 'Levels.fxml'.")
   }
 
-  private def initBackButton(): Unit = {
-    buttonBack = ViewUtils.buttonFactory(bText = s"Back", _ => viewFacade.changeScreen(ScreenEvent.GoBack))
-  }
-
   private def selectLevel(level: Int): Unit = {
     controller.setupGame(level)
     viewFacade.changeScreen(ScreenEvent.GoNext)
@@ -40,7 +35,8 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i))
+      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i), _ => controller
+        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })
     grid.addRow(levels.size, buttonBack)
