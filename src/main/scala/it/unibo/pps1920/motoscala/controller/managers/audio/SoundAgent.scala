@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 import java.util.concurrent.ArrayBlockingQueue
 
 import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
+import it.unibo.pps1920.motoscala.view.initializeJavaFXThread
 import javafx.application.Platform
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
@@ -24,6 +25,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private var actualClipPlayer: AudioClip = _
   private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
+  initializeJavaFXThread()
   cacheSounds()
 
   override def run(): Unit = {
