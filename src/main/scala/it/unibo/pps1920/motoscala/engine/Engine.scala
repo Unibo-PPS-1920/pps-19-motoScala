@@ -63,9 +63,11 @@ object GameEngine {
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
 
-        case BlackPupa(position, shape, _, velocity) =>
+            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
+
+        case BlackPupa(position, shape, _, velocity)
+        =>
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
@@ -73,7 +75,8 @@ object GameEngine {
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-        case RedPupa(position, shape, _, velocity) =>
+        case RedPupa(position, shape, _, velocity)
+        =>
           logger info "add red pupa"
           val red = RedPupaEntity(UUID.randomUUID())
           coordinator.addEntity(red)
@@ -82,7 +85,8 @@ object GameEngine {
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
             .addEntityComponent(red, AIComponent(0, myUuid))
-        case BluePupa(position, shape, _, velocity) =>
+        case BluePupa(position, shape, _, velocity)
+        =>
           logger info "add blue pupa"
           val blue = BluePupaEntity(UUID.randomUUID())
           coordinator.addEntity(blue)
@@ -90,7 +94,8 @@ object GameEngine {
             .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(blue, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-        case Polar(position, shape, _, velocity) =>
+        case Polar(position, shape, _, velocity)
+        =>
           logger info "add polar"
           val polar = PolarEntity(UUID.randomUUID())
           coordinator.addEntity(polar)
