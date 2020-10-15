@@ -2,11 +2,10 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.EngineController
-import it.unibo.pps1920.motoscala.controller.Controller
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
+import it.unibo.pps1920.motoscala.controller.{Controller, EngineController}
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
@@ -92,7 +91,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
 object EndGameSystemTestClasses {
   final class Display extends Displayable {
     override def notifyDrawEntities(player: EntityData,
-                                    entities: Seq[EntityData]): Unit = ???
+                                    entities: Set[EntityData]): Unit = ???
     override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = ???
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
   }

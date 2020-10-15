@@ -2,8 +2,7 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.EngineController
-import it.unibo.pps1920.motoscala.controller.Controller
+import it.unibo.pps1920.motoscala.controller.{Controller, EngineController}
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually

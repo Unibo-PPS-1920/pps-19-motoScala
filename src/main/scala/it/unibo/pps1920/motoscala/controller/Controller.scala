@@ -4,7 +4,6 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 
 import it.unibo.pps1920.motoscala
-import it.unibo.pps1920.motoscala.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle

@@ -1,6 +1,5 @@
-package it.unibo.pps1920.motoscala
+package it.unibo.pps1920.motoscala.controller
 
-import it.unibo.pps1920.motoscala.controller.SoundController
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 
 trait EngineController extends SoundController {

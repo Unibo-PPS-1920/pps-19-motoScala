@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.EngineController
+import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData

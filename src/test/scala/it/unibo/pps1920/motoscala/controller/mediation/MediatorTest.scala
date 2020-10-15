@@ -40,7 +40,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       }
       "allow to send command" in {
         mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South)))
-        mediator.publishEvent(Event.DrawEntityEvent(null, List.empty))
+        mediator.publishEvent(Event.DrawEntityEvent(null, Set.empty))
         mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
@@ -68,7 +68,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
 }
 object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
-    override def notifyDrawEntities(player: EntityData, entities: Seq[Event.EntityData]): Unit = ToggleFlags
+    override def notifyDrawEntities(player: EntityData, entities: Set[Event.EntityData]): Unit = ToggleFlags
       .drawFlag = !ToggleFlags
       .drawFlag
     override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag

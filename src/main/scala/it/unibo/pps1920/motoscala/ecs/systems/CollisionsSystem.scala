@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
-import it.unibo.pps1920.motoscala.EngineController
+import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
@@ -111,9 +111,9 @@ object CollisionsSystem {
       /* COLLISION CORE */
 
       if (collisionCompE1.mass != 0 && collisionCompE2.mass != 0) {
-        logger debug s"Before collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
+        /*logger debug s"Before collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
           velocityCompE2.currentVel
-        }"
+        }"*/
 
         // Compute unit normal and unit tangent vectors
         val normalVector = positionCompE2.pos sub positionCompE1.pos
@@ -141,9 +141,9 @@ object CollisionsSystem {
         // Set new velocities in x and y coordinates
         velocityCompE1.currentVel = newNorVec1 add newTanVec1
         velocityCompE2.currentVel = newNorVec2 add newTanVec2
-        logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
+        /*logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
           velocityCompE2.currentVel
-        }"
+        }"*/
       }
     }
 
