@@ -10,8 +10,6 @@ import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
-import scala.util.Try
-
 object DrawSystem {
   def apply(mediator: Mediator, coordinator: Coordinator,
             myUuid: UUID): System = new DrawSystemImpl(mediator, coordinator, myUuid)
@@ -25,10 +23,7 @@ object DrawSystem {
         val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
         DrawEntityData(p.pos, Direction.vecToDir(v.currentVel), s.shape, e)
       }).partition(_.entity.uuid == myUuid)
-      Try(DrawEntityEvent(entitiesToView._1.head, entitiesToView._2))
-        .fold(err => logger info err.getMessage, value => mediator.publishEvent(value))
-
-
+      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.head, entitiesToView._2))
     }
   }
 }
