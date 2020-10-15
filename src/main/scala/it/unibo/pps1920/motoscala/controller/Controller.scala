@@ -52,7 +52,7 @@ object Controller {
                                    Level
                                      .RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
                                    Level
-                                     .RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(5, 5))
+                                     .RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(5, 5))
                                    )))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }

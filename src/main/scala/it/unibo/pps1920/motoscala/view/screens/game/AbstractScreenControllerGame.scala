@@ -90,9 +90,8 @@ abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(true)
   }
 
-  protected def drawEntities(player: EntityData, entities: Set[EntityData]): Unit = {
+  protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
-    //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
       case RedPupaEntity(_) => Drawables.RedPupaDrawable.draw(e)
@@ -100,7 +99,7 @@ abstract class AbstractScreenControllerGame(
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
     })
-    Drawables.PlayerDrawable.draw(player)
+    player.foreach(Drawables.PlayerDrawable.draw(_))
   }
 
   override def whenDisplayed(): Unit = {

@@ -44,7 +44,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
         mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
-        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(true, null)))
+        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(hasWon = true, null)))
       }
     }
     "publishing" should {
@@ -68,9 +68,8 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
 }
 object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
-    override def notifyDrawEntities(player: EntityData, entities: Set[Event.EntityData]): Unit = ToggleFlags
-      .drawFlag = !ToggleFlags
-      .drawFlag
+    override def notifyDrawEntities(player: Option[EntityData], entities: Set[Event.EntityData]): Unit =
+      ToggleFlags.drawFlag = !ToggleFlags.drawFlag
     override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
     override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
   }
