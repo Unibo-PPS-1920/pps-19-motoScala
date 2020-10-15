@@ -19,38 +19,39 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
-  private var blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
-  private var actualMusicPlayer: MediaPlayer = _
+  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
+  private var actualMusicPlayer: Option[MediaPlayer] = None
   private var actualClipPlayer: AudioClip = _
-  private var volumeMusic: Double = 1.0
+  private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
 
   override def run(): Unit = {
     while (true) {
       Try(this.blockingQueue.take()) match {
         case Success(ev) => ev.handle(this)
-        case Failure(exception) => logger warn (exception.getMessage)
+        case Failure(exception) => logger warn exception.getMessage
       }
     }
   }
   override def playMusic(media: Music): Unit = {
     if (!this.medias.contains(media)) {
-      this.medias += (media -> (new MediaPlayer(new Media(loadFromJar(media.entryName)))))
+      this.medias += (media -> new MediaPlayer(new Media(loadFromJar(media.entryName))))
     }
     Platform.runLater(() => {
-      this.actualMusicPlayer = this.medias(media)
-      this.actualMusicPlayer.setVolume(volumeMusic)
-      this.actualMusicPlayer.play()
-      this.actualMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE)
+      this.actualMusicPlayer = this.medias.get(media)
+      this.actualMusicPlayer.foreach(_.setVolume(volumeMusic))
+      this.actualMusicPlayer.foreach(_.play())
+      this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
+      this.medias.filterNot(p => p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())
     })
-
   }
-  override def stopMusic(): Unit = this.actualMusicPlayer.stop()
+  override def stopMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.stop()))
+  override def pauseMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.pause()))
+  override def resumeMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.play()))
   override def playClip(clip: Clips): Unit = {
     if (!this.clips.contains(clip)) {
-      this.clips += (clip -> (new AudioClip(loadFromJar(clip.entryName))))
+      this.clips += (clip -> new AudioClip(loadFromJar(clip.entryName)))
     }
-
     Platform.runLater(() => {
       this.actualClipPlayer = this.clips(clip)
       this.actualClipPlayer.play(volumeEffect)
@@ -58,35 +59,20 @@ private final class ConcreteSoundAgent extends SoundAgent {
   }
   override def setVolumeMusic(value: Double): Unit = {
     this.volumeMusic = value
-    Platform.runLater(() => {
-      this.actualMusicPlayer.setVolume(this.volumeMusic)
-    })
+    Platform.runLater(() => {this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic)) })
   }
   override def setVolumeEffect(value: Double): Unit = {
     this.volumeEffect = value
-    Platform.runLater(() => {
-      this.actualClipPlayer.setVolume(this.volumeEffect)
-    })
+    Platform.runLater(() => {this.actualClipPlayer.setVolume(this.volumeEffect) })
   }
   override def restartMusic(): Unit = {
     Platform.runLater(() => {
-      this.actualMusicPlayer.stop()
-      this.actualMusicPlayer.seek(Duration.ZERO);
-      this.actualMusicPlayer.play()
+      this.actualMusicPlayer.foreach(_.stop())
+      this.actualMusicPlayer.foreach(_.seek(Duration.ZERO))
+      this.actualMusicPlayer.foreach(_.play())
     })
   }
-  override def pauseMusic(): Unit = Platform.runLater(() => {
-    this.actualMusicPlayer.pause()
-  })
-
-  override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() => {
-    this.blockingQueue.add(ev)
-
-  })
-
-  override def resumeMusic(): Unit = Platform.runLater(() => {
-    this.actualMusicPlayer.pause()
-  })
+  override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() => {this.blockingQueue.add(ev) })
 }
 
 object SoundAgent {

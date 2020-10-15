@@ -14,7 +14,6 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
                                                      protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var buttonBack: Button = _
   @FXML protected var buttonHost: Button = _
   @FXML protected var buttonJoin: Button = _
   @FXML protected var ipTextField: TextField = _
@@ -22,6 +21,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
+    initButtons()
     initBackButton()
     initTextField()
   }
@@ -35,8 +35,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     assert(ipTextField != null, "fx:id=\"ipTextField\" was not injected: check your FXML file 'ModeSelection.fxml'.")
   }
 
-  private def initBackButton(): Unit = {
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+  private def initButtons(): Unit = {
     buttonHost.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
     buttonJoin.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoLobby))
   }

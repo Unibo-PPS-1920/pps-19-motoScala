@@ -11,9 +11,7 @@ final class ScreenControllerLevels(protected override val viewFacade: ViewFacade
                                    protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {
   logger info "Level Screen"
 
-  override def whenDisplayed(): Unit = {
-    controller.loadAllLevels()
-  }
+  override def whenDisplayed(): Unit = controller.loadAllLevels()
 
   override def notify(ev: ViewEvent): Unit = ev match {
     case LevelDataEvent(levels) => Platform.runLater(() => populateLevels(levels))

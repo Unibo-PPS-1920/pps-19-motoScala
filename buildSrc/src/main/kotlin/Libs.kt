@@ -78,4 +78,8 @@ object Libs {
         const val jackson_module = "com.fasterxml.jackson.module:jackson-module-scala_2.13:" + Versions.jackson
         const val jackson_yaml = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:" + Versions.jackson
     }
+
+    object TuProlog {
+        const val tuprolog = "it.unibo.alice.tuprolog:tuprolog:" + Versions.tuprolog
+    }
 }

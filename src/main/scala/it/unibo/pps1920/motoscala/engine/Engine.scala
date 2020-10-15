@@ -47,12 +47,15 @@ object GameEngine {
       coordinator.registerComponentType(classOf[CollisionComponent])
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
+      coordinator.registerComponentType(classOf[AIComponent])
       coordinator
         .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
       coordinator.registerSystem(MovementSystem(coordinator))
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
       coordinator.registerSystem(CollisionsSystem(coordinator, Fps))
+      coordinator.registerSystem(AISystem(coordinator, eventQueue))
+
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
       level.entities.foreach {
@@ -74,6 +77,7 @@ object GameEngine {
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+
         }
         case RedPupa(position, shape, direction, velocity) => {
           logger info "add red pupa"
@@ -83,6 +87,8 @@ object GameEngine {
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(red, AIComponent(0, myUuid))
+
         }
         case BluePupa(position, shape, direction, velocity) => {
           logger info "add blue pupa"

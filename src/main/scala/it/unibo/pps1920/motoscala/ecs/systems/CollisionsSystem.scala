@@ -91,8 +91,8 @@ object CollisionsSystem {
       }
 
       //check distance from closest edge
-      if((circlePos dist testEdge) <= circle.radius) inversionVec //collide
-      else Vector2(1,1) //do not collide
+      if((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
+      else Vector2(1,1) //do not collide: same direction
 
     }
 
