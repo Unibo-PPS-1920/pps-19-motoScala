@@ -15,12 +15,7 @@ import org.kordamp.ikonli.Ikon
 import org.kordamp.ikonli.javafx.FontIcon
 
 package object view {
-  private var isToolkitInitialized = false
-
-  def initializeJavaFXThread(): Unit = if (!isToolkitInitialized) {
-    Platform.startup(() => {})
-    isToolkitInitialized = true
-  }
+  def initializeJavaFXThread(): Unit = Platform.startup(() => {})
 
   def loadFxml(fxml: FXMLScreens, controller: ScreenController): Node = {
     val loader = new FXMLLoader(View.getClass.getResource(fxml.resourcePath))

@@ -2,16 +2,17 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
+import it.unibo.pps1920.motoscala.controller.EngineController
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
-import it.unibo.pps1920.motoscala.controller.{Controller, EngineController}
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-import it.unibo.pps1920.motoscala.ecs.systems.EndGameSystemTestClasses.Display
+import it.unibo.pps1920.motoscala.ecs.systems.EndGameSystemTestClasses.{DisplayMock, EngineControllerMock}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameEngine
 import org.junit.runner.RunWith
@@ -27,13 +28,13 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
   var endsys: System = _
   var mediator: Mediator = _
   var controller: EngineController = _
-  var display: Display = _
+  var display: DisplayMock = _
   val pid: UUID = UUID.randomUUID()
   val entity: BumperCarEntity = BumperCarEntity(pid)
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
-    controller = Controller()
-    display = new Display()
+    controller = new EngineControllerMock(Mediator())
+    display = new DisplayMock()
     mediator = controller.mediator
     controller.mediator.subscribe(display)
     endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(controller, UUID.randomUUID()))
@@ -89,13 +90,16 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
 }
 
 object EndGameSystemTestClasses {
-  final class Display extends Displayable {
+  final class DisplayMock extends Displayable {
     override def notifyDrawEntities(player: EntityData,
-                                    entities: Set[EntityData]): Unit = ???
-    override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = ???
+                                    entities: Set[EntityData]): Unit = {}
+    override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
   }
-
+  final class EngineControllerMock(_mediator: Mediator) extends EngineController {
+    override def mediator: Mediator = _mediator
+    override def redirectSoundEvent(me: MediaEvent): Unit = {}
+  }
 }
 
 object res {
