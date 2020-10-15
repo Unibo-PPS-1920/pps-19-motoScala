@@ -90,7 +90,7 @@ abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(true)
   }
 
-  protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
+  protected def drawEntities(player: EntityData, entities: Set[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
     //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
