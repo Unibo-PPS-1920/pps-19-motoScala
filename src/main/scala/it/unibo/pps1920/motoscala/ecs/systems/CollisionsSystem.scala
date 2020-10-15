@@ -29,9 +29,6 @@ object CollisionsSystem {
     private var velocityCompE2: VelocityComponent = _
     private var collisionCompE2: CollisionComponent = _
 
-
-
-
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
       entitiesRef().foreach(e1 => {
@@ -51,24 +48,51 @@ object CollisionsSystem {
            shapeCompE2 = extractComponent[ShapeComponent](e2, classOf[ShapeComponent])
            positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
            positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
-          if (areTouching()) {
-            if(!(velocityCompE2.currentVel.isZero() && velocityCompE1.currentVel.isZero())){
-              collide()
-              collisionStep(collisionCompE1, velocityCompE1)
-              collisionStep(collisionCompE2, velocityCompE2)
-            }
-
-          }
+          checkCollision()
         })
       })
     }
 
-    private def areTouching(): Boolean = {
+    private def checkCollision(): Unit = {
       (shapeCompE1.shape, shapeCompE2.shape) match {
-        case (Circle(e1Radius), Circle(e2Radius)) => (positionCompE1.pos dist positionCompE2.pos) <= (e1Radius + e2Radius)
-        case (Circle(radius), Rectangle(dimX, dimY)) => ???
-        case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"; false
+        case (Circle(e1Radius), Circle(e2Radius)) => if((positionCompE1.pos dist positionCompE2.pos) <= (e1Radius + e2Radius)) {
+          if(!(velocityCompE2.currentVel.isZero() && velocityCompE1.currentVel.isZero())){
+            collide()
+            collisionStep(collisionCompE1, velocityCompE1)
+            collisionStep(collisionCompE2, velocityCompE2)
+          }
+        }
+        case (circle: Circle, rectangle: Rectangle) => velocityCompE1.currentVel = (velocityCompE1.currentVel mul getDirInversion(circle, positionCompE1.pos, rectangle, positionCompE2.pos))
+        case (rectangle: Rectangle, circle: Circle) => velocityCompE2.currentVel = velocityCompE2.currentVel mul getDirInversion(circle, positionCompE2.pos, rectangle, positionCompE1.pos)
+        case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"
       }
+    }
+
+    private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle, rectanglePos: Vector2): Vector2 = {
+      val testEdge = circlePos
+      val inversionVec = Vector2(1,1)
+      //find closest edge
+      if (circlePos.x < rectanglePos.x) { //left edge
+        testEdge.x = rectanglePos.x
+        inversionVec.x = -1
+      }
+      else if(circlePos.x > rectanglePos.x + rectangle.dimX){ //right edge
+        testEdge.x = rectanglePos.x + rectangle.dimX
+        inversionVec.x = -1
+    }
+
+      if(circlePos.y < rectanglePos.y){ //top edge
+        testEdge.y = rectanglePos.y
+        inversionVec.y = -1
+      }
+      else if(circlePos.y > rectanglePos.y + rectangle.dimY){ //bottom edge
+        testEdge.y = rectanglePos.y + rectangle.dimY
+        inversionVec.y = -1
+      }
+
+      //check distance from closest edge
+      if((circlePos dist testEdge) <= circle.radius) inversionVec //collide
+      else Vector2(1,1) //do not collide
 
     }
 
@@ -107,10 +131,7 @@ object CollisionsSystem {
         logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
           velocityCompE2.currentVel
         }"
-
-
       }
-
     }
 
     private def computeCollVel(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double =
