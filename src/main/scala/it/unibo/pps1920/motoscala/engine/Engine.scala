@@ -66,7 +66,7 @@ object GameEngine {
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
         }
 
         case BlackPupa(position, shape, direction, velocity) => {
