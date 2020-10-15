@@ -2,7 +2,8 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.EngineController
+import it.unibo.pps1920.motoscala.controller.Controller
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
 import org.scalatest.concurrent.Eventually
@@ -18,8 +19,8 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
     PatienceConfig(timeout = scaled(Span(10000, Millis)), interval = scaled(Span(5, Millis)))
 
   }
-  val mediator: Mediator = Mediator()
-  val engine: Engine = GameEngine(mediator, UUID.randomUUID())
+  val controller: EngineController = Controller()
+  val engine: Engine = GameEngine(controller, UUID.randomUUID())
   var loop: GameLoop = _
 
   before {

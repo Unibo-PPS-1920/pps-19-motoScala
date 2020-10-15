@@ -8,7 +8,7 @@ trait ObservableUI extends SoundController {
   def attachUI(obs: ObserverUI*): Unit
   def detachUI(obs: ObserverUI*): Unit
   def setupGame(level: Level): Unit
-  def getMediator: Mediator
+  def mediator: Mediator
   def loadAllLevels(): Unit
   def start(): Unit
   def pause(): Unit
