@@ -84,22 +84,26 @@
     -fx-font-size: 25px;
     -fx-alignment: center;
     -fx-text-fill: #958b8b;
+    -fx-border-color: linear-gradient(#266eaa 0.0%, #2065a5 25.0%, #135ba0 75.0%, #0954a0 100.0%);
+
 
 }
 
 #listPlayerView .list-cell:filled:selected:focused, .list-cell:filled:selected {
-    -fx-background-color: linear-gradient(#266eaa 0.0%, #2065a5 25.0%, #135ba0 75.0%, #0954a0 100.0%);
+    -fx-border-width: 5;
     -fx-text-fill: white;
 }
 
 
 #listPlayerView .list-cell:even {
+    /*
     -fx-background-color: #05243e;
+    */
 }
 
 #listPlayerView .list-cell:filled:hover {
-    -fx-background-color: #0a64a5;
-    -fx-text-fill: white;
+    /*    -fx-background-color: #0a64a5;*/
+    /*    -fx-text-fill: white;*/
 }
 
 #IP {

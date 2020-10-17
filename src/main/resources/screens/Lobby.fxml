@@ -51,7 +51,7 @@
                             <MenuItem mnemonicParsing="false" text="Action 2" />
                           </items>
                         </SplitMenuButton>
-                        <SplitMenuButton id="DropMenu" fx:id="dropMenuDifficult" mnemonicParsing="false" text="Diffuculties" textFill="#c8c2da">
+                        <SplitMenuButton id="DropMenu" fx:id="dropMenuDifficult" disable="true" mnemonicParsing="false" text="Diffuculties" textFill="#c8c2da">
                           <items>
                             <MenuItem mnemonicParsing="false" text="Action 1" />
                             <MenuItem mnemonicParsing="false" text="Action 2" />
@@ -60,7 +60,7 @@
                               <Font size="11.0" />
                            </font>
                         </SplitMenuButton>
-                        <SplitMenuButton id="DropMenu" fx:id="dropMenuLevel" mnemonicParsing="false" text="Level" textFill="#c8c2da">
+                        <SplitMenuButton id="DropMenu" fx:id="dropMenuLevel" disable="true" mnemonicParsing="false" text="Level" textFill="#c8c2da">
                            <items>
                               <MenuItem mnemonicParsing="false" text="Action 1" />
                               <MenuItem mnemonicParsing="false" text="Action 2" />
@@ -70,8 +70,8 @@
                   </HBox>
                   <HBox alignment="CENTER" fillHeight="false" spacing="50.0" VBox.vgrow="NEVER">
                      <children>
-                        <Label id="IP" fx:id="ipLabel" text="IP:" />
-                        <Label id="Port" fx:id="portLabel" text="Port:" />
+                        <Label id="IP" fx:id="ipLabel" text="IP:" visible="false" />
+                        <Label id="Port" fx:id="portLabel" text="Port:" visible="false" />
                      </children>
                      <padding>
                         <Insets bottom="15.0" top="15.0" />

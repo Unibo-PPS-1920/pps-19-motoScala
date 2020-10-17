@@ -44,6 +44,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
   }
 
   private def initBackButton(): Unit = {
+
     buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
     buttonHost.setOnAction(_ => {
       this.controller.becomeHost()
@@ -131,13 +132,10 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
   }
   protected def displayResult(res: Boolean): Unit = {
+    this.toggleButtons()
     if (res) {
       viewFacade.changeScreen(ScreenEvent.GotoLobby)
-    } else {
-
     }
-
-
   }
 
 

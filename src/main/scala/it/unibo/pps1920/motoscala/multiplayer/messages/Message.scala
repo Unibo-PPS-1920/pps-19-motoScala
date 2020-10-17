@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.multiplayer.messages
 import akka.actor.ActorRef
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandableEvent, DisplayableEvent}
 import it.unibo.pps1920.motoscala.model.PlayerData
+import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
 
 import scala.collection.mutable
 
@@ -21,8 +22,7 @@ object Message {
   ) extends Message
 
   /*SERVER to client MESSAGES*/
-  /*connection messages*/
-  case class JoinResponseMessage(response: Boolean) extends Message
+
 
   /*in game messages*/
   case class LobbyDataMessage(lobbyData: LobbyData) extends Message
@@ -32,14 +32,31 @@ object Message {
 
 
   /*CLIENT to server MESSAGES*/
-  /*connection messages*/
+
+  /*Client to Server connection messages*/
   case class JoinRequestMessage(name: String) extends Message
-  case class ReadyMessage() extends Message
+  case class JoinResponseMessage(option: Option[ErrorReason] = None) extends Message
+  /*Also used from Controller to Client*/
+  case class ReadyMessage(status: Boolean) extends Message
+
+  /*Internal Controller to Client message*/
+  case class TryJoin(serverSelection: String, name: String) extends Message
+  /*Internal Timeout message*/
+  case class TimeOut() extends Message
 
   /*in game messages*/
   case class CommandMessage(event: CommandableEvent) extends Message
 }
 
 object MessageData {
-  final case class LobbyData(difficulty: Int, mode: Boolean, readyPlayers: mutable.Map[ActorRef, PlayerData])
+  final case class LobbyData(difficulty: Option[Int] = None, mode: Option[Boolean] = None,
+                             readyPlayers: mutable.Map[ActorRef, PlayerData])
 }
+
+
+object ErrorMsg {
+  case class ErrorReason(title: String, text: String)
+
+}
+
+

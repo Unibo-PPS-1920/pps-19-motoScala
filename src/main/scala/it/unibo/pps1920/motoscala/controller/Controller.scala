@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller
 import java.util.UUID
 import java.util.UUID.randomUUID
 
-import akka.actor.{ActorSelection, ExtendedActorSystem}
+import akka.actor.ExtendedActorSystem
 import it.unibo.pps1920.motoscala
 import it.unibo.pps1920.motoscala.controller.managers.audio._
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
@@ -11,20 +11,18 @@ import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
-import it.unibo.pps1920.motoscala.model.ReadyTable.ReadyPlayers
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
-import it.unibo.pps1920.motoscala.multiplayer.messages.Message.{JoinRequestMessage, ReadyMessage}
+import it.unibo.pps1920.motoscala.multiplayer.messages.Message.{LobbyDataMessage, ReadyMessage, TryJoin}
+import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.ObserverUI
-import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
-import scala.reflect.classTag
 
 trait Controller extends ActorController with SoundController with ObservableUI {
 }
@@ -37,8 +35,6 @@ object Controller {
   private class ControllerImpl private[Controller]() extends Controller {
     import it.unibo.pps1920.motoscala.model.{MultiPlayerSetup, SinglePlayerSetup}
     import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
-    import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-    import it.unibo.pps1920.motoscala.view.events.ViewEvent.LobbyDataEvent
     private val soundController: SoundController = null
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val mediator = Mediator()
@@ -57,9 +53,9 @@ object Controller {
     private var actualSettings: SettingsData = loadSettings()
     private var clientActor: Option[ActorRef] = None
     private var serverActor: Option[ActorRef] = None
-    private var serverAddress: ActorSelection = _
     private var matchSetupMp: Option[MultiPlayerSetup] = None
     private var matchSetupSp: Option[SinglePlayerSetup] = None
+    private var status: Boolean = false
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -100,57 +96,48 @@ object Controller {
       this.dataManager.saveSettings(this.actualSettings)
     }
     override def setSelfReady(): Unit = {
+      this.status = !this.status
       if (serverActor.isDefined) {
-        setReadyClient(serverActor.get)
+        this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.status)
+        this.serverActor.get
+          .tell(LobbyDataMessage(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers)), this.serverActor.get)
+        observers
+          .foreach(observer => observer
+            .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
       } else {
-        this.serverAddress ! (ReadyMessage(), this.clientActor.get)
+        this.clientActor.get ! ReadyMessage(this.status)
       }
-      this.matchSetupMp.get.setPlayerStatus(serverActor.getOrElse(clientActor.get), isReady = true)
-      observers
-        .foreach(observer => observer
-          .notify(UpdateReadyPlayer(ReadyPlayers(this.matchSetupMp.get.readyPlayers))))
     }
-    /*Used by Server Actor*/
-    def setReadyClient(ref: ActorRef): Unit = {
-      this.matchSetupMp.get.setPlayerStatus(ref, isReady = true)
-      observers
-        .foreach(observer => observer
-          .notify(UpdateReadyPlayer(ReadyPlayers(this.matchSetupMp.get.readyPlayers))))
-    }
+
+
     override def kickSomeone(): Unit = ???
-    override def requestJoin(ref: ActorRef): Boolean = matchSetupMp.get.tryAddPlayer(ref, "")
     /*Used by Client Actor*/
     override def gameStart(): Unit = ???
     override def gameEnd(): Unit = ???
-    override def settingsUpdate(setup: LobbyData): Unit = observers.foreach(o => o.notify(LobbyDataEvent(setup)))
-    override def getLobbyData: DataType.LobbyData = LobbyData(matchSetupMp.get.difficulty, matchSetupMp.get
-      .mode, matchSetupMp.get.readyPlayers)
-
+    override def getLobbyData: DataType.LobbyData = LobbyData(Some(matchSetupMp.get.difficulty), Some(matchSetupMp.get
+                                                                                                        .mode), matchSetupMp
+                                                                .get.readyPlayers)
     override def tryJoinLobby(ip: String, port: String): Unit = {
-      clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
-      serverAddress = system.actorSelection(s"akka://MotoSystem@${ip}:${port}/user/Server*")
-      serverAddress ! (JoinRequestMessage(this.actualSettings.name), clientActor.get)
+      this.clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
+      this.clientActor.get ! TryJoin(s"akka://MotoSystem@${ip}:${port}/user/Server*", this.actualSettings.name)
     }
     override def becomeHost(): Unit = {
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
       matchSetupMp = Some(MultiPlayerSetup(1, mode = true, 10))
+      matchSetupMp.get.tryAddPlayer(serverActor.get, this.actualSettings.name)
       observers
         .foreach(observer => observer
           .notify(SetupLobby(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
             .getDefaultAddress.port.get.toString, this.actualSettings.name)))
+
     }
     override def joinResult(result: Boolean): Unit = {
-      observers
-        .foreach(observer => observer
-          .notify(ViewEvent.JoinResult(result)))
-
-    }
-    override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
-      classTag[T].runtimeClass
-      strategy.apply(this.matchSetupMp.get)
-    }
-    override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = {
-
+      if (!result) {
+        this.shutdownMultiplayer()
+      }
+      this.observers.foreach(obs => {
+        obs.notify(JoinResult(result))
+      })
     }
     override def shutdownMultiplayer(): Unit = {
       if (this.serverActor.isDefined) {
@@ -159,6 +146,14 @@ object Controller {
       if (this.clientActor.isDefined) {
         this.system.stop(this.clientActor.get)
       }
+      this.serverActor = None
+      this.clientActor = None
+    }
+    override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
+      strategy.apply(this.matchSetupMp.get)
+    }
+    override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = {
+      observers.foreach(o => strategy.apply(o))
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
