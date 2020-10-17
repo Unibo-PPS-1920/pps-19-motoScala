@@ -15,6 +15,8 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
+import scala.collection.mutable
+
 @RunWith(classOf[JUnitRunner])
 class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   var ai: System = _
@@ -30,14 +32,14 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
   val pos2: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic: AIComponent = AIComponent(foolishness = 1, target = pid)
+  val aic: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
   val pos3: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel3: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic2: AIComponent = AIComponent(foolishness = 1, target = pid)
+  val aic2: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     q = CommandQueue()
-    ai = AISystem(coordinator, q)
+    ai = AISystem(coordinator, q, skipFrames = 1)
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerComponentType(classOf[AIComponent])
