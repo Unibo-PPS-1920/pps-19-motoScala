@@ -16,23 +16,21 @@ move2((SX,SY),(TX,TY),DX,DY):-
   pos_dir((SX,SY),(NX,NY),(DX,DY)).
   %move2((NX,NY),(TX,TY),N).
 
-move_avoiding((TX,TY),(TX,TY),[],TX,TY):- !.
+move_avoiding(Q,(TX,TY),(TX,TY),[],TX,TY):-
+	!.
 
-move_avoiding((SX,SY),(TX,TY),O,DX,DY):-
+move_avoiding(Q,(SX,SY),(TX,TY),O,OX,OY):-
   step(SX,TX,NX),
   step(SY,TY,NY),
   allowed_move((NX,NY),O),
-  pos_dir((SX,SY),(NX,NY),(DX,DY)).
+  pos_dir((SX,SY),(NX,NY),(DX,DY)),
+  random_biased_dir(Q,(DX,DY),(OX,OY)).
 
-move_avoiding((SX,SY),(TX,TY),O,DX,DY):-
+move_avoiding(Q,(SX,SY),(TX,TY),O,DX,DY):-
   step(SX,TX,NX),
   step(SY,TY,NY),
   \+ allowed_move((NX,NY),O),
-  step(NX,TX,EX),
-  step(NY,TY,EY),
-%  step_right(SX,EX),
-%  step_right(SY,EY),
-  pos_dir((EX,EY),(NX,NY),(DX,DY)).
+  random_biased_dir(100,DX,DY).
 
 allowed_move((X,Y),O):-
   \+ member((X,Y),O).
@@ -56,4 +54,23 @@ pos_dir(P1,P1,(0,0)).
 pos_dir((X1,Y1),(X2,Y2),(DX,DY)):-
 	DX is X2 - X1,
 	DY is Y2 - Y1.
+
+random_dir(X,Y):-
+	rand_int(3,A),
+	rand_int(3,B),
+	X is A -1,
+	Y is B -1.
+
+%random_biased_dir(+B,+X,+Y,-RX,-RY).
+%outputs a random direction with more probabilty as the bias rises
+
+random_biased_dir(B,(X,Y),(RX,RY)):-
+	rand_int(B,R),
+	(R > 1 ->
+	random_dir(RX,RY);
+	RX is X,
+	RY is Y).
+
+
+
 

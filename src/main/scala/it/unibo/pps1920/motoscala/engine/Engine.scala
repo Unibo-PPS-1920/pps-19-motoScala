@@ -17,6 +17,9 @@ import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
 import org.slf4j.LoggerFactory
 
+import scala.collection.mutable
+import scala.util.Random
+
 trait Engine extends UpdatableEngine with Commandable {
   def init(level: LevelData): Unit
   def start(): Unit
@@ -48,7 +51,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[JumpComponent])
 
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
-      coordinator.registerSystem(AISystem(coordinator, eventQueue))
+      coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
       coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
       coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
       coordinator.registerSystem(MovementSystem(coordinator))
@@ -76,6 +79,7 @@ object GameEngine {
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(black, AIComponent(1, Random.shuffle(mutable.Stack(player))))
         case RedPupa(position, shape, _, velocity)
         =>
           logger info "add red pupa"
@@ -85,7 +89,7 @@ object GameEngine {
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(red, AIComponent(0, myUuid))
+            .addEntityComponent(red, AIComponent(4, Random.shuffle(mutable.Stack(player))))
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"

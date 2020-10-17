@@ -15,29 +15,31 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
+import scala.collection.mutable
+
 @RunWith(classOf[JUnitRunner])
 class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   var ai: System = _
   var coordinator: Coordinator = _
   var q: CommandQueue = _
-  val pid = UUID.randomUUID()
-  val eid = UUID.randomUUID()
-  val eid2 = UUID.randomUUID()
-  val p = BumperCarEntity(pid)
-  val e = RedPupaEntity(eid)
-  val e2 = RedPupaEntity(eid2)
+  val pid: UUID = UUID.randomUUID()
+  val eid: UUID = UUID.randomUUID()
+  val eid2: UUID = UUID.randomUUID()
+  val p: BumperCarEntity = BumperCarEntity(pid)
+  val e: RedPupaEntity = RedPupaEntity(eid)
+  val e2: RedPupaEntity = RedPupaEntity(eid2)
   val pos: PositionComponent = PositionComponent(Vector2(0, 0))
   val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
   val pos2: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic: AIComponent = AIComponent(skill = 0, target = pid)
+  val aic: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
   val pos3: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel3: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic2: AIComponent = AIComponent(skill = 0, target = pid)
+  val aic2: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     q = CommandQueue()
-    ai = AISystem(coordinator, q)
+    ai = AISystem(coordinator, q, skipFrames = 1)
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerComponentType(classOf[AIComponent])
@@ -69,6 +71,16 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
         coordinator.updateSystems()
         val ev = q.dequeueAll()
         ev.head.cmd.direction shouldBe South
+      }
+    }
+    "go to the corner if there are no more players" when {
+      "updating" in {
+        pos2.pos shouldBe Vector2(0, 10)
+        coordinator.removeEntity(p)
+        coordinator.updateSystems()
+
+        val ev = q.dequeueAll()
+        ev.head.cmd.direction shouldBe North
       }
     }
 
