@@ -19,12 +19,12 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
+  cacheSounds()
   private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
   private var actualMusicPlayer: Option[MediaPlayer] = None
   private var actualClipPlayer: AudioClip = _
   private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
-  cacheSounds()
 
   override def run(): Unit = {
     while (true) {
