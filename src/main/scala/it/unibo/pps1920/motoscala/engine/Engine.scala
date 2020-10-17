@@ -45,6 +45,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator.registerComponentType(classOf[AIComponent])
+      coordinator.registerComponentType(classOf[JumpComponent])
 
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(AISystem(coordinator, eventQueue))
@@ -63,7 +64,7 @@ object GameEngine {
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-
+            .addEntityComponent(player, JumpComponent(true))
             .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
 
         case BlackPupa(position, shape, _, velocity)
