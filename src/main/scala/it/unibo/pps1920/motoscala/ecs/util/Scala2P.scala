@@ -6,6 +6,7 @@ import alice.tuprolog._
 object Scala2P {
   def extractTerm(t: Term, i: Integer): Term = t.asInstanceOf[Struct].getArg(i).getTerm
 
+  implicit def intToTerm(i: scala.Int): Term = Term.createTerm(i.toString)
   implicit def stringToTerm(s: String): Term = Term.createTerm(s)
   implicit def seqToTerm[T](s: Seq[T]): Term = s.mkString("[", ",", "]")
 

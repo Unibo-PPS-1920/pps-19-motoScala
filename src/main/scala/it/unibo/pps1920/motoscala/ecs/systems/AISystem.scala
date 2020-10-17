@@ -44,10 +44,10 @@ object AISystem {
             case None => Vector2(0, 0)
           }
 
-          val query = new Struct("move_avoiding", (pos.x, pos.y).toString(), (tPos.x, tPos.y)
+          val query = new Struct("move_avoiding", ai.foolishness, (pos.x, pos.y).toString(), (tPos.x, tPos.y)
             .toString(), positions, new Var(), new Var())
           val s = engine.solve(query).getSolution
-          val v = Vector2(x = extractTerm(s, 3), y = extractTerm(s, 4))
+          val v = Vector2(x = extractTerm(s, 4), y = extractTerm(s, 5))
           queue
             .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
         })
