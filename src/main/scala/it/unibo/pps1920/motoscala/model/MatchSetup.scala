@@ -21,8 +21,15 @@ case class MultiPlayerSetup(var difficulty: Int = 0, var mode: Boolean = false,
       readyPlayers += (playerRef -> PlayerData(name, status = false))
       return None
     }
-    return Some(ErrorReason("Lobby full", "No more slots available"))
+    Some(ErrorReason("Lobby full", "No more slots available"))
   }
+
+  def removePlayer(name: String): ActorRef = {
+    val player = this.readyPlayers.find(data => data._2.name == name).get
+    this.readyPlayers.remove(player._1)
+    player._1
+  }
+
 }
 
 case class PlayerData(var name: String, var status: Boolean)

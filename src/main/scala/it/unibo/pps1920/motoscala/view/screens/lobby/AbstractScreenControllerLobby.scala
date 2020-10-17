@@ -49,7 +49,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
       controller.setSelfReady()
     })
     buttonKick.setOnAction(_ => {
-      controller.kickSomeone()
+      controller.kickSomeone(this.listPlayer.getSelectionModel.getSelectedItem.getText)
     })
     this.buttonReady.setDisable(false)
   }
@@ -58,10 +58,12 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     buttonBack.setOnAction(_ => {
       this.cleanAll()
       this.controller.shutdownMultiplayer()
+      this.controller.leaveLobby()
       viewFacade.changeScreen(ScreenEvent.GoBack)
     })
   }
   private def cleanAll() {
+    this.buttonKick.setVisible(false)
     this.ipLabel.setVisible(false)
     this.portLabel.setVisible(false)
     this.dropMenuDifficult.setDisable(true)
@@ -100,14 +102,20 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
         }
         lisPlayerStatus.add(label)
       })
-
-
     })
 
 
   }
 
+
+  def leaveLobby(): Unit = {
+    Platform.runLater(() => {
+      viewFacade.changeScreen(ScreenEvent.GoBack)
+    })
+  }
+
   protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
+    this.buttonKick.setVisible(true)
     this.ipLabel.setVisible(true)
     this.portLabel.setVisible(true)
     this.dropMenuDifficult.setDisable(false)

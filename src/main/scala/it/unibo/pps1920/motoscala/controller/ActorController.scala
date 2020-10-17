@@ -16,6 +16,7 @@ trait ActorController {
   //Called by Client Actor
   def gameStart(): Unit
   def gameEnd(): Unit
+  def gotKicked(): Unit
   def joinResult(result: Boolean): Unit
 
 

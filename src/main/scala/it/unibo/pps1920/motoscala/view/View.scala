@@ -74,7 +74,7 @@ object View {
       case event: ViewEvent.SettingsEvent => screenLoader.getScreenController(FXMLScreens.SETTINGS).notify(event)
       case event: ViewEvent.StatsEvent => screenLoader.getScreenController(FXMLScreens.STATS).notify(event)
       case event: ViewEvent.SelectionEvent => screenLoader.getScreenController(FXMLScreens.SELECTION).notify(event)
-      case ViewEvent.ShowDialog(title, msg, duration, notificationType) => Platform
+      case ViewEvent.ShowDialogEvent(title, msg, duration, notificationType) => Platform
         .runLater(() => showNotificationPopup(title, msg, duration, notificationType, _ => {}))
       case _ => logger warn s"Strange message ${ev}"
     }

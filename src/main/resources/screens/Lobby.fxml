@@ -36,7 +36,7 @@
          <bottom>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button id="Button" fx:id="buttonKick" disable="true" mnemonicParsing="false" text="Kick" />
+                  <Button id="Button" fx:id="buttonKick" disable="true" mnemonicParsing="false" text="Kick" visible="false" />
                </children>
             </HBox>
          </bottom>

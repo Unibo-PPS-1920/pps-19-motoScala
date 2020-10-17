@@ -3,9 +3,9 @@ package it.unibo.pps1920.motoscala.multiplayer.actors
 import akka.actor.{Actor, ActorLogging, ActorSelection, Timers}
 import it.unibo.pps1920.motoscala.controller.ActorController
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.multiplayer.messages.Message._
+import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.view.JavafxEnums
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LobbyDataEvent, ShowDialog}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveEvent, LeaveLobbyEvent, LobbyDataEvent, ShowDialogEvent}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -13,19 +13,19 @@ private class ClientActor(protected val actorController: ActorController) extend
   import akka.actor.ActorRef
   import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
   import org.slf4j.LoggerFactory
-  private val controller: ActorController = actorController
-  private val levelMediator: Mediator = controller.getMediator
+
+  private val levelMediator: Mediator = actorController.getMediator
   private val logger = LoggerFactory getLogger classOf[ClientActor]
   private var serverActor: Option[ActorRef] = None
   private var serverAddress: ActorSelection = _
   //def connectToServer() = ???
-  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandMessage(commandEvent)
+  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandActorMessage(commandEvent)
   override def receive: Receive = idleBehaviour
   private def idleBehaviour: Receive = {
     case TryJoin(selection, name) => {
       serverAddress = this.context.system.actorSelection(selection)
 
-      serverAddress ! JoinRequestMessage(name)
+      serverAddress ! JoinRequestActorMessage(name)
       timers.startSingleTimer(SchedulerTickKey, TimeOut, 5 seconds)
 
       /*
@@ -44,40 +44,53 @@ private class ClientActor(protected val actorController: ActorController) extend
 
 
     }
-    case rdyMsg: ReadyMessage => serverActor.get ! rdyMsg
-    case reqMsg: JoinRequestMessage => serverActor.get ! reqMsg
-    case JoinResponseMessage(None) => {
+    case rdyMsg: ReadyActorMessage => serverActor.get ! rdyMsg
+    case reqMsg: JoinRequestActorMessage => serverActor.get ! reqMsg
+    case JoinResponseActorMessage(None) => {
       timers.cancelAll()
       this.context.become(initMatchBehaviour);
       this.serverActor = Some(this.sender())
       this.actorController.joinResult(true)
     }
-    case JoinResponseMessage(Some(error)) => {
+    case JoinResponseActorMessage(Some(error)) => {
       timers.cancelAll()
-      sendErrorToView(error.title, error.text)
+      sendViewMessage(error.title, error.text)
       this.actorController.joinResult(false)
 
     }
-    case TimeOut => sendErrorToView("Cannot find server", "Timeout reached"); this.actorController.joinResult(false)
-    case msg => logger warn s"Received unexpected message ${msg}"
+    case TimeOut => sendViewMessage("Cannot find server", "Timeout reached"); this.actorController.joinResult(false)
+
+
+    /*
+          this.actorController.joinResult(false)
+    */
+    case msg => logger warn s"Received unexpected message $msg"
   }
   private def initMatchBehaviour: Receive = {
     //Update view lobby data
-    case LobbyDataMessage(lobbyData) => controller
+    case LobbyDataActorMessage(lobbyData) => actorController
       .sendToViewStrategy(obsUi => obsUi.notify(LobbyDataEvent(lobbyData)))
-    case readyMsg: ReadyMessage => serverActor.get ! readyMsg
-    case GameStartMessage => controller.gameStart(); this.context.become(inGameBehaviour)
-    case msg => logger warn s"Received unexpected message ${msg}"
+    case readyMsg: ReadyActorMessage => serverActor.get ! readyMsg
+    case GameStartActorMessage => actorController.gameStart(); this.context.become(inGameBehaviour)
+    case KickActorMessage(ref) => {
+      this.actorController.gotKicked()
+    }
+    case ev: LeaveEvent => this.serverActor.get ! ev
+    case CloseLobby() => {
+      this.actorController.sendToViewStrategy(obsUi => obsUi.notify(LeaveLobbyEvent()))
+      sendViewMessage("Lobby has been closed", "Choose another server")
+    }
+    case msg => logger warn s"Received unexpected message $msg"
   }
   private def inGameBehaviour: Receive = {
-    case GameEndMessage => controller.gameEnd()
-    case DisplayMessage(event) => controller.getMediator.publishEvent(event)
-    case msg => logger warn s"Received unexpected message ${msg}"
+    case GameEndActorMessage => actorController.gameEnd()
+    case DisplayActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case msg => logger warn s"Received unexpected message $msg"
   }
-  private def sendErrorToView(title: String, text: String): Unit = {
-    this.controller.sendToViewStrategy(view => view
-      .notify(ShowDialog(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
-        .ERROR_NOTIFICATION)))
+  private def sendViewMessage(title: String, text: String): Unit = {
+    this.actorController.sendToViewStrategy(view => view
+      .notify(ShowDialogEvent(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
+        .INFO_NOTIFICATION)))
   }
   private case object SchedulerTickKey
 }

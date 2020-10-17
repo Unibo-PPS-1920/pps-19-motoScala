@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.view.events
 
+import akka.actor.ActorRef
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
@@ -16,11 +17,13 @@ object ViewEvent {
   sealed trait GlobalViewEvent extends ViewEvent
   sealed trait SettingsEvent extends ViewEvent
   sealed trait StatsEvent extends ViewEvent
-  final case class ShowDialog(title: String, msg: String, secondsDuration: view.JavafxEnums.Notification_Duration,
-                              notificationType: view.JavafxEnums.NotificationType) extends GlobalViewEvent
-  final case class JoinResult(result: Boolean) extends SelectionEvent
+  final case class ShowDialogEvent(title: String, msg: String, secondsDuration: view.JavafxEnums.Notification_Duration,
+                                   notificationType: view.JavafxEnums.NotificationType) extends GlobalViewEvent
+  final case class JoinResultEvent(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
-  final case class SetupLobby(ip: String, port: String, name: String) extends LobbyEvent
+  final case class LeaveLobbyEvent() extends LobbyEvent
+  final case class LeaveEvent(ref: ActorRef) extends LobbyEvent
+  final case class SetupLobbyEvent(ip: String, port: String, name: String) extends LobbyEvent
   final case class LevelDataEvent(levels: Seq[LevelData]) extends LevelEvent
   final case class SettingsDataEvent(settings: SettingsData) extends SettingsEvent
   final case class ScoreDataEvent(scores: ScoresData) extends StatsEvent

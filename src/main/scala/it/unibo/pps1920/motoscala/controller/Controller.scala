@@ -15,11 +15,11 @@ import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
-import it.unibo.pps1920.motoscala.multiplayer.messages.Message.{LobbyDataMessage, ReadyMessage, TryJoin}
+import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-import it.unibo.pps1920.motoscala.view.ObserverUI
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
+import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI}
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
@@ -100,20 +100,27 @@ object Controller {
       if (serverActor.isDefined) {
         this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.status)
         this.serverActor.get
-          .tell(LobbyDataMessage(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers)), this.serverActor.get)
+          .tell(LobbyDataActorMessage(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers)), this.serverActor
+            .get)
         observers
           .foreach(observer => observer
             .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
       } else {
-        this.clientActor.get ! ReadyMessage(this.status)
+        this.clientActor.get ! ReadyActorMessage(this.status)
       }
     }
 
-
-    override def kickSomeone(): Unit = ???
+    override def kickSomeone(name: String): Unit = {
+      this.serverActor.get ! KickActorMessage(this.matchSetupMp.get.removePlayer(name))
+      observers
+        .foreach(observer => observer
+          .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
+    }
     /*Used by Client Actor*/
     override def gameStart(): Unit = ???
-    override def gameEnd(): Unit = ???
+    override def gameEnd(): Unit = {
+
+    }
     override def getLobbyData: DataType.LobbyData = LobbyData(Some(matchSetupMp.get.difficulty), Some(matchSetupMp.get
                                                                                                         .mode), matchSetupMp
                                                                 .get.readyPlayers)
@@ -127,33 +134,46 @@ object Controller {
       matchSetupMp.get.tryAddPlayer(serverActor.get, this.actualSettings.name)
       observers
         .foreach(observer => observer
-          .notify(SetupLobby(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
+          .notify(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
             .getDefaultAddress.port.get.toString, this.actualSettings.name)))
-
     }
     override def joinResult(result: Boolean): Unit = {
       if (!result) {
         this.shutdownMultiplayer()
       }
       this.observers.foreach(obs => {
-        obs.notify(JoinResult(result))
+        obs.notify(JoinResultEvent(result))
       })
-    }
-    override def shutdownMultiplayer(): Unit = {
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      }
-      if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
     }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
     override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = {
       observers.foreach(o => strategy.apply(o))
+    }
+    override def gotKicked(): Unit = {
+      this.observers.foreach(obs => {
+        obs.notify(LeaveLobbyEvent())
+        obs.notify(ShowDialogEvent("Sorry, i hate you", "You have been kicked", JavafxEnums.SHORT_DURATION, JavafxEnums
+          .ERROR_NOTIFICATION))
+        this.shutdownMultiplayer()
+      })
+    }
+    override def shutdownMultiplayer(): Unit = {
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
+    }
+    override def leaveLobby(): Unit = {
+      if (this.serverActor.isDefined) {
+        this.serverActor.get ! CloseLobby()
+      } else if (this.clientActor.isDefined) {
+        this.clientActor.get ! LeaveEvent(this.clientActor.get)
+      }
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }

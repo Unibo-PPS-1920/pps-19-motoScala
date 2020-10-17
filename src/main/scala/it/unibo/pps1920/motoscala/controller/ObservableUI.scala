@@ -8,9 +8,10 @@ trait ObservableUI extends SoundController {
   type Level = Int
   def becomeHost(): Unit
   def tryJoinLobby(ip: String, port: String): Unit
-  def kickSomeone(): Unit
+  def kickSomeone(name: String): Unit
   def setSelfReady(): Unit
   def shutdownMultiplayer(): Unit
+  def leaveLobby(): Unit
   def attachUI(obs: ObserverUI*): Unit
   def detachUI(obs: ObserverUI*): Unit
   def setupGame(level: Level): Unit
