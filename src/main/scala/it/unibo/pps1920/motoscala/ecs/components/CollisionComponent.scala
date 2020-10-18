@@ -12,6 +12,6 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 final case class CollisionComponent(var mass: Double,
                                     var isColliding: Boolean = false,
                                     var duration: Int = 0,
-                                    var oldSpeed: Vector2
+                                    var oldSpeed: Vector2 = Vector2(0,0),
                                    ) extends Component
 
