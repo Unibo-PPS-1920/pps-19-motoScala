@@ -9,7 +9,7 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LeaveEvent
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LobbyDataEvent
 class ServerActor(protected val actorController: ActorController) extends Actor with ActorLogging {
 
   import org.slf4j.LoggerFactory
@@ -35,13 +35,17 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
       this.actorController.sendToLobbyStrategy(lobby => {
         lobby.removePlayer(lobby.readyPlayers(ref).name)
       })
-      this.tellToClients(LobbyDataActorMessage(LobbyData(readyPlayers = this.actorController
-        .sendToLobbyStrategy(lobby => {
-          lobby.readyPlayers
-        }))))
+      val readyPlayersData = this.actorController.getLobbyData.readyPlayers
+
+      this.actorController.sendToViewStrategy(obsUi => {
+        obsUi.notify(LobbyDataEvent(LobbyData(readyPlayers = readyPlayersData
+                                              )))
+      })
+      this.tellToClients(LobbyDataActorMessage(LobbyData(readyPlayers = readyPlayersData)))
     }
-    case ev: CloseLobby => {
+    case ev: CloseLobbyActorMessage => {
       this.tellToClients(ev)
+      this.actorController.shutdownMultiplayer()
     }
     case msg => logger warn s"Received unexpected message IDLE $msg"
   }

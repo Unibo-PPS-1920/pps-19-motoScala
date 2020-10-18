@@ -1,6 +1,5 @@
 package it.unibo.pps1920.motoscala.view.events
 
-import akka.actor.ActorRef
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
@@ -22,7 +21,6 @@ object ViewEvent {
   final case class JoinResultEvent(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
   final case class LeaveLobbyEvent() extends LobbyEvent
-  final case class LeaveEvent(ref: ActorRef) extends LobbyEvent
   final case class SetupLobbyEvent(ip: String, port: String, name: String) extends LobbyEvent
   final case class LevelDataEvent(levels: Seq[LevelData]) extends LevelEvent
   final case class SettingsDataEvent(settings: SettingsData) extends SettingsEvent

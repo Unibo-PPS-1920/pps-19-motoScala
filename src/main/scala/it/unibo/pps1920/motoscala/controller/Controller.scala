@@ -160,6 +160,7 @@ object Controller {
       })
     }
     override def shutdownMultiplayer(): Unit = {
+
       if (this.serverActor.isDefined) {
         this.system.stop(this.serverActor.get)
       } else if (this.clientActor.isDefined) {
@@ -170,7 +171,7 @@ object Controller {
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
-        this.serverActor.get ! CloseLobby()
+        this.serverActor.get ! CloseLobbyActorMessage()
       } else if (this.clientActor.isDefined) {
         this.clientActor.get ! LeaveEvent(this.clientActor.get)
       }

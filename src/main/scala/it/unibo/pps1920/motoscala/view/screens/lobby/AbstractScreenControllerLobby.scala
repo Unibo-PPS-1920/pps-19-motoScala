@@ -56,9 +56,8 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
   private def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => {
-      this.cleanAll()
-      this.controller.shutdownMultiplayer()
       this.controller.leaveLobby()
+      this.cleanAll()
       viewFacade.changeScreen(ScreenEvent.GoBack)
     })
   }

@@ -25,32 +25,32 @@ object ActorMessage {
 
 
   /*in game messages*/
-  case class LobbyDataActorMessage(lobbyData: LobbyData) extends ActorMessage
-  case class GameStartActorMessage() extends ActorMessage
-  case class GameEndActorMessage() extends ActorMessage
-  case class DisplayActorMessage(event: DisplayableEvent)
+  final case class LobbyDataActorMessage(lobbyData: LobbyData) extends ActorMessage
+  final case class GameStartActorMessage() extends ActorMessage
+  final case class GameEndActorMessage() extends ActorMessage
+  final case class DisplayActorMessage(event: DisplayableEvent)
 
 
   /*CLIENT to server MESSAGES*/
 
   /*Server to Client messages*/
-  case class KickActorMessage(ref: ActorRef) extends ActorMessage
-  case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage
-  final case class CloseLobby() extends ActorMessage
-
+  final case class KickActorMessage(ref: ActorRef) extends ActorMessage
+  final case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage
+  final case class CloseLobbyActorMessage() extends ActorMessage
+  final case class LeaveEvent(ref: ActorRef) extends ActorMessage
 
   /*Client to Server connection messages*/
-  case class JoinRequestActorMessage(name: String) extends ActorMessage
+  final case class JoinRequestActorMessage(name: String) extends ActorMessage
   /*Also used from Controller to Client*/
-  case class ReadyActorMessage(status: Boolean) extends ActorMessage
+  final case class ReadyActorMessage(status: Boolean) extends ActorMessage
 
   /*Internal Controller to Client message*/
-  case class TryJoin(serverSelection: String, name: String) extends ActorMessage
+  final case class TryJoin(serverSelection: String, name: String) extends ActorMessage
   /*Internal Timeout message*/
-  case class TimeOut() extends ActorMessage
+  final case class TimeOut() extends ActorMessage
 
   /*in game messages*/
-  case class CommandActorMessage(event: CommandableEvent) extends ActorMessage
+  final case class CommandActorMessage(event: CommandableEvent) extends ActorMessage
 }
 
 object MessageData {

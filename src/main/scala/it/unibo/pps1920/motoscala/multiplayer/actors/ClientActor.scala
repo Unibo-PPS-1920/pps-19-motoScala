@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ActorController
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.view.JavafxEnums
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveEvent, LeaveLobbyEvent, LobbyDataEvent, ShowDialogEvent}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent, ShowDialogEvent}
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -75,10 +75,14 @@ private class ClientActor(protected val actorController: ActorController) extend
     case KickActorMessage(ref) => {
       this.actorController.gotKicked()
     }
-    case ev: LeaveEvent => this.serverActor.get ! ev
-    case CloseLobby() => {
+    case ev: LeaveEvent => {
+      this.serverActor.get ! ev
+      this.actorController.shutdownMultiplayer()
+    }
+    case CloseLobbyActorMessage() => {
       this.actorController.sendToViewStrategy(obsUi => obsUi.notify(LeaveLobbyEvent()))
       sendViewMessage("Lobby has been closed", "Choose another server")
+      this.actorController.shutdownMultiplayer()
     }
     case msg => logger warn s"Received unexpected message $msg"
   }
