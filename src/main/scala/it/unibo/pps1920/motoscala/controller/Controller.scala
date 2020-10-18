@@ -47,14 +47,14 @@ object Controller {
                                                 Coordinate(10 * MaxFps, 10 * MaxFps)),
                                    Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
+                                   Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
+                                   Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
                                    Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
-                                                 Coordinate(5 * MaxFps, 5 * MaxFps))
+                                   /*Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps))*/
                                    )))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }

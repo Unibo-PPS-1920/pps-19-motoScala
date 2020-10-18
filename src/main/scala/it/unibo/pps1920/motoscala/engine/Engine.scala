@@ -32,7 +32,7 @@ object GameEngine {
   def apply(controller: EngineController, myUuid: UUID): Engine = new GameEngineImpl(controller, myUuid)
   private class GameEngineImpl(controller: EngineController, myUuid: UUID) extends Engine {
     private val mediator = controller.mediator
-    private val Fps = 30
+    private val Fps = 160
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()

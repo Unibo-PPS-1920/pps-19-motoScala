@@ -23,7 +23,7 @@ object CollisionsSystem {
                                         classOf[VelocityComponent],
                                         classOf[CollisionComponent])) {
 
-    private val CollisionDuration = fps / 12
+    private val CollisionDuration = fps/8
     //not used because we chose to keep the realistic collision velocity until the end of the collision
     private val CollisionVelocity = Vector2(30, 30)
 

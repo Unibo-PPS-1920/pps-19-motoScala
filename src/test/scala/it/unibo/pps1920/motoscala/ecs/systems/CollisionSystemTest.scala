@@ -44,7 +44,7 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = Mediator()
-    movement = MovementSystem(coordinator)
+    movement = MovementSystem(coordinator, fps=60)
     controller = new EngineControllerMock(mediator)
     collision = CollisionsSystem(coordinator, controller, fps = 60)
 
@@ -86,6 +86,5 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
 object CollisionSystemTestClasses {
   final class EngineControllerMock(_mediator: Mediator) extends EngineController {
     override def mediator: Mediator = _mediator
-    override def redirectSoundEvent(me: MediaEvent): Unit = {}
   }
 }
