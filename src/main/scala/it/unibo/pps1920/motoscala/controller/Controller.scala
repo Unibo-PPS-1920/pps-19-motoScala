@@ -6,6 +6,7 @@ import java.util.UUID.randomUUID
 import akka.actor.{ActorRef, ActorSystem, ExtendedActorSystem}
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps1920.motoscala
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{SetVolumeEffect, SetVolumeMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
@@ -52,9 +53,10 @@ object Controller {
     private var matchSetupMp: Option[MultiPlayerSetup] = None
     private var matchSetupSp: Option[SinglePlayerSetup] = None
     private var status: Boolean = false
-
-
     this.soundAgent.start()
+    /*
+        this.setAudioVolume(this.actualSettings.volume)
+    */
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -102,6 +104,11 @@ object Controller {
     override def saveStats(newSettings: SettingsData): Unit = {
       this.actualSettings = newSettings
       this.dataManager.saveSettings(this.actualSettings)
+      this.setAudioVolume(this.actualSettings.volume)
+    }
+    private def setAudioVolume(value: Double) {
+      this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
+      this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
     }
     override def setSelfReady(): Unit = {
       this.status = !this.status
@@ -117,7 +124,6 @@ object Controller {
         this.clientActor.get ! ReadyActorMessage(this.status)
       }
     }
-
     override def kickSomeone(name: String): Unit = {
       this.serverActor.get ! KickActorMessage(this.matchSetupMp.get.removePlayer(name))
       observers
