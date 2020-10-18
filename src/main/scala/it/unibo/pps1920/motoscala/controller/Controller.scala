@@ -7,6 +7,7 @@ import it.unibo.pps1920.motoscala
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
+import it.unibo.pps1920.motoscala.engine.Constants.MaxFps
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Level
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
@@ -42,18 +43,18 @@ object Controller {
     override def start(): Unit = engine.get.start()
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                              List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
-                                   Level
-                                     .RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
-                                   Level
-                                     .RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
-                                   Level
-                                     .RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
-                                   Level
-                                     .RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
-                                   Level
-                                     .RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),
-                                   Level.BlackPupa(Coordinate(100, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5))
+                              List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0),
+                                                Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps))
                                    )))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }

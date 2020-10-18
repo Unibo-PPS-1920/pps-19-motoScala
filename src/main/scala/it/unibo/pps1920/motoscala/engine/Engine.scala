@@ -54,7 +54,7 @@ object GameEngine {
       coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
       coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
       coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
-      coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerSystem(MovementSystem(coordinator, Fps))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
 
       val player = BumperCarEntity(myUuid)

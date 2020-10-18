@@ -4,9 +4,8 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
-import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-import it.unibo.pps1920.motoscala.ecs.util.Direction._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
@@ -16,29 +15,24 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class MovementSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
-
-
   var coordinator: Coordinator = _
   var movement: System = _
   var mediator: Mediator = _
   val entity = TestEntity(UUID.randomUUID())
   val entity2 = TestEntity(UUID.randomUUID())
   val pos: PositionComponent = PositionComponent(Vector2(0, 0))
-  val vel: VelocityComponent = VelocityComponent(Vector2(0,20), Vector2(20,20))
+  val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
   val pos2: PositionComponent = PositionComponent(Vector2(10, 10))
-  val vel2: VelocityComponent = VelocityComponent(Vector2(20,0), Vector2(20,20))
+  val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
-
-    movement = MovementSystem(coordinator)
-
+    movement = MovementSystem(coordinator, fps = 1)
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerSystem(movement)
     coordinator.addEntity(entity)
     coordinator.addEntityComponent(entity, pos)
     coordinator.addEntityComponent(entity, vel)
-
   }
 
   "A movementSystem" when {
