@@ -72,6 +72,7 @@ object MediatorTestClasses {
       ToggleFlags.drawFlag = !ToggleFlags.drawFlag
     override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
     override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
+    override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }
   final class CommandableImpl extends Commandable {
     override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag

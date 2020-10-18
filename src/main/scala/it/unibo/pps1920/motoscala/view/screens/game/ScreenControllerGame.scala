@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.view.screens.game
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, Event, Mediator}
 import it.unibo.pps1920.motoscala.view.ViewFacade
@@ -19,6 +19,7 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   override def notifyDrawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = Platform
     .runLater(() => drawEntities(player, entities))
   override def notifyLevelEnd(data: LevelEndData): Unit = {}
+  override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
 
   override def notify(ev: ViewEvent): Unit = ???
   override def sendCommandEvent(event: Event.CommandEvent): Unit = mediator.publishEvent(event)
