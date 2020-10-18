@@ -31,6 +31,8 @@ trait Vector2 {
 
   def abs(): Vector2 = Vector2(x.abs, y.abs)
 
+  def neg(): Vector2 = Vector2(-x, -y)
+
   def sumabs(v: Vector2): Vector2 = {
     val vc = Vector2(x.abs + v.x.abs, y.abs + v.y.abs) mul clip()
     logger debug (s"Before zero collision: velocity ent1: ${vc}")

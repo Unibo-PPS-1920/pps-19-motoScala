@@ -89,8 +89,8 @@ object CollisionsSystem {
               collisionStep(collisionCompE2, velocityCompE2)
           }
         }
-        case (circle: Circle, rectangle: Rectangle) => velocityCompE1.currentVel = (velocityCompE1
-          .currentVel mul getDirInversion(circle, positionCompE1.pos, rectangle, positionCompE2.pos))
+        case (circle: Circle, rectangle: Rectangle) => velocityCompE1.currentVel = velocityCompE1
+          .currentVel mul getDirInversion(circle, positionCompE1.pos, rectangle, positionCompE2.pos)
         case (rectangle: Rectangle, circle: Circle) => velocityCompE2.currentVel = velocityCompE2
           .currentVel mul getDirInversion(circle, positionCompE2.pos, rectangle, positionCompE1.pos)
         case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"
@@ -127,6 +127,7 @@ object CollisionsSystem {
     }
 
     private def collide(): Unit = {
+      val wereBothColliding = collisionCompE1.isColliding && collisionCompE2.isColliding
       controller.redirectSoundEvent(PlaySoundEffect(Clips.Collision))
       startCollision()
 
@@ -136,6 +137,11 @@ object CollisionsSystem {
         /*logger debug s"Before collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
           velocityCompE2.currentVel
         }" */
+
+        /*if(velocityCompE1.currentVel == velocityCompE2.currentVel
+        && collisionCompE1.mass == collisionCompE2.mass){
+          velocityCompE1.currentVel = Vector2(0,0)
+        }*/
 
         // Compute unit normal and unit tangent vectors
         val normalVector = positionCompE2.pos sub positionCompE1.pos
@@ -163,7 +169,12 @@ object CollisionsSystem {
         // Set new velocities in x and y coordinates
         velocityCompE1.currentVel = newNorVec1 add newTanVec1
         velocityCompE2.currentVel = newNorVec2 add newTanVec2
-       /* logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
+
+
+        if(wereBothColliding){
+
+        }
+        /*logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
           velocityCompE2.currentVel
         }"*/
       }
