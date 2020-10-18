@@ -9,4 +9,6 @@ private[view] object FXMLScreens {
   final case object LOBBY extends FXMLScreens("/screens/Lobby.fxml", "/sheets/Lobby.css")
   final case object SETTINGS extends FXMLScreens("/screens/Settings.fxml", "/sheets/Settings.css")
   final case object STATS extends FXMLScreens("/screens/Stats.fxml", "/sheets/Stats.css")
+  final case object END extends FXMLScreens("/screens/EndGame.fxml", "/sheets/EndGame.css")
+
 }

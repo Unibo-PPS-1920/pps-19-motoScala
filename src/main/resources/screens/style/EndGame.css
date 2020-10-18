@@ -36,7 +36,6 @@
 }
 
 .root * {
-    -fx-font-size: 35px;
     -fx-background-color: #0c2d4a;
 }
 
@@ -45,20 +44,29 @@
     -fx-stroke: #ffffff;
 }
 
-
-#TextField {
-
-    -fx-border-color: #22374b;
-    -fx-border-width: 5px;
-    -fx-text-fill: #97b3ce;
-    -fx-font-size: 30px;
-    -fx-background-insets: 1 0 1 1, 1 0 1 1, 3 2 3 3;
-    -fx-background-radius: 2 0 0 2, 1 0 0 1, 0;
+#listView {
+    -fx-background-color: #0c4a43;
 
 }
 
+#listView .list-cell {
+    -fx-font-size: 25px;
+    -fx-alignment: center;
+    -fx-text-fill: #958b8b;
 
-#TextField:focused {
-    -fx-border-color: #2e5276;
-    -fx-border-width: 7px;
+}
+
+#listView .list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(#266eaa 0.0%, #2065a5 25.0%, #135ba0 75.0%, #0954a0 100.0%);
+    -fx-text-fill: white;
+}
+
+
+#listView .list-cell:even {
+    -fx-background-color: #05243e;
+}
+
+#listView .list-cell:filled:hover {
+    -fx-background-color: #0a64a5;
+    -fx-text-fill: white;
 }

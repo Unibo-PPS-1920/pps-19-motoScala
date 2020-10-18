@@ -75,6 +75,7 @@ object GameEngine {
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
+
             .addEntityComponent(black, ShapeComponent(shape))
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))

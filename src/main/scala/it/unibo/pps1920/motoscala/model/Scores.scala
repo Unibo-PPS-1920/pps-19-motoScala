@@ -1,8 +1,10 @@
 package it.unibo.pps1920.motoscala.model
 
-object Scores {
+import scala.collection.immutable.HashMap
 
-  case class Score(score: Map[String, Int])
+object Scores {
+  sealed trait Scores
+  case class ScoresData(scoreTable: HashMap[String, Int] = HashMap()) extends Scores
 
 }
 
