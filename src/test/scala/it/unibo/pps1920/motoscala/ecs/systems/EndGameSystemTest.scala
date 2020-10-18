@@ -3,8 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.EngineController
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.System
@@ -95,10 +94,10 @@ object EndGameSystemTestClasses {
                                     entities: Set[EntityData]): Unit = {}
     override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
+    override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }
   final class EngineControllerMock(_mediator: Mediator) extends EngineController {
     override def mediator: Mediator = _mediator
-    override def redirectSoundEvent(me: MediaEvent): Unit = {}
   }
 }
 

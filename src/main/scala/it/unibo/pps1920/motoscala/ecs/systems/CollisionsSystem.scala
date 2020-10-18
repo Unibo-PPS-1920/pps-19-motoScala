@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
+import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
@@ -105,7 +106,7 @@ object CollisionsSystem {
     }
 
     private def collide(): Unit = {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.Collision))
+      controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Collision)))
       startCollision()
 
       /* COLLISION CORE */
