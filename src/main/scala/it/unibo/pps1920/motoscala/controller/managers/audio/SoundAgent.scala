@@ -17,14 +17,14 @@ trait SoundAgent extends Thread with SoundAgentLogic {
 private final class ConcreteSoundAgent extends SoundAgent {
   final val QUEUE_SIZE = 100
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
+  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
-  cacheSounds()
-  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
   private var actualMusicPlayer: Option[MediaPlayer] = None
-  private var actualClipPlayer: AudioClip = _
+  private var actualClipPlayer: Option[AudioClip] = None
   private var volumeMusic: Double = 0.5
   private var volumeEffect: Double = 1.0
+  cacheSounds()
 
   override def run(): Unit = {
     while (true) {
@@ -54,8 +54,9 @@ private final class ConcreteSoundAgent extends SoundAgent {
       this.clips += (clip -> new AudioClip(loadFromJar(clip.entryName)))
     }
     Platform.runLater(() => {
-      this.actualClipPlayer = this.clips(clip)
-      this.actualClipPlayer.play(volumeEffect)
+      this.actualClipPlayer = Some(this.clips(clip))
+      this.actualClipPlayer.get.setVolume(0f)
+      this.actualClipPlayer.get.play(0f)
     })
   }
   override def setVolumeMusic(value: Double): Unit = {
@@ -64,7 +65,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   }
   override def setVolumeEffect(value: Double): Unit = {
     this.volumeEffect = value
-    Platform.runLater(() => {this.actualClipPlayer.setVolume(this.volumeEffect) })
+    Platform.runLater(() => {this.actualClipPlayer.foreach(_.setVolume(this.volumeEffect)) })
   }
   override def restartMusic(): Unit = {
     Platform.runLater(() => {

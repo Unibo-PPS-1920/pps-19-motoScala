@@ -54,9 +54,9 @@ object Controller {
     private var matchSetupSp: Option[SinglePlayerSetup] = None
     private var status: Boolean = false
     this.soundAgent.start()
-    /*
-        this.setAudioVolume(this.actualSettings.volume)
-    */
+
+    this.setAudioVolume(this.actualSettings.volume)
+
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -85,6 +85,24 @@ object Controller {
                                    Level
                                      .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))
                                    )))
+      this.dataManager
+        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+
+                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0),
+                                             Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
+                                              Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                Level.RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
+                                              Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                Level.RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
+                                              Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
+                                              Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
+                                              Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                Level
+                                  .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))
+                                )))
 
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
@@ -161,16 +179,6 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -184,6 +192,16 @@ object Controller {
           .ERROR_NOTIFICATION))
         this.shutdownMultiplayer()
       })
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
