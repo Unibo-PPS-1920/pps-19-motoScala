@@ -5,16 +5,17 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
 import javafx.application.Platform
+import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control._
 import javafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 
+
 abstract class AbstractScreenControllerLobby(protected override val viewFacade: ViewFacade,
                                              protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainBorderPane: BorderPane = _
-  @FXML protected var buttonBack: Button = _
   @FXML protected var buttonKick: Button = _
   @FXML protected var buttonReady: Button = _
   @FXML protected var buttonStart: Button = _
@@ -24,8 +25,10 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   @FXML protected var listPlayer: ListView[Label] = _
   @FXML protected var ipLabel: Label = _
   @FXML protected var portLabel: Label = _
+
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
+    extendButtonBackBehaviour()
     initBackButton()
     initButtons()
     initSplitMenus()
@@ -54,14 +57,13 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     this.buttonReady.setDisable(false)
   }
 
-  private def initBackButton(): Unit = {
-    buttonBack.setOnAction(_ => {
+  private def extendButtonBackBehaviour(): Unit = {
+    buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       this.controller.leaveLobby()
       this.cleanAll()
-      viewFacade.changeScreen(ScreenEvent.GoBack)
     })
   }
-  private def cleanAll() {
+  private def cleanAll(): Unit = {
     this.buttonKick.setVisible(false)
     this.ipLabel.setVisible(false)
     this.portLabel.setVisible(false)
@@ -88,7 +90,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   }
   def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
-      lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("TETONE"))
+      lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
 
       val lisPlayerStatus = this.listPlayer.getItems
       lisPlayerStatus.clear()

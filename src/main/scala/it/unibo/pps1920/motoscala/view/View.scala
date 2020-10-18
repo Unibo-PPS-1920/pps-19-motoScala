@@ -33,7 +33,6 @@ trait View extends ObserverUI {
 object View {
   def apply(controller: ObservableUI): View = {
     require(controller != null)
-    Platform.startup(() => {})
     new ViewImpl(controller)
   }
 
@@ -54,18 +53,19 @@ object View {
         changeScreen(ScreenEvent.GotoHome)
         this.stage = Some(stage)
         logger info s"View started on ${Thread.currentThread()}"
-        controller.redirectSoundEvent(PlayMusicEvent(Music.Menu))
+        controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
       })
-
-
     }
+
     override def changeScreen(event: ScreenEvent): Unit = {
       Platform.runLater(() => {
         screenLoader.applyScreen(stateMachine.consume(event), root)
         screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
       })
     }
+
     override def getStage: Stage = stage.get
+
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
       case event: ViewEvent.GameEvent => screenLoader.getScreenController(FXMLScreens.GAME).notify(event)
@@ -78,6 +78,7 @@ object View {
         .runLater(() => showNotificationPopup(title, msg, duration, notificationType, _ => {}))
       case _ => logger warn s"Strange message ${ev}"
     }
+
     private def loadScreens(): Unit = {
       loadFXMLNode(FXMLScreens.STATS, new ScreenControllerStats(this, controller))
       loadFXMLNode(FXMLScreens.SETTINGS, new ScreenControllerSettings(this, controller))
@@ -88,6 +89,7 @@ object View {
       loadFXMLNode(FXMLScreens.SELECTION, new ScreenControllerModeSelection(this, controller))
       loadFXMLNode(FXMLScreens.END, new ScreenControllerEndGame(this, controller))
     }
+
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
       .loadFXMLNode(screen, controller)
   }

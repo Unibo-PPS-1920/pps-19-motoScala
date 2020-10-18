@@ -3,19 +3,22 @@ package it.unibo.pps1920.motoscala.controller
 import java.util.UUID
 import java.util.UUID.randomUUID
 
-import akka.actor.ExtendedActorSystem
+import akka.actor.{ActorRef, ActorSystem, ExtendedActorSystem}
+import com.typesafe.config.ConfigFactory
 import it.unibo.pps1920.motoscala
-import it.unibo.pps1920.motoscala.controller.managers.audio._
+import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
+import it.unibo.pps1920.motoscala.engine.Constants.MaxFps
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
-import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
+import it.unibo.pps1920.motoscala.model.{Level, MultiPlayerSetup, NetworkAddr, SinglePlayerSetup}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
+import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
@@ -24,31 +27,24 @@ import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
 
-trait Controller extends ActorController with SoundController with ObservableUI {
+trait Controller extends ActorController with SoundController with EngineController with ObservableUI {
 }
-
 object Controller {
   def apply(): Controller = new ControllerImpl()
 
-  import akka.actor.{ActorRef, ActorSystem}
-  import com.typesafe.config.ConfigFactory
-  private class ControllerImpl private[Controller]() extends Controller {
-    import it.unibo.pps1920.motoscala.model.{MultiPlayerSetup, SinglePlayerSetup}
-    import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
-    private val soundController: SoundController = null
+  private class ControllerImpl private[Controller](
+    override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
-    private val mediator = Mediator()
     private val myUuid: UUID = randomUUID()
 
-    private val soundAgent: SoundAgent = SoundAgent()
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
     private val config = ConfigFactory.load("application")
     private val system = ActorSystem("MotoSystem", config)
+    private val soundAgent: SoundAgent = SoundAgent()
     private var engine: Option[Engine] = None
-    private var observers: Set[ObserverUI] = Set()
-    this.soundAgent.start();
     this.dataManager.initAppDirectory()
+    private var observers: Set[ObserverUI] = Set()
     private var levels: List[LevelData] = List()
     private var actualSettings: SettingsData = loadSettings()
     private var clientActor: Option[ActorRef] = None
@@ -57,22 +53,35 @@ object Controller {
     private var matchSetupSp: Option[SinglePlayerSetup] = None
     private var status: Boolean = false
 
+
+    this.soundAgent.start()
+
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
-      engine = Option(motoscala.engine.GameEngine(mediator, myUuid, this))
+      engine = Option(motoscala.engine.GameEngine(this, myUuid))
       engine.get.init(levels.filter(data => data.index == level).head)
     }
 
     override def start(): Unit = engine.get.start()
-    override def getMediator: Mediator = mediator
     override def loadAllLevels(): Unit = {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
 
-                              List(Level.Player(Coordinate(50, 50), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),
-                                   Level
-                                     .RedPupa(Coordinate(90, 50), Circle(25), Coordinate(0, 0), Coordinate(20, 20)))))
+                              List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0),
+                                                Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps))
+                                   )))
+
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
@@ -81,7 +90,6 @@ object Controller {
       engine.get.stop()
       engine = None
     }
-
 
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
 
@@ -145,6 +153,16 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
+    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -159,16 +177,6 @@ object Controller {
         this.shutdownMultiplayer()
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
         this.serverActor.get ! CloseLobbyActorMessage()
@@ -176,6 +184,7 @@ object Controller {
         this.clientActor.get ! LeaveEvent(this.clientActor.get)
       }
     }
+    override def getMediator: Mediator = this.mediator
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
 }

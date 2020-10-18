@@ -3,19 +3,22 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.Controller
+import it.unibo.pps1920.motoscala.controller.EngineController
+import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
-import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
-import it.unibo.pps1920.motoscala.ecs.systems.{DrawSystem, EndGameSystem, InputSystem, MovementSystem}
+import it.unibo.pps1920.motoscala.ecs.systems._
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
 import org.slf4j.LoggerFactory
+
+import scala.collection.mutable
+import scala.util.Random
 
 trait Engine extends UpdatableEngine with Commandable {
   def init(level: LevelData): Unit
@@ -25,15 +28,10 @@ trait Engine extends UpdatableEngine with Commandable {
   def stop(): Unit
 }
 
-
 object GameEngine {
-
-
-  def apply(mediator: Mediator, myUuid: UUID,
-            controller: Controller): Engine = new GameEngineImpl(mediator, myUuid, controller)
-
-  private class GameEngineImpl(mediator: Mediator, myUuid: UUID, controller: Controller) extends Engine {
-
+  def apply(controller: EngineController, myUuid: UUID): Engine = new GameEngineImpl(controller, myUuid)
+  private class GameEngineImpl(controller: EngineController, myUuid: UUID) extends Engine {
+    private val mediator = controller.mediator
     private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
@@ -46,61 +44,70 @@ object GameEngine {
       logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
-
+      coordinator.registerComponentType(classOf[CollisionComponent])
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
-      coordinator
-        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
-      coordinator.registerSystem(MovementSystem(coordinator))
+      coordinator.registerComponentType(classOf[AIComponent])
+
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
+      coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
+      coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+      coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
+      coordinator.registerSystem(MovementSystem(coordinator, Fps))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
       level.entities.foreach {
 
-        case Player(position, shape, direction, velocity) => {
+        case Player(position, shape, _, velocity) =>
           logger info "add player"
           coordinator.addEntity(player)
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-          //.addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, Center, Center, 0))
-        }
 
-        case BlackPupa(position, shape, direction, velocity) => {
+            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
+
+        case BlackPupa(position, shape, _, velocity)
+        =>
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
-          coordinator.addEntityComponent(black, ShapeComponent(shape))
-          coordinator.addEntityComponent(black, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator.addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
 
-        }
-        case RedPupa(position, shape, direction, velocity) => {
+            .addEntityComponent(black, ShapeComponent(shape))
+            .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
+            .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+            .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(black, AIComponent(1, Random.shuffle(mutable.Stack(player))))
+        case RedPupa(position, shape, _, velocity)
+        =>
           logger info "add red pupa"
           val red = RedPupaEntity(UUID.randomUUID())
           coordinator.addEntity(red)
-          coordinator.addEntityComponent(red, ShapeComponent(shape))
-          coordinator.addEntityComponent(red, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator.addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-        }
-        case BluePupa(position, shape, direction, velocity) => {
+            .addEntityComponent(red, ShapeComponent(shape))
+            .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
+            .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+            .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(red, AIComponent(4, Random.shuffle(mutable.Stack(player))))
+        case BluePupa(position, shape, _, velocity)
+        =>
           logger info "add blue pupa"
           val blue = BluePupaEntity(UUID.randomUUID())
           coordinator.addEntity(blue)
-          coordinator.addEntityComponent(blue, ShapeComponent(shape))
-          coordinator.addEntityComponent(blue, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator.addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-        }
-        case Polar(position, shape, direction, velocity) => {
+            .addEntityComponent(blue, ShapeComponent(shape))
+            .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
+            .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+            .addEntityComponent(blue, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+        case Polar(position, shape, _, velocity)
+        =>
           logger info "add polar"
           val polar = PolarEntity(UUID.randomUUID())
           coordinator.addEntity(polar)
-          coordinator.addEntityComponent(polar, ShapeComponent(shape))
-          coordinator.addEntityComponent(polar, PositionComponent(util.Vector2(position.x, position.y)))
-          coordinator.addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-
-        }
+            .addEntityComponent(polar, ShapeComponent(shape))
+            .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
+            .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
+            .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"
@@ -116,7 +123,6 @@ object GameEngine {
     override def resume(): Unit = gameLoop.unPause()
 
     override def stop(): Unit = {
-      logger info "Engine Stopped"
       gameLoop.halt()
       mediator.unsubscribe(this)
     }

@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.controller.mediation
 
 
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.components.Shape
@@ -13,10 +14,12 @@ object Event {
   type EntityData = EventData.DrawEntityData
   type LevelEndData = EventData.EndData
   type CommandData = EventData.CommandData
+  type SoundEvent = MediaEvent
   sealed trait DisplayableEvent extends Event
-  final case class DrawEntityEvent(player: EntityData, entity: Seq[EntityData]) extends DisplayableEvent
+  final case class DrawEntityEvent(player: Option[EntityData], entity: Set[EntityData]) extends DisplayableEvent
   final case class LevelSetupEvent(data: LevelSetupData) extends DisplayableEvent
   final case class LevelEndEvent(data: LevelEndData) extends DisplayableEvent
+  final case class RedirectSoundEvent(event: SoundEvent) extends DisplayableEvent
   sealed trait CommandableEvent extends Event
   final case class CommandEvent(cmd: Event.CommandData) extends CommandableEvent
 }

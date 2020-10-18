@@ -12,8 +12,12 @@ private[managers] trait SystemManager {
 private[managers] object SystemManager {
   private class SystemManagerImpl() extends SystemManager {
     private var systemSignature: Map[System, ECSSignature] = Map()
+    private var systemList: List[System] = List()
 
-    override def registerSystem(sys: System): Unit = systemSignature += (sys -> sys.signature)
+    override def registerSystem(sys: System): Unit = {
+      systemSignature += (sys -> sys.signature)
+      systemList = sys :: systemList
+    }
     override def entitySignatureChanged(entity: Entity, enSignature: ECSSignature): Set[System] = {
       val partition = systemSignature.partition(s => s._2.signatureSet.&(enSignature.signatureSet)
         == s._2.signatureSet)
@@ -22,7 +26,7 @@ private[managers] object SystemManager {
       partition._1.keySet
     }
     override def entityDestroyed(entity: Entity): Unit = systemSignature.keys.foreach(_.removeEntityRef(entity))
-    override def updateAll(): Unit = systemSignature.keys.foreach(_.update())
+    override def updateAll(): Unit = systemList.foreach(_.update())
   }
   def apply(): SystemManager = new SystemManagerImpl()
 }

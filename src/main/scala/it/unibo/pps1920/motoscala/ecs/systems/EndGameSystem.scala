@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
-import it.unibo.pps1920.motoscala.controller.mediation.Event.LevelEndEvent
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{LevelEndEvent, RedirectSoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.PositionComponent
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
@@ -24,12 +26,15 @@ object EndGameSystem {
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
           this.coordinator.removeEntity(e)
+          mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.GameOver)))
           this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))
         } else {
+          mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Out)))
           this.coordinator.removeEntity(e)
         }
       })
       if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
+        mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))
       }

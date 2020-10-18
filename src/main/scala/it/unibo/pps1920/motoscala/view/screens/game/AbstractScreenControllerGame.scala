@@ -2,6 +2,8 @@ package it.unibo.pps1920.motoscala.view.screens.game
 
 import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
+import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
@@ -30,7 +32,6 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var canvas: Canvas = _
   @FXML protected var canvasStack: StackPane = _
   @FXML protected var buttonStart: Button = _
-  @FXML protected var buttonBack: Button = _
   @FXML protected var labelTitle: Label = _
   private var context: GraphicsContext = _
 
@@ -42,10 +43,13 @@ abstract class AbstractScreenControllerGame(
     context = canvas.getGraphicsContext2D
   }
   private def dismiss(): Unit = {
+    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ScreenEvent.GoBack)
     viewFacade.getStage.setFullScreen(false)
+    controller.redirectSoundEvent(StopMusic())
+    controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
@@ -86,9 +90,8 @@ abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(true)
   }
 
-  protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
+  protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
-    //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
       case RedPupaEntity(_) => Drawables.RedPupaDrawable.draw(e)
@@ -96,10 +99,14 @@ abstract class AbstractScreenControllerGame(
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
     })
-    Drawables.PlayerDrawable.draw(player)
+    player.foreach(Drawables.PlayerDrawable.draw(_))
   }
 
-  override def whenDisplayed(): Unit = root.requestFocus()
+  override def whenDisplayed(): Unit = {
+    root.requestFocus()
+    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
+  }
+
   def sendCommandEvent(event: CommandEvent): Unit
 
   private object Drawables {

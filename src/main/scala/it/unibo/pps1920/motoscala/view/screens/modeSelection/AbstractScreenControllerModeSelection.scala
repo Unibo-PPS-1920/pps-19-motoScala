@@ -17,7 +17,6 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
                                                      protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var buttonBack: Button = _
   @FXML protected var buttonHost: Button = _
   @FXML protected var buttonJoin: Button = _
   @FXML protected var ipTextField: TextField = _
@@ -28,6 +27,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
+    initButtons()
     initBackButton()
     initTextField()
   }
@@ -43,9 +43,9 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
   }
 
-  private def initBackButton(): Unit = {
 
-    buttonBack.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GoBack))
+  private def initButtons(): Unit = {
+
     buttonHost.setOnAction(_ => {
       this.controller.becomeHost()
       viewFacade.changeScreen(ScreenEvent.GotoLobby)
@@ -59,6 +59,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     this.buttonJoin.setDisable(!this.buttonJoin.isDisabled)
     this.buttonBack.setDisable(!this.buttonBack.isDisabled)
     this.buttonHost.setDisable(!this.buttonHost.isDisabled)
+
   }
   private def initTextField(): Unit = {
     val partialBlock: String = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
@@ -66,7 +67,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     val ipAddressRegex: String = "^" + (partialBlock + "?" + subsequentPartialBlock + "{0,3}")
 
     val ipAddressFilter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
-      var value: String = formatter.getControlNewText
+      val value: String = formatter.getControlNewText
       if (value.matches(ipAddressRegex)) {
         formatter
       } else {

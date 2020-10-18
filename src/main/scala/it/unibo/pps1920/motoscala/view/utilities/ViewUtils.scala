@@ -4,6 +4,7 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Window.{ScreenMin
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.scene.Scene
 import javafx.scene.image.Image
+import javafx.scene.input.MouseEvent
 import javafx.stage.{Stage, StageStyle, WindowEvent}
 import scalafx.scene.control.Button
 
@@ -26,11 +27,12 @@ private[view] object ViewUtils {
     stage setOnCloseRequest onCloseRequest
     stage
   }
-  def buttonFactory(bText: String, handler: EventHandler[ActionEvent]): Button = {
+  def buttonFactory(bText: String, handler: EventHandler[ActionEvent], handler2: EventHandler[MouseEvent]): Button = {
     new Button {
       text = bText
       id = "Button"
       onAction = handler
+      onMouseEntered = handler2
     }
   }
 }

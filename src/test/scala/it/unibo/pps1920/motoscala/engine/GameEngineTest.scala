@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.engine
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.controller.{Controller, EngineController}
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually
@@ -10,10 +10,10 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   var engine: Engine = _
-  val mediator: Mediator = Mediator()
+  val controller: EngineController = Controller()
 
   override def beforeAll(): Unit = {
-    engine = GameEngine(mediator, UUID.randomUUID())
+    engine = GameEngine(controller, UUID.randomUUID())
   }
 
   "A GameEngine" when {
