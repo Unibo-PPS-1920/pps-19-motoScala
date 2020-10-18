@@ -21,6 +21,7 @@ object ViewEvent {
   final case class JoinResultEvent(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
   final case class LeaveLobbyEvent() extends LobbyEvent
+  final case class LoadLevelEvent() extends LobbyEvent
   final case class SetupLobbyEvent(ip: String, port: String, name: String) extends LobbyEvent
   final case class LevelDataEvent(levels: Seq[LevelData]) extends LevelEvent
   final case class SettingsDataEvent(settings: SettingsData) extends SettingsEvent

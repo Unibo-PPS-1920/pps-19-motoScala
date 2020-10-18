@@ -3,21 +3,19 @@ package it.unibo.pps1920.motoscala.multiplayer.actors
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import it.unibo.pps1920.motoscala.controller.ActorController
 import it.unibo.pps1920.motoscala.controller.mediation.Event.DisplayableEvent
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LobbyDataEvent
-class ServerActor(protected val actorController: ActorController) extends Actor with ActorLogging {
+class ServerActor(protected val actorController: ActorController) extends Actor with ActorLogging with EventObserver[DisplayableEvent] {
 
   import org.slf4j.LoggerFactory
   private val levelMediator: Mediator = actorController.getMediator
   private val logger = LoggerFactory getLogger classOf[ServerActor]
   private var clients: Set[ActorRef] = Set()
-  def handle(displayEvent: DisplayableEvent): Unit = clients
-    .foreach(c => c ! DisplayActorMessage(displayEvent))
 
   override def receive: Receive = idleBehaviour
   def idleBehaviour: Receive = {
@@ -47,10 +45,15 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
       this.tellToClients(ev)
       this.actorController.shutdownMultiplayer()
     }
+    case  ev: GameStartActorMessage => {
+      this.levelMediator.subscribe(this)
+      this.context.become(inGameBehaviour)
+      this.tellToClients(ev)
+    }
     case msg => logger warn s"Received unexpected message IDLE $msg"
   }
   def inGameBehaviour: Receive = {
-    case CommandActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case CommandableActorMessage(event) => actorController.getMediator.publishEvent(event)
     case msg => logger warn s"Received unexpected message $msg"
       println(akka.serialization.Serialization
                 .serializedActorPath(self))
@@ -78,7 +81,13 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
   private def tellToClients(mess: ActorMessage): Unit = {
     this.clients.foreach(c => c ! mess)
   }
-
+  /**
+   * Notify the observer with the event.
+   *
+   * @param event the notified event.
+   */
+  override def notify(event: DisplayableEvent): Unit = clients
+    .foreach(c => c ! DisplayableActorMessage(event))
 }
 
 object ServerActor {

@@ -37,7 +37,7 @@ object Controller {
     override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val myUuid: UUID = randomUUID()
-
+    private val maxPlayers = 5
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
     private val config = ConfigFactory.load("application")
@@ -93,8 +93,11 @@ object Controller {
     override def pause(): Unit = engine.get.pause()
     override def resume(): Unit = engine.get.resume()
     override def stop(): Unit = {
-      engine.get.stop()
-      engine = None
+      if (engine.isDefined){
+        engine.get.stop()
+        engine = None
+      }
+
     }
 
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
@@ -135,7 +138,11 @@ object Controller {
           .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
     }
     /*Used by Client Actor*/
-    override def gameStart(): Unit = ???
+    override def gameStart(): Unit = {
+      observers
+        .foreach(observer => observer
+          .notify(LoadLevelEvent()))
+    }
     override def gameEnd(): Unit = {
 
     }
@@ -148,7 +155,7 @@ object Controller {
     }
     override def becomeHost(): Unit = {
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
-      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, 10))
+      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, this.actualSettings.name)
       observers
         .foreach(observer => observer
@@ -196,6 +203,12 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
+    override def startMultiplayer(): Unit = {
+      loadAllLevels()
+      serverActor.get ! GameStartActorMessage()
+      setupGame(0)
+
+    }
   }
 }
 
