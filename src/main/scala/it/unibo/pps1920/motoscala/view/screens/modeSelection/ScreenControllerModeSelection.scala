@@ -11,8 +11,9 @@ final class ScreenControllerModeSelection(protected override val viewFacade: Vie
 
   override def whenDisplayed(): Unit = {}
 
+
   override def notify(ev: ViewEvent): Unit = ev match {
-    case event: ViewEvent.LobbyEvent => logger info event.toString
+    case ViewEvent.JoinResultEvent(res) => displayResult(res)
     case _ =>
   }
 }

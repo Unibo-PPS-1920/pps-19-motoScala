@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import org.slf4j.LoggerFactory
 
 import scala.util.Try
@@ -18,8 +19,8 @@ final class YamlManager {
   private def initializeMapper(): Unit = {
     import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
     mapper.findAndRegisterModules
-    //mapper.registerModule(DefaultScalaModule)
-    val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[AnyVal]).build
+    mapper.registerModule(DefaultScalaModule)
+    val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[Any]).build
     mapper.activateDefaultTyping(ptv)
   }
   def saveYaml[T](location: Path)(data: T): Boolean = {

@@ -28,6 +28,6 @@ package object file {
 
   object ResourcesPaths {
     final val SCORE_FILE: String = APP_SCORE_FOLDER + SYSTEM_SEPARATOR + "Stats.yml"
-    final val SETTINGS_FILE: String = APP_SETTINGS_FOLDER + SYSTEM_SEPARATOR + "Stats.yml"
+    final val SETTINGS_FILE: String = APP_SETTINGS_FOLDER + SYSTEM_SEPARATOR + "Settings.yml"
   }
 }
