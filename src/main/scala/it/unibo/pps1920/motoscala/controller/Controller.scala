@@ -54,7 +54,9 @@ object Controller {
                                    Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
                                    Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
-                                                 Coordinate(5 * MaxFps, 5 * MaxFps))
+                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                   Level
+                                     .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))
                                    )))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
