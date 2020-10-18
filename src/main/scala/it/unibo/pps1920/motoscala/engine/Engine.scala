@@ -32,7 +32,7 @@ object GameEngine {
   def apply(controller: EngineController, myUuid: UUID): Engine = new GameEngineImpl(controller, myUuid)
   private class GameEngineImpl(controller: EngineController, myUuid: UUID) extends Engine {
     private val mediator = controller.mediator
-    private val Fps = 60
+    private val Fps = 160
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
@@ -48,6 +48,7 @@ object GameEngine {
       coordinator.registerComponentType(classOf[ShapeComponent])
       coordinator.registerComponentType(classOf[VelocityComponent])
       coordinator.registerComponentType(classOf[AIComponent])
+      coordinator.registerComponentType(classOf[JumpComponent])
 
       coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
       coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
@@ -66,7 +67,7 @@ object GameEngine {
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-
+            .addEntityComponent(player, JumpComponent())
             .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
 
         case BlackPupa(position, shape, _, velocity)
