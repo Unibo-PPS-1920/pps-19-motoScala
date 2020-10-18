@@ -32,6 +32,26 @@ move_avoiding(Q,(SX,SY),(TX,TY),O,DX,DY):-
   \+ allowed_move((NX,NY),O),
   random_biased_dir(100,DX,DY).
 
+move_avoiding2(Q,(TX,TY),(TX,TY),[],TX,TY):-
+    !.
+
+move_avoiding2(Q,(SX,SY),(TX,TY),O,OX,OY):-
+    BX is TX + Q,
+    BY is TY + Q,
+    step(SX,BX,NX),
+    step(SY,BY,NY),
+    allowed_move((NX,NY),O),
+    pos_dir((SX,SY),(NX,NY),(OX,OY)).
+    %random_biased_dir(Q,(DX,DY),(OX,OY)).
+
+move_avoiding2(Q,(SX,SY),(TX,TY),O,DX,DY):-
+    BX is TX + Q,
+    BY is TY + Q,
+    step(SX,BX,NX),
+    step(SY,BY,NY),
+    \+ allowed_move((NX,NY),O),
+    random_biased_dir(100,DX,DY).
+
 allowed_move((X,Y),O):-
   \+ member((X,Y),O).
 

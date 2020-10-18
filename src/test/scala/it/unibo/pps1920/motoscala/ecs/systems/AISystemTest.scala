@@ -32,10 +32,10 @@ class AISystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
   val vel: VelocityComponent = VelocityComponent(Vector2(0, 20), Vector2(20, 20))
   val pos2: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
+  val aic: AIComponent = AIComponent(foolishness = 0, targets = mutable.Stack(p))
   val pos3: PositionComponent = PositionComponent(Vector2(0, 10))
   val vel3: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
-  val aic2: AIComponent = AIComponent(foolishness = 1, targets = mutable.Stack(p))
+  val aic2: AIComponent = AIComponent(foolishness = 0, targets = mutable.Stack(p))
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     q = CommandQueue()

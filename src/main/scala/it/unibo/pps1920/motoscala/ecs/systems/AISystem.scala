@@ -48,7 +48,7 @@ object AISystem {
             (0, 0)
           }
 
-          val query = new Struct("move_avoiding", ai.foolishness, (pos.x, pos.y).toString(), (tPos.x, tPos.y)
+          val query = new Struct("move_avoiding2", ai.foolishness, (pos.x, pos.y).toString(), (tPos.x, tPos.y)
             .toString(), positions, new Var(), new Var())
           val s = engine.solve(query).getSolution
           val v = Vector2(x = extractTerm(s, 4), y = extractTerm(s, 5))
