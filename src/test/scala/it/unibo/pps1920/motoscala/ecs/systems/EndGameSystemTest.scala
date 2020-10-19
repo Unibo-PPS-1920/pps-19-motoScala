@@ -9,8 +9,8 @@ import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, 
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems.EndGameSystemTestClasses.{DisplayMock, EngineControllerMock}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameEngine
@@ -76,8 +76,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
 
       }
       "emit a loss event when an entity goes out of the playing field" in {
-        coordinator.getEntityComponent(entity, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
-          .pos = Vector2(-1, -1)
+        coordinator.getEntityComponent[PositionComponent](entity).pos = Vector2(-1, -1)
         endsys.update()
         res.event shouldBe EndData(hasWon = false, entity)
         endsys.entitiesRef() shouldBe Set.empty

@@ -8,8 +8,8 @@ import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems._
 import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2

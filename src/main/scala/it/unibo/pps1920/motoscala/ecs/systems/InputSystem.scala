@@ -1,7 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
 import it.unibo.pps1920.motoscala.ecs.components.VelocityComponent
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 import it.unibo.pps1920.motoscala.engine.CommandQueue
 
@@ -14,11 +14,9 @@ object InputSystem {
     def update(): Unit = {
       val events = eventQueue.dequeueAll()
       entitiesRef().foreach(e => {
-        val vC = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
+        val vC = coordinator.getEntityComponent[VelocityComponent](e)
         events.filter(_.cmd.entity == e).map(_.cmd.direction).lastOption match {
-          case Some(dir) => vC.inputVel.x = (dir.value.x * vC.defVel.x);
-            vC.inputVel.y = (dir.value.y * vC.defVel
-              .y) //optimized
+          case Some(dir) => vC.inputVel.x = dir.value.x * vC.defVel.x; vC.inputVel.y = dir.value.y * vC.defVel.y
           case None => //leave old direction
         }
       })
