@@ -11,6 +11,7 @@ trait Coordinator {
   def isEntityAlive(entity: Entity): Boolean
   def registerComponentType(compType: ComponentType): Coordinator
   def addEntityComponent(entity: Entity, component: Component): Coordinator
+  def addEntityComponents(entity: Entity, components: Component*): Coordinator
   def removeEntityComponent(entity: Entity, component: Component): Coordinator
   def getEntityComponent[T: ClassTag](entity: Entity): T
   def registerSystem(sys: System): Coordinator
@@ -43,6 +44,12 @@ object Coordinator {
         .bindComponentToEntity(entity, component)))
       this
     }
+    override def addEntityComponents(entity: Entity,
+                                     components: Component*): Coordinator = {
+      components.foreach(this.addEntityComponent(entity, _))
+      this
+    }
+
     override def removeEntityComponent(entity: Entity, component: Component): Coordinator = {
       this.synchronized(systemManager.entitySignatureChanged(entity, componentManager
         .unbindComponentFromEntity(entity, component)))

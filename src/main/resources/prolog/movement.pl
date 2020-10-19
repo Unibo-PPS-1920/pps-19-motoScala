@@ -1,50 +1,16 @@
-%move(+start,+end,-[Directions]).
-
-move(T,T,[T]):- !.
-
-move((SX,SY),(TX,TY),[(DX,DY)|N]):-
-  step(SX,TX,NX),
-  step(SY,TY,NY),
-  pos_dir((SX,SY),(NX,NY),(DX,DY)),
-  move((NX,NY),(TX,TY),N).
-
-move2((TX,TY),(TX,TY),TX,TY):- !.
-
-move2((SX,SY),(TX,TY),DX,DY):-
-  step(SX,TX,NX),
-  step(SY,TY,NY),
-  pos_dir((SX,SY),(NX,NY),(DX,DY)).
-  %move2((NX,NY),(TX,TY),N).
-
-move_avoiding(Q,(TX,TY),(TX,TY),[],TX,TY):-
-	!.
-
-move_avoiding(Q,(SX,SY),(TX,TY),O,OX,OY):-
-  step(SX,TX,NX),
-  step(SY,TY,NY),
-  allowed_move((NX,NY),O),
-  pos_dir((SX,SY),(NX,NY),(DX,DY)),
-  random_biased_dir(Q,(DX,DY),(OX,OY)).
-
-move_avoiding(Q,(SX,SY),(TX,TY),O,DX,DY):-
-  step(SX,TX,NX),
-  step(SY,TY,NY),
-  \+ allowed_move((NX,NY),O),
-  random_biased_dir(100,DX,DY).
-
-move_avoiding2(Q,(TX,TY),(TX,TY),[],TX,TY):-
+%outputs direction to move in order to reach target, avoiding obstacles and with a bias ont the target's position
+move_avoiding(_,(TX,TY),(TX,TY),[],TX,TY):-
     !.
 
-move_avoiding2(Q,(SX,SY),(TX,TY),O,OX,OY):-
+move_avoiding(Q,(SX,SY),(TX,TY),O,OX,OY):-
     BX is TX + Q,
     BY is TY + Q,
     step(SX,BX,NX),
     step(SY,BY,NY),
     allowed_move((NX,NY),O),
     pos_dir((SX,SY),(NX,NY),(OX,OY)).
-    %random_biased_dir(Q,(DX,DY),(OX,OY)).
 
-move_avoiding2(Q,(SX,SY),(TX,TY),O,DX,DY):-
+move_avoiding(Q,(SX,SY),(TX,TY),O,DX,DY):-
     BX is TX + Q,
     BY is TY + Q,
     step(SX,BX,NX),
@@ -55,10 +21,6 @@ move_avoiding2(Q,(SX,SY),(TX,TY),O,DX,DY):-
 allowed_move((X,Y),O):-
   \+ member((X,Y),O).
 
-step_right(X0,X1):-
-	X1 is X0 + 10.
-
-
 step(P,P,P).
 
 step(P,T,E):-
@@ -68,6 +30,8 @@ step(P,T,E):-
 step(P,T,E):-
   P < T,
   E is P + 1.
+
+%given two positions outputs the diection in order to go from one to the other
 
 pos_dir(P1,P1,(0,0)).
 

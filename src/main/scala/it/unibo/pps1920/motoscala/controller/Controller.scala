@@ -107,7 +107,7 @@ object Controller {
       this.dataManager.saveSettings(this.actualSettings)
       this.setAudioVolume(this.actualSettings.volume)
     }
-    private def setAudioVolume(value: Double) {
+    private def setAudioVolume(value: Double): Unit = {
       this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
       this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
     }
@@ -141,7 +141,7 @@ object Controller {
                                                                 .get.readyPlayers)
     override def tryJoinLobby(ip: String, port: String): Unit = {
       this.clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
-      this.clientActor.get ! TryJoin(s"akka://MotoSystem@${ip}:${port}/user/Server*", this.actualSettings.name)
+      this.clientActor.get ! TryJoin(s"akka://MotoSystem@$ip:$port/user/Server*", this.actualSettings.name)
     }
     override def becomeHost(): Unit = {
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
