@@ -1,13 +1,13 @@
-package it.unibo.pps1920.motoscala.view.utilities
+package it.unibo.pps1920.motoscala.view.fsm
 
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent._
+import it.unibo.pps1920.motoscala.view.screens.FXMLScreens
 import it.unibo.pps1920.motoscala.view.screens.FXMLScreens._
-import it.unibo.pps1920.motoscala.view.screens.ScreenEvent._
-import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenEvent}
 import org.driangle.sm.StateMachine
 
 private[view] object ViewStateMachine {
-  def buildStateMachine(): StateMachine[FXMLScreens, ScreenEvent] = StateMachine
-    .WithFunctionTransitions[FXMLScreens, ScreenEvent]()
+  def buildStateMachine(): StateMachine[FXMLScreens, ChangeScreenEvent] = StateMachine
+    .WithFunctionTransitions[FXMLScreens, ChangeScreenEvent]()
     .initialState(FXMLScreens.HOME)
     .transition({
       case (HOME, GotoGame) => GAME

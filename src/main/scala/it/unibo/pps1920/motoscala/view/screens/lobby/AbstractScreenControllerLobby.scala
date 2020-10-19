@@ -3,7 +3,8 @@ package it.unibo.pps1920.motoscala.view.screens.lobby
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -47,7 +48,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
   }
   private def initButtons(): Unit = {
-    buttonStart.setOnAction(_ => viewFacade.changeScreen(ScreenEvent.GotoGame))
+    buttonStart.setOnAction(_ => viewFacade.changeScreen(ChangeScreenEvent.GotoGame))
     buttonReady.setOnAction(_ => {
       controller.setSelfReady()
     })
@@ -111,7 +112,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
   def leaveLobby(): Unit = {
     Platform.runLater(() => {
-      viewFacade.changeScreen(ScreenEvent.GoBack)
+      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     })
   }
 

@@ -10,8 +10,9 @@ import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter, showDialog}
 import javafx.fxml.FXML
@@ -47,7 +48,7 @@ abstract class AbstractScreenControllerGame(
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
-    viewFacade.changeScreen(ScreenEvent.GoBack)
+    viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     viewFacade.getStage.setFullScreen(false)
     controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
