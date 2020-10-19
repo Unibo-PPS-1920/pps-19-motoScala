@@ -6,8 +6,8 @@ import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.{JumpPowerUp, SpeedBoostPowerUp}
 import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll

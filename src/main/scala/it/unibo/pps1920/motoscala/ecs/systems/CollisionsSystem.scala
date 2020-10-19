@@ -6,13 +6,12 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySound
 import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 import scala.math.signum
-import scala.reflect.ClassTag
 object CollisionsSystem {
 
   def apply(coordinator: Coordinator, controller: EngineController,
@@ -39,21 +38,21 @@ object CollisionsSystem {
       var entitiesToCheck = entitiesRef()
       entitiesRef().filter(_.getClass != classOf[PowerUpEntity]).foreach(e1 => {
         entitiesToCheck -= e1
-        collisionCompE1 = extractComponent[CollisionComponent](e1)
-        velocityCompE1 = extractComponent[VelocityComponent](e1)
+        collisionCompE1 = coordinator.getEntityComponent[CollisionComponent](e1)
+        velocityCompE1 = coordinator.getEntityComponent[VelocityComponent](e1)
         if (collisionCompE1.isColliding) collisionStep(collisionCompE1)
         else velocityCompE1.currentVel = velocityCompE1.inputVel
 
 
         entitiesToCheck.foreach(e2 => {
-          if (!((e1.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e1).isActive)
-            || (e2.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e2).isActive))) {
-            collisionCompE2 = extractComponent[CollisionComponent](e2)
-            velocityCompE2 = extractComponent[VelocityComponent](e2)
-            shapeCompE1 = extractComponent[ShapeComponent](e1)
-            shapeCompE2 = extractComponent[ShapeComponent](e2)
-            positionCompE1 = extractComponent[PositionComponent](e1)
-            positionCompE2 = extractComponent[PositionComponent](e2)
+          if (!((e1.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e1).isActive)
+            || (e2.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e2).isActive))) {
+            collisionCompE2 = coordinator.getEntityComponent[CollisionComponent](e2)
+            velocityCompE2 = coordinator.getEntityComponent[VelocityComponent](e2)
+            shapeCompE1 = coordinator.getEntityComponent[ShapeComponent](e1)
+            shapeCompE2 = coordinator.getEntityComponent[ShapeComponent](e2)
+            positionCompE1 = coordinator.getEntityComponent[PositionComponent](e1)
+            positionCompE2 = coordinator.getEntityComponent[PositionComponent](e2)
             if (collisionCompE1.isColliding && (collisionCompE1.collEntity == e2 || collisionCompE1.collEntity == e1)) {
             } else {
               (e1, e2) match {
@@ -173,11 +172,8 @@ object CollisionsSystem {
       collisionCompE2.duration = CollisionDuration
     }
 
-    private def extractComponent[T: ClassTag](e: Entity): T =
-      coordinator.getEntityComponent(e, implicitly[ClassTag[T]].runtimeClass).get.asInstanceOf[T]
-
     private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
-      extractComponent[PowerUpComponent](powerUp).entity = Some(bumperCar)
+      coordinator.getEntityComponent[PowerUpComponent](powerUp).entity = Some(bumperCar)
 
     private def collisionStep(collisionComp: CollisionComponent): Unit = {
       collisionComp.duration -= 1

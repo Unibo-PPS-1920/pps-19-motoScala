@@ -5,8 +5,8 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySound
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{LevelEndEvent, RedirectSoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.PositionComponent
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 import it.unibo.pps1920.motoscala.engine.Engine
@@ -20,7 +20,7 @@ object EndGameSystem {
     override def update(): Unit = {
       entitiesRef()
         .filter(e => {
-          val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos
+          val p = coordinator.getEntityComponent[PositionComponent](e).pos
           p.x < 0 || p.y < 0 || p.x > canvasSize.x || p.y > canvasSize.y
         }).foreach(e => {
         if (e.getClass == classOf[BumperCarEntity]) {

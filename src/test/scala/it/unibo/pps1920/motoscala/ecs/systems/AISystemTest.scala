@@ -4,8 +4,8 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.{AIComponent, PositionComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.CommandQueue

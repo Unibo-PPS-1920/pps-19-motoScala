@@ -2,17 +2,14 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.controller.EngineController
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData}
+import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
-import it.unibo.pps1920.motoscala.ecs.systems.CollisionSystemTestClasses.EngineControllerMock
-import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, JumpComponent, PositionComponent, ShapeComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
-import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
+import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
+import it.unibo.pps1920.motoscala.ecs.systems.CollisionSystemTestClasses.EngineControllerMock
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
@@ -38,13 +35,13 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
   val playerJump: JumpComponent = JumpComponent()
   val pupa: RedPupaEntity = RedPupaEntity(UUID.randomUUID())
   val pupaPos: PositionComponent = PositionComponent(Vector2(108, 100))
-  val pupaVel: VelocityComponent = VelocityComponent(currentVel= Vector2(-5,0), inputVel = Vector2(-5,0))
+  val pupaVel: VelocityComponent = VelocityComponent(currentVel = Vector2(-5, 0), inputVel = Vector2(-5, 0))
   val pupaColl: CollisionComponent = CollisionComponent(10)
 
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     mediator = Mediator()
-    movement = MovementSystem(coordinator, fps=60)
+    movement = MovementSystem(coordinator, fps = 60)
     controller = new EngineControllerMock(mediator)
     collision = CollisionsSystem(coordinator, controller, fps = 60)
 
@@ -73,9 +70,9 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
       "handle collisions" in {
         coordinator.updateSystems()
         coordinator.updateSystems()
-        coordinator.getEntityComponent(player, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
+        coordinator.getEntityComponent[VelocityComponent](player)
           .currentVel shouldBe Vector2(10, 0)
-        coordinator.getEntityComponent(pupa, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
+        coordinator.getEntityComponent[VelocityComponent](pupa)
           .currentVel shouldBe Vector2(-5, 0)
       }
     }
