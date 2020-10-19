@@ -23,7 +23,7 @@ object CollisionsSystem {
                                         classOf[ShapeComponent],
                                         classOf[VelocityComponent],
                                         classOf[CollisionComponent])) {
-    private val CollisionDuration = fps / 8
+    private val CollisionDuration = fps / 6
 
     private var positionCompE1: PositionComponent = _
     private var shapeCompE1: ShapeComponent = _
@@ -37,12 +37,14 @@ object CollisionsSystem {
 
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
-      entitiesRef().foreach(e1 => {
+      entitiesRef().filter(_.getClass != classOf[PowerUpEntity]).foreach(e1 => {
         entitiesToCheck -= e1
         collisionCompE1 = extractComponent[CollisionComponent](e1)
         velocityCompE1 = extractComponent[VelocityComponent](e1)
         if (collisionCompE1.isColliding) collisionStep(collisionCompE1)
         else velocityCompE1.currentVel = velocityCompE1.inputVel
+
+
         entitiesToCheck.foreach(e2 => {
           if (!((e1.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e1).isActive)
             || (e2.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e2).isActive))) {
@@ -56,10 +58,20 @@ object CollisionsSystem {
             } else {
               (e1, e2) match {
                 case (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =>
-                  if (areCirclesTouching()) addBumperToPowUp(bumperCar, powerUp)
+                  if (areCirclesTouching(positionCompE1.pos, positionCompE2.pos, shapeCompE1.shape.asInstanceOf[Circle]
+                    .radius, shapeCompE2.shape.asInstanceOf[Circle].radius)) {
+                    addBumperToPowUp(bumperCar, powerUp)
+                    entitiesToCheck -= powerUp
+                    coordinator.removeEntityComponent(powerUp, collisionCompE2)
+                      .removeEntityComponent(powerUp, shapeCompE2)
+                      .removeEntityComponent(powerUp, positionCompE2)
+                      .removeEntityComponent(powerUp, positionCompE2)
+                  }
                 case (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =>
-                  if (areCirclesTouching()) addBumperToPowUp(bumperCar, powerUp)
-                case _ => checkCollision(e1, e2)
+                  if (areCirclesTouching(positionCompE2.pos, positionCompE1.pos, shapeCompE2.shape.asInstanceOf[Circle]
+                    .radius, shapeCompE1.shape.asInstanceOf[Circle].radius)) addBumperToPowUp(bumperCar, powerUp)
+                case _ => checkCollision(e1, e2, shapeCompE1.shape, shapeCompE2.shape, positionCompE1
+                  .pos, positionCompE2.pos, velocityCompE1, velocityCompE2)
               }
             }
           }
@@ -67,13 +79,15 @@ object CollisionsSystem {
       })
     }
 
-    private def areCirclesTouching(): Boolean =
-      (positionCompE1.pos dist positionCompE2.pos) <= (shapeCompE1.shape.asInstanceOf[Circle].radius
-        + shapeCompE2.shape.asInstanceOf[Circle].radius)
-    private def checkCollision(e1: Entity, e2: Entity): Unit = {
-      (shapeCompE1.shape, shapeCompE2.shape) match {
-        case (_: Circle, _: Circle) => if (areCirclesTouching()) {
-          if (!(velocityCompE2.currentVel.isZero() && velocityCompE1.currentVel.isZero())) {
+    private def areCirclesTouching(cPos1: Vector2, cPos2: Vector2, cRadius1: Float, cRadius2: Float): Boolean =
+      (cPos1 dist cPos2) <= (cRadius1 + cRadius2)
+
+    private def checkCollision(e1: Entity, e2: Entity, shape1: Shape, shape2: Shape, pos1: Vector2, pos2: Vector2,
+                               vel1: VelocityComponent,
+                               vel2: VelocityComponent): Unit = {
+      (shape1, shape2) match {
+        case (Circle(radius1), Circle(radius2)) => if (areCirclesTouching(pos1, pos2, radius1, radius2)) {
+          if (!(vel2.currentVel.isZero() && vel1.currentVel.isZero())) {
             collisionCompE1.collEntity = e2
             collisionCompE2.collEntity = e1
             collide()
@@ -81,11 +95,11 @@ object CollisionsSystem {
             collisionStep(collisionCompE2)
           }
         }
-        case (circle: Circle, rectangle: Rectangle) => velocityCompE1.currentVel = velocityCompE1
-          .currentVel mul getDirInversion(circle, positionCompE1.pos, rectangle, positionCompE2.pos)
-        case (rectangle: Rectangle, circle: Circle) => velocityCompE2.currentVel = velocityCompE2
-          .currentVel mul getDirInversion(circle, positionCompE2.pos, rectangle, positionCompE1.pos)
-        case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"
+        case (circle: Circle, rectangle: Rectangle) => vel1.currentVel = vel1
+          .currentVel mul getDirInversion(circle, pos1, rectangle, pos2)
+        case (rectangle: Rectangle, circle: Circle) => vel2.currentVel = vel2
+          .currentVel mul getDirInversion(circle, pos2, rectangle, pos1)
+        case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
 
@@ -113,7 +127,6 @@ object CollisionsSystem {
       //check distance from closest edge
       if ((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
       else Vector2(1, 1) //do not collide: same direction
-
     }
 
     private def collide(): Unit = {
@@ -159,6 +172,7 @@ object CollisionsSystem {
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
     }
+
     private def extractComponent[T: ClassTag](e: Entity): T =
       coordinator.getEntityComponent(e, implicitly[ClassTag[T]].runtimeClass).get.asInstanceOf[T]
 

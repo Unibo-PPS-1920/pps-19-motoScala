@@ -98,6 +98,7 @@ abstract class AbstractScreenControllerGame(
       case BlackPupaEntity(_) => Drawables.BlackPupaDrawable.draw(e)
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
+      case PowerUpEntity(_) => Drawables.PowerUpDrawable.draw(e)
     })
     player.foreach(Drawables.PlayerDrawable.draw(_))
   }
@@ -115,6 +116,8 @@ abstract class AbstractScreenControllerGame(
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
     val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
+    val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader
+                                                               .getImage(Textures.ParticleTexture), context)
   }
 }
 

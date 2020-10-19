@@ -9,11 +9,17 @@ object Level {
   case class LevelData(index: Int, mapSize: Coordinate, entities: List[LevelEntity])
   case class Coordinate(x: Int, y: Int)
 
-  case class Player(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
-  case class RedPupa(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
-  case class BluePupa(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
-  case class BlackPupa(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
+  case class Player(position: Coordinate, shape: Circle, direction: Coordinate,
+                    velocity: Coordinate) extends LevelEntity
+  case class RedPupa(position: Coordinate, shape: Circle, direction: Coordinate,
+                     velocity: Coordinate) extends LevelEntity
+  case class BluePupa(position: Coordinate, shape: Circle, direction: Coordinate,
+                      velocity: Coordinate) extends LevelEntity
+  case class BlackPupa(position: Coordinate, shape: Circle, direction: Coordinate,
+                       velocity: Coordinate) extends LevelEntity
   case class Polar(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
-
+  case class JumpPowerUp(position: Coordinate, shape: Circle) extends LevelEntity
+  case class WeightBoostPowerUp(position: Coordinate, shape: Circle) extends LevelEntity
+  case class SpeedBoostPowerUp(position: Coordinate, shape: Circle) extends LevelEntity
 }
 
