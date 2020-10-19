@@ -89,7 +89,7 @@ object GameLoopTestClasses {
   final class DisplayMock extends Displayable {
     override def notifyDrawEntities(player: Option[EntityData],
                                     entities: Set[EntityData]): Unit = {}
-    override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = {}
+    override def notifyLevelSetup(data: EventData.SetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }

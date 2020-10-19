@@ -6,7 +6,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.SetupData
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
@@ -152,7 +152,7 @@ object GameEngine {
             .addEntityComponent(s, VelocityComponent((0, 0)))
             .addEntityComponent(s, PowerUpComponent(effect = PowerUpEffect.SpeedBoostPowerUp(duration = 20, _ dot 0.5)))
       }
-      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
+      mediator.publishEvent(LevelSetupEvent(SetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"
     }
     override def start(): Unit = {

@@ -4,7 +4,6 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
@@ -91,7 +90,7 @@ object EndGameSystemTestClasses {
   final class DisplayMock extends Displayable {
     override def notifyDrawEntities(player: Option[EntityData],
                                     entities: Set[EntityData]): Unit = {}
-    override def notifyLevelSetup(data: EventData.LevelSetupData): Unit = {}
+    override def notifyLevelSetup(data: EventData.SetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }

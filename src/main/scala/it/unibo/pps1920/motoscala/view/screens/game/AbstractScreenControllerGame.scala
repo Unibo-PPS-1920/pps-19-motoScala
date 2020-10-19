@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.SetupData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
@@ -76,7 +76,7 @@ abstract class AbstractScreenControllerGame(
       controller.pause()
     })
   }
-  protected def handleSetup(data: LevelSetupData): Unit = {
+  protected def handleSetup(data: SetupData): Unit = {
 
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
