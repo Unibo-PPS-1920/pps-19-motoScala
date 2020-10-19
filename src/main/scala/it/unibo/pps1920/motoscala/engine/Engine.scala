@@ -83,7 +83,8 @@ object GameEngine {
                                PositionComponent((position.x + 100, position.y + 100)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                CollisionComponent(10),
-                               AIComponent(10, Random.shuffle(mutable.Stack(player)))
+                               AIComponent(10, Random.shuffle(mutable.Stack(player))),
+                               ScoreComponent(300)
                                )
       case RedPupa(position, shape, _, velocity)
       =>
@@ -94,7 +95,8 @@ object GameEngine {
                                PositionComponent((position.x + 100, position.y + 100)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                CollisionComponent(10),
-                               AIComponent(20, Random.shuffle(mutable.Stack(player)))
+                               AIComponent(20, Random.shuffle(mutable.Stack(player))),
+                               ScoreComponent(300)
                                )
       case BluePupa(position, shape, _, velocity)
       =>
@@ -104,7 +106,9 @@ object GameEngine {
           .addEntityComponents(blue, ShapeComponent(shape),
                                PositionComponent((position.x + 100, position.y + 100)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
-                               CollisionComponent(10)
+                               CollisionComponent(10),
+                               AIComponent(5, Random.shuffle(mutable.Stack(player))),
+                               ScoreComponent(300)
                                )
       case Polar(position, shape, _, velocity)
       =>
@@ -114,7 +118,31 @@ object GameEngine {
           .addEntityComponents(polar, ShapeComponent(shape),
                                PositionComponent((position.x + 100, position.y + 100)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
-                               CollisionComponent(4)
+                               CollisionComponent(4),
+                               AIComponent(25, Random.shuffle(mutable.Stack(player))),
+                               ScoreComponent(300)
+                               )
+      case Nabicon(position, shape, _, velocity)
+      =>
+        logger info "add nabicon"
+        val nabi = NabiconEntity(UUID.randomUUID())
+        coordinator.addEntity(nabi)
+          .addEntityComponents(nabi, ShapeComponent(shape),
+                               PositionComponent((position.x + 100, position.y + 100)),
+                               VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                               CollisionComponent(4000),
+                               ScoreComponent(50000)
+                               )
+      case Beecon(position, shape, _, velocity)
+      =>
+        logger info "add nabicon"
+        val bee = BeeconEntity(UUID.randomUUID())
+        coordinator.addEntity(bee)
+          .addEntityComponents(bee, ShapeComponent(shape),
+                               PositionComponent((position.x + 100, position.y + 100)),
+                               VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                               CollisionComponent(400),
+                               ScoreComponent(1000)
                                )
       case JumpPowerUp(position, shape)
       =>

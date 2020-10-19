@@ -116,6 +116,8 @@ abstract class AbstractScreenControllerGame(
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
       case PowerUpEntity(_) => Drawables.PowerUpDrawable.draw(e)
+      case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e)
+      case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e)
     })
     player.foreach(Drawables.PlayerDrawable.draw(_))
   }
@@ -133,6 +135,11 @@ abstract class AbstractScreenControllerGame(
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
     val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
+    val NabiconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Nabicon), context)
+    val BeeconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Beecon), context)
+    val JumpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Jump), context)
+    val WeightDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Weight), context)
+    val SpeedDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Speed), context)
     val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
