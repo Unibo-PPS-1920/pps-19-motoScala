@@ -26,7 +26,7 @@ class MovementSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAl
   val vel2: VelocityComponent = VelocityComponent(Vector2(20, 0), Vector2(20, 20))
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
-    movement = MovementSystem(coordinator, fps = 1)
+    movement = MovementSystem(coordinator, fps = 60)
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerSystem(movement)

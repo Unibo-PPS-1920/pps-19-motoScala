@@ -53,9 +53,9 @@ object Controller {
     private var matchSetupSp: Option[SinglePlayerSetup] = None
     private var status: Boolean = false
     this.soundAgent.start()
-    /*
-        this.setAudioVolume(this.actualSettings.volume)
-    */
+
+    this.setAudioVolume(this.actualSettings.volume)
+
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -152,16 +152,6 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -175,6 +165,16 @@ object Controller {
           .ERROR_NOTIFICATION))
         this.shutdownMultiplayer()
       })
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {

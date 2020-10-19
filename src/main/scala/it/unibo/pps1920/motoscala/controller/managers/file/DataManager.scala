@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.controller.managers.file
 
-import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{APP_MAIN_FOLDER, APP_SCORE_FOLDER, APP_SETTINGS_FOLDER, APP_USER_LEVEL_FOLDER}
+import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants._
 import it.unibo.pps1920.motoscala.controller.managers.file.ResourcesPaths.{SCORE_FILE, SETTINGS_FILE}
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
@@ -27,7 +27,9 @@ final class DataManager {
       .map(pf => this.yamlManager.loadYaml(APP_USER_LEVEL_FOLDER + pf)(classOf[LevelData]))
       .filter(_.isDefined).map(_.get)
   }
-
+  def saveLvl(data: LevelData): Unit = {
+    this.yamlManager.saveYaml(APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "lvl.yaml")(data)
+  }
   def loadLvl(): List[LevelData] = ???
 
 }
