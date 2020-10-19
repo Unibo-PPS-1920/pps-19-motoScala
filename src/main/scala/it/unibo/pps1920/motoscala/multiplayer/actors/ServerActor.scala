@@ -19,7 +19,6 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
 
   override def receive: Receive = idleBehaviour
   def idleBehaviour: Receive = {
-    case PlainActorMessage(text, num) => println("TESTO: " + text + "NUM:" + num)
     case mess: LobbyDataActorMessage => tellToClients(mess)
     case JoinRequestActorMessage(name) => handleJoinRequest(name)
     case ReadyActorMessage(status) =>
@@ -54,6 +53,10 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
   }
   def inGameBehaviour: Receive = {
     case CommandableActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case SetupsForClientsMessage(setups) => {
+      val setupsIterator = setups.iterator
+      this.clients.foreach({c=> c ! LevelSetupMessage(setupsIterator.next())})
+    }
     case msg => logger warn s"Received unexpected message $msg"
       println(akka.serialization.Serialization
                 .serializedActorPath(self))

@@ -15,6 +15,7 @@ object DataType {
 
 
 object ActorMessage {
+  import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
   import it.unibo.pps1920.motoscala.model.Level.LevelData
   import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
   case class PlainActorMessage(
@@ -22,6 +23,7 @@ object ActorMessage {
     num: Int
   ) extends ActorMessage
 
+  final case class SetupsForClientsMessage(setups: List[LevelSetupData])
   /*SERVER to client MESSAGES*/
 
 
@@ -39,6 +41,8 @@ object ActorMessage {
   final case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage
   final case class CloseLobbyActorMessage() extends ActorMessage
   final case class LeaveEvent(ref: ActorRef) extends ActorMessage
+  final case class LevelSetupMessage(levelData: LevelSetupData) extends ActorMessage
+
 
   /*Client to Server connection messages*/
   final case class JoinRequestActorMessage(name: String) extends ActorMessage

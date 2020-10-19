@@ -6,6 +6,8 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
 import it.unibo.pps1920.motoscala.controller.mediation.{Commandable, EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.view.JavafxEnums
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
+import akka.actor.Props
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent, ShowDialogEvent}
 
 import scala.concurrent.duration._
@@ -94,6 +96,8 @@ private class ClientActor(protected val actorController: ActorController) extend
   private def inGameBehaviour: Receive = {
     case GameEndActorMessage => actorController.gameEnd()
     case DisplayableActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case LevelSetupMessage(levelSetupData) =>
+      actorController.sendToViewStrategy(obsUI => obsUI.notify(LevelSetupEvent(levelSetupData)))
     case msg => logger warn s"Received unexpected message $msg"
   }
   private def sendViewMessage(title: String, text: String): Unit = {
@@ -112,6 +116,5 @@ private class ClientActor(protected val actorController: ActorController) extend
 }
 
 object ClientActor {
-  import akka.actor.Props
   def props(controller: ActorController): Props = Props(new ClientActor(controller))
 }

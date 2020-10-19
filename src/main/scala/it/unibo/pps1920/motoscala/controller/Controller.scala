@@ -39,7 +39,7 @@ object Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val maxPlayers = 4
     private val dataManager: DataManager = new DataManager()
-    //campi che arrivano dal fu ConcreteActorController
+
     private val config = ConfigFactory.load("application")
     private val system = ActorSystem("MotoSystem", config)
     private val soundAgent: SoundAgent = SoundAgent()
@@ -61,8 +61,6 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
-
-
       logger info s"level selected: $level"
       val lvl = levels.filter(_.index == level).head
       var playerNum = 1
@@ -77,7 +75,12 @@ object Controller {
       engine = Option(motoscala.engine.GameEngine(this, players))
       engine.get.init(lvl)
 
+      var setups: List[LevelSetupData] = List()
+      players.slice(1, players.size).foreach(player => setups = setups.:+(LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player)))
+
       observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = false, isHosting = true, players.head))))
+
+      if(serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
     }
 
     override def start(): Unit = engine.get.start()
@@ -92,19 +95,19 @@ object Controller {
                                                 Coordinate(10 * MaxFps, 10 * MaxFps)),
                                    Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0),
                                                 Coordinate(10 * MaxFps, 10 * MaxFps)),
-                                   Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
+                                   /*Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
                                    Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
-                                                   Coordinate(5 * MaxFps, 5 * MaxFps)),
+                                                   Coordinate(5 * MaxFps, 5 * MaxFps)),*/
                                    Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
                                                Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
+                                   /*Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
 
                                    Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
                                    Level
-                                     .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))
+                                     .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))*/
 
                                    )))
 

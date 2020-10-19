@@ -12,8 +12,6 @@ trait ActorController {
   def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T
   def getMediator: Mediator
   def getLobbyData: LobbyData
-  //Called by Server Actor
-  //Called by Client Actor
   def gameStart(): Unit
   def shutdownMultiplayer(): Unit
   def gameEnd(): Unit
