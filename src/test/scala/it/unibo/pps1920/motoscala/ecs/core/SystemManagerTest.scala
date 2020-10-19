@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.ecs.managers
+package it.unibo.pps1920.motoscala.ecs.core
 
 import java.util.UUID
 

@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.ecs.managers.errors
+package it.unibo.pps1920.motoscala.ecs.core.errors
 
 trait ManagerError
 object ManagerError {

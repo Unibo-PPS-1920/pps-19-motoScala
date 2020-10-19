@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.ecs.managers
+package it.unibo.pps1920.motoscala.ecs.core
 
 import java.util.UUID
 
@@ -47,7 +47,7 @@ class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Match
         componentManager.bindComponentToEntity(entity, comp1) shouldBe ECSSignature(comp1.getClass)
       }
       "get component from entity" in {
-        componentManager.getEntityComponent(entity, comp1.getClass).get shouldEqual comp1
+        componentManager.getEntityComponent[Comp1](entity) shouldEqual comp1
       }
       "unbind component from entity" in {
         componentManager.unbindComponentFromEntity(entity, comp1) shouldBe ECSSignature()

@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.ecs
 
-import it.unibo.pps1920.motoscala.ecs.managers.ECSSignature
+import it.unibo.pps1920.motoscala.ecs.core.ECSSignature
 import org.slf4j.{Logger, LoggerFactory}
 
 trait System {
