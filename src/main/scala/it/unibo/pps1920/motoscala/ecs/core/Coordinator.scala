@@ -46,7 +46,7 @@ object Coordinator {
     }
     override def addEntityComponents(entity: Entity,
                                      components: Component*): Coordinator = {
-      components.foreach(this.addEntityComponents(entity, _))
+      components.foreach(this.addEntityComponent(entity, _))
       this
     }
 
