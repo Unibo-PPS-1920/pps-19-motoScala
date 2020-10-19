@@ -36,6 +36,7 @@ object Controller {
     override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val myUuid: UUID = randomUUID()
+    private var score: Int = 0
 
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
@@ -65,7 +66,10 @@ object Controller {
       engine.get.init(levels.filter(data => data.index == level).head)
     }
 
-    override def start(): Unit = engine.get.start()
+    override def start(): Unit = {
+      score = 0
+      engine.get.start()
+    }
     override def loadAllLevels(): Unit = {
       levels = List(
         LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
@@ -188,6 +192,10 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
+    override def updateScore(delta: Int): Int = {
+      score += delta
+      score
+    }
   }
 }
 

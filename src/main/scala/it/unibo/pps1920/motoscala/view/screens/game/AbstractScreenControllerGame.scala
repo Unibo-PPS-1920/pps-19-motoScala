@@ -38,7 +38,6 @@ abstract class AbstractScreenControllerGame(
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
-  private var score: Int = 0
 
   def initialize(): Unit = {
     assertNodeInjected()
@@ -89,15 +88,13 @@ abstract class AbstractScreenControllerGame(
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
     } else {buttonStart setVisible false }
-    score = 0
-    labelScore.setText(s"Score: ${score}")
+    labelScore.setText(s"Score: ${0}")
     initButtons()
     gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
     viewFacade.getStage.setFullScreen(true)
   }
   protected def updateScore(points: Int): Unit = {
-    score += points
-    labelScore.setText(s"Score: ${score}")
+    labelScore.setText(s"Score: ${controller.updateScore(points)}")
   }
 
   protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
