@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.view.screens.`end`
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.ScoreDataEvent
 
 
 final class ScreenControllerEndGame(protected override val viewFacade: ViewFacade,
@@ -12,7 +13,7 @@ final class ScreenControllerEndGame(protected override val viewFacade: ViewFacad
   override def whenDisplayed(): Unit = {}
 
   override def notify(ev: ViewEvent): Unit = ev match {
-    case event: ViewEvent.LobbyEvent => logger info event.toString
+    case ScoreDataEvent(score) => this.populateScoreBoard(score)
     case _ =>
   }
 }
