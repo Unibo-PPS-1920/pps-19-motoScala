@@ -59,7 +59,7 @@ object GameEngine {
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
         .registerSystem(InputSystem(coordinator, eventQueue))
-        .registerSystem(PowerUpSystem(coordinator))
+        .registerSystem(PowerUpSystem(coordinator, mediator))
 
 
       val player = BumperCarEntity(myUuid)

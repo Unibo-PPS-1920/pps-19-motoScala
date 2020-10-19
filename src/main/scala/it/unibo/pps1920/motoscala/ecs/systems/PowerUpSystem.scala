@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
+import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.WeightBoostPowerUp
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
@@ -12,8 +13,8 @@ import scala.language.postfixOps
  */
 
 object PowerUpSystem {
-  def apply(coordinator: Coordinator): System = new PowerUpSystemImpl(coordinator)
-  private class PowerUpSystemImpl(coordinator: Coordinator)
+  def apply(coordinator: Coordinator, mediator: Mediator): System = new PowerUpSystemImpl(coordinator, mediator)
+  private class PowerUpSystemImpl(coordinator: Coordinator, mediator: Mediator)
     extends AbstractSystem(ECSSignature(classOf[PowerUpComponent])) {
 
     def update(): Unit = {
