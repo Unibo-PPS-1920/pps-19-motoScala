@@ -37,13 +37,14 @@ object PowerUpSystem {
                   pUp.entity = None
                   affComp.isActive = false
                 }
+                logger info "am jumping"
 
               case PowerUpEffect.WeightBoostPowerUp(_, modifier, oldMass) => val affComp = coordinator
                 .getEntityComponent(entity, classOf[CollisionComponent]).get.asInstanceOf[CollisionComponent]
-                //ugly workaround to modify oldmass
                 effect.asInstanceOf[WeightBoostPowerUp].oldMass = affComp.mass
                 affComp.mass = modifier(affComp.mass)
                 effect.duration = effect.duration - 1
+                logger info "am fat"
                 if (effect.duration == 0) {
                   affComp.mass = oldMass
                   pUp.entity = None

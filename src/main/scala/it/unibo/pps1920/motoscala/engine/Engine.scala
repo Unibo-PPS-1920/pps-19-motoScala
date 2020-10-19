@@ -44,18 +44,21 @@ object GameEngine {
       logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
-      coordinator.registerComponentType(classOf[CollisionComponent])
-      coordinator.registerComponentType(classOf[ShapeComponent])
-      coordinator.registerComponentType(classOf[VelocityComponent])
-      coordinator.registerComponentType(classOf[AIComponent])
-      coordinator.registerComponentType(classOf[JumpComponent])
+        .registerComponentType(classOf[CollisionComponent])
+        .registerComponentType(classOf[ShapeComponent])
+        .registerComponentType(classOf[VelocityComponent])
+        .registerComponentType(classOf[AIComponent])
+        .registerComponentType(classOf[JumpComponent])
+        .registerComponentType(classOf[PowerUpComponent])
 
-      coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
-      coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
-      coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
-      coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
-      coordinator.registerSystem(MovementSystem(coordinator, Fps))
-      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+        .registerSystem(DrawSystem(mediator, coordinator, myUuid))
+        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
+        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+        .registerSystem(CollisionsSystem(coordinator, controller, Fps))
+        .registerSystem(MovementSystem(coordinator, Fps))
+        .registerSystem(InputSystem(coordinator, eventQueue))
+        .registerSystem(PowerUpSystem(coordinator))
+
 
       val player = BumperCarEntity(myUuid)
       logger info "" + level.entities
@@ -90,7 +93,7 @@ object GameEngine {
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(red, AIComponent(40, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, AIComponent(20, Random.shuffle(mutable.Stack(player))))
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
@@ -109,6 +112,36 @@ object GameEngine {
             .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+        case JumpPowerUp(position, shape)
+        =>
+          logger info "add jump powerUp"
+          val jmp = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(jmp)
+            .addEntityComponent(jmp, ShapeComponent(shape))
+            .addEntityComponent(jmp, PositionComponent((position.x, position.y)))
+            .addEntityComponent(jmp, CollisionComponent(mass = 0))
+            .addEntityComponent(jmp, VelocityComponent((0, 0)))
+            .addEntityComponent(jmp, PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(40)))
+        case WeightBoostPowerUp(position, shape)
+        =>
+          logger info "add weight powerUp"
+          val w = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(w)
+            .addEntityComponent(w, ShapeComponent(shape))
+            .addEntityComponent(w, PositionComponent((position.x, position.y)))
+            .addEntityComponent(w, CollisionComponent(mass = 0))
+            .addEntityComponent(w, VelocityComponent((0, 0)))
+            .addEntityComponent(w, PowerUpComponent(effect = PowerUpEffect.WeightBoostPowerUp(duration = 4, _ * 10)))
+        case SpeedBoostPowerUp(position, shape)
+        =>
+          logger info "add weight powerUp"
+          val s = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(s)
+            .addEntityComponent(s, ShapeComponent(shape))
+            .addEntityComponent(s, PositionComponent((position.x, position.y)))
+            .addEntityComponent(s, CollisionComponent(mass = 0))
+            .addEntityComponent(s, VelocityComponent((0, 0)))
+            .addEntityComponent(s, PowerUpComponent(effect = PowerUpEffect.SpeedBoostPowerUp(duration = 20, _ dot 0.5)))
       }
       mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"

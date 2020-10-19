@@ -5,12 +5,10 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
-import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
 import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
-import it.unibo.pps1920.motoscala.ecs.components.PowerUpComponent
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
-
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Component, Entity, System}
 object CollisionsSystem {
 
@@ -23,7 +21,7 @@ object CollisionsSystem {
                                         classOf[VelocityComponent],
                                         classOf[CollisionComponent])) {
 
-    private val CollisionDuration = fps/8
+    private val CollisionDuration = fps / 8
     //not used because we chose to keep the realistic collision velocity until the end of the collision
     private val CollisionVelocity = Vector2(30, 30)
 
@@ -39,62 +37,81 @@ object CollisionsSystem {
 
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
-      entitiesRef().foreach(e1 => {
+      entitiesRef().filter(_.getClass != classOf[PowerUpEntity]).foreach(e1 => {
         import it.unibo.pps1920.motoscala.ecs.components.JumpComponent
         entitiesToCheck -= e1
+        //        logger info s"e1: ${e1.getClass}"
+
         collisionCompE1 = extractComponent[CollisionComponent](e1, classOf[CollisionComponent])
         velocityCompE1 = extractComponent[VelocityComponent](e1, classOf[VelocityComponent])
+
         if (collisionCompE1.isColliding) collisionStep(collisionCompE1, velocityCompE1)
         else velocityCompE1.currentVel = velocityCompE1.inputVel
 
 
-          entitiesToCheck.foreach(e2 => {
-            //check collision only if jumpComponent is not active
-            if(!((e1.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e1, classOf[JumpComponent]).isActive)
-            || (e2.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e2, classOf[JumpComponent]).isActive)))
-              {
-                collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
-                velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
-                shapeCompE1 = extractComponent[ShapeComponent](e1, classOf[ShapeComponent])
-                shapeCompE2 = extractComponent[ShapeComponent](e2, classOf[ShapeComponent])
-                positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
-                positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
-                (e1, e2) match {
-                  case  (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =>
-                    if(areCirclesTouching()) addBumperToPowUp(bumperCar, powerUp)
-                  case  (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =>
-                    if(areCirclesTouching()) addBumperToPowUp(bumperCar, powerUp)
-                  case  _ =>
-                    checkCollision()
+        entitiesToCheck.foreach(e2 => {
+          //check collision only if jumpComponent is not active
+          if (!((e1.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e1, classOf[JumpComponent])
+            .isActive)
+            || (e2.isInstanceOf[BumperCarEntity] && extractComponent[JumpComponent](e2, classOf[JumpComponent])
+            .isActive))) {
+            //            logger info s"e2: ${e2.getClass}"
+            collisionCompE2 = extractComponent[CollisionComponent](e2, classOf[CollisionComponent])
+            velocityCompE2 = extractComponent[VelocityComponent](e2, classOf[VelocityComponent])
+            shapeCompE1 = extractComponent[ShapeComponent](e1, classOf[ShapeComponent])
+            shapeCompE2 = extractComponent[ShapeComponent](e2, classOf[ShapeComponent])
+            positionCompE1 = extractComponent[PositionComponent](e1, classOf[PositionComponent])
+            positionCompE2 = extractComponent[PositionComponent](e2, classOf[PositionComponent])
+            (e1, e2) match {
+              case (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =>
+                if (areCirclesTouching(positionCompE1.pos, positionCompE2.pos, shapeCompE1.shape.asInstanceOf[Circle]
+                  .radius, shapeCompE2.shape.asInstanceOf[Circle].radius)) {
+                  addBumperToPowUp(bumperCar, powerUp)
+                  entitiesToCheck -= powerUp
+                  //                  logger info "bbbbb"
+                  coordinator.removeEntityComponent(powerUp, collisionCompE2)
+                    .removeEntityComponent(powerUp, shapeCompE2)
+                    .removeEntityComponent(powerUp, positionCompE2)
+                    .removeEntityComponent(powerUp, positionCompE2)
+                  //                  logger info "aaaaaa"
                 }
-              }
-
-
-          })
-
-
-
+              case (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =>
+                if (areCirclesTouching(positionCompE2.pos, positionCompE1.pos, shapeCompE2.shape.asInstanceOf[Circle]
+                  .radius, shapeCompE1.shape.asInstanceOf[Circle].radius)) {
+                  addBumperToPowUp(bumperCar, powerUp)
+                  logger info "succede"
+                  //                  entitiesToCheck -= powerUp
+                  //                  coordinator.removeEntity(powerUp)
+                }
+              case _ =>
+                checkCollision(shapeCompE1.shape, shapeCompE2.shape, positionCompE1.pos, positionCompE2
+                  .pos, velocityCompE1, velocityCompE2)
+            }
+          }
+        })
       })
     }
 
-    private def areCirclesTouching() : Boolean =
-      (positionCompE1.pos dist positionCompE2.pos) <= (shapeCompE1.shape.asInstanceOf[Circle].radius
-                                                        + shapeCompE2.shape.asInstanceOf[Circle].radius)
-    private def checkCollision(): Unit = {
-      (shapeCompE1.shape, shapeCompE2.shape) match {
-        case (_: Circle, _: Circle) => if(areCirclesTouching())
-          {
-            if (!(velocityCompE2.currentVel.isZero() && velocityCompE1.currentVel.isZero())) {
-              collide()
-              collisionStep(collisionCompE1, velocityCompE1)
-              collisionStep(collisionCompE2, velocityCompE2)
+    private def areCirclesTouching(cPos1: Vector2, cPos2: Vector2, cRadius1: Float, cRadius2: Float): Boolean =
+      (cPos1 dist cPos2) <= (cRadius1 + cRadius2)
+    //      (positionCompE1.pos dist positionCompE2.pos) <= (shapeCompE1.shape.asInstanceOf[Circle].radius
+    //        + shapeCompE2.shape.asInstanceOf[Circle].radius)
+
+    private def checkCollision(shape1: Shape, shape2: Shape, pos1: Vector2, pos2: Vector2, vel1: VelocityComponent,
+                               vel2: VelocityComponent): Unit = {
+      (shape1, shape2) match {
+        case (Circle(radius1), Circle(radius2)) => if (areCirclesTouching(pos1, pos2, radius1, radius2)) {
+          if (!(vel2.currentVel.isZero() && vel1.currentVel.isZero())) {
+            collide()
+            collisionStep(collisionCompE1, vel1)
+            collisionStep(collisionCompE2, vel2)
           }
         }
-        case (circle: Circle, rectangle: Rectangle) => velocityCompE1.currentVel = velocityCompE1
-          .currentVel mul getDirInversion(circle, positionCompE1.pos, rectangle, positionCompE2.pos)
-        case (rectangle: Rectangle, circle: Circle) => velocityCompE2.currentVel = velocityCompE2
-          .currentVel mul getDirInversion(circle, positionCompE2.pos, rectangle, positionCompE1.pos)
-        case _ => logger warn s"unexpected shape collision: ${shapeCompE1.shape} and ${shapeCompE1.shape}"
+        case (circle: Circle, rectangle: Rectangle) => vel1.currentVel = vel1
+          .currentVel mul getDirInversion(circle, pos1, rectangle, pos2)
+        case (rectangle: Rectangle, circle: Circle) => vel2.currentVel = vel2
+          .currentVel mul getDirInversion(circle, pos2, rectangle, pos1)
+        case _ => logger warn s"unexpected shape collision: ${shape1} and ${shape1}"
       }
     }
 
@@ -173,7 +190,7 @@ object CollisionsSystem {
         velocityCompE2.currentVel = newNorVec2 add newTanVec2
 
 
-        if(wereBothColliding){
+        if (wereBothColliding) {
 
         }
         /*logger debug s"Computed collision: velocity ent1: ${velocityCompE1.currentVel}  velocity ent2 = ${
@@ -200,8 +217,10 @@ object CollisionsSystem {
     private def extractComponent[T <: Component](e: Entity, componentClass: Predef.Class[_]): T =
       coordinator.getEntityComponent(e, componentClass).get.asInstanceOf[T]
 
-    private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
+    private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit = {
+      logger info "he toch pup"
       extractComponent[PowerUpComponent](powerUp, classOf[PowerUpComponent]).entity = Some(bumperCar)
+    }
 
 
     //Performs a collision step, decrementing the collision duration and handling termination
