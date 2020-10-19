@@ -148,7 +148,7 @@ object GameEngine {
       case JumpPowerUp(position, shape)
       =>
         logger info "add jump powerUp"
-        val jmp = PowerUpEntity(UUID.randomUUID())
+        val jmp = JumpPowerUpEntity(UUID.randomUUID())
         coordinator.addEntity(jmp)
           .addEntityComponents(jmp, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
@@ -158,7 +158,7 @@ object GameEngine {
       case WeightBoostPowerUp(position, shape)
       =>
         logger info "add weight powerUp"
-        val w = PowerUpEntity(UUID.randomUUID())
+        val w = WeightPowerUpEntity(UUID.randomUUID())
         coordinator.addEntity(w)
           .addEntityComponents(w, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
@@ -168,7 +168,7 @@ object GameEngine {
       case SpeedBoostPowerUp(position, shape)
       =>
         logger info "add weight powerUp"
-        val s = PowerUpEntity(UUID.randomUUID())
+        val s = SpeedPowerUpEntity(UUID.randomUUID())
         coordinator.addEntity(s)
           .addEntityComponents(s, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
