@@ -6,7 +6,7 @@ object Versions {
     const val javafx_plugin = "0.0.9"
 
     //JAVAFX
-    const val jfoenix = "8.0.8"
+    const val jfoenix = "9.0.10"
     const val ikonli = "11.5.0"
     const val enzo = "0.3.6"
 

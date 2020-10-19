@@ -4,16 +4,17 @@ import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData, LevelEndData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, SetupData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
+import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter, showDialog}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
@@ -33,6 +34,7 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var canvasStack: StackPane = _
   @FXML protected var buttonStart: Button = _
   @FXML protected var labelTitle: Label = _
+  @FXML protected var labelScore: Label = _
   private var context: GraphicsContext = _
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
@@ -46,7 +48,7 @@ abstract class AbstractScreenControllerGame(
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
-    viewFacade.changeScreen(ScreenEvent.GoBack)
+    viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     viewFacade.getStage.setFullScreen(false)
     controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
@@ -57,6 +59,7 @@ abstract class AbstractScreenControllerGame(
     assert(buttonStart != null, "fx:id=\"buttonStart\" was not injected: check your FXML file 'Game.fxml'.")
     assert(buttonBack != null, "fx:id=\"buttonBack\" was not injected: check your FXML file 'Game.fxml'.")
     assert(labelTitle != null, "fx:id=\"labelTitle\" was not injected: check your FXML file 'Game.fxml'.")
+    assert(labelScore != null, "fx:id=\"scoreTile\" was not injected: check your FXML file 'Game.fxml'.")
   }
 
   private def initButtons(): Unit = {
@@ -74,7 +77,8 @@ abstract class AbstractScreenControllerGame(
       controller.pause()
     })
   }
-  protected def handleSetup(data: LevelSetupData): Unit = {
+
+  protected def handleSetup(data: SetupData): Unit = {
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
@@ -85,9 +89,22 @@ abstract class AbstractScreenControllerGame(
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
     } else {buttonStart setVisible false }
+    labelScore.setText(s"Score: ${0}")
     initButtons()
     gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
     viewFacade.getStage.setFullScreen(true)
+  }
+
+  protected def handleTearDown(data: LevelEndData): Unit = data match {
+    case EndData(true, BumperCarEntity(_), _) =>
+      showDialog(this.canvasStack, "You Win!",
+                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG,
+                 _ => dismiss())
+    case EndData(false, BumperCarEntity(_), _) =>
+      showDialog(this.canvasStack, "Game Over!",
+                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG,
+                 _ => dismiss())
+    case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(score)}")
   }
 
   protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
@@ -116,8 +133,7 @@ abstract class AbstractScreenControllerGame(
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
     val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
-    val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader
-                                                               .getImage(Textures.ParticleTexture), context)
+    val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
 

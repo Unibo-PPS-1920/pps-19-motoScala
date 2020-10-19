@@ -6,7 +6,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.SetupData
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
@@ -50,9 +50,10 @@ object GameEngine {
         .registerComponentType(classOf[AIComponent])
         .registerComponentType(classOf[JumpComponent])
         .registerComponentType(classOf[PowerUpComponent])
+        .registerComponentType(classOf[ScoreComponent])
 
         .registerSystem(DrawSystem(mediator, coordinator, myUuid))
-        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
+        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
         .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
@@ -72,6 +73,7 @@ object GameEngine {
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
             .addEntityComponent(player, JumpComponent())
             .addEntityComponent(player, CollisionComponent(20))
+            .addEntityComponent(player, ScoreComponent(0))
 
         case BlackPupa(position, shape, _, velocity)
         =>
@@ -84,6 +86,7 @@ object GameEngine {
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(10))
             .addEntityComponent(black, AIComponent(10, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(black, ScoreComponent(10))
         case RedPupa(position, shape, _, velocity)
         =>
           logger info "add red pupa"
@@ -94,6 +97,8 @@ object GameEngine {
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(15))
             .addEntityComponent(red, AIComponent(20, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, ScoreComponent(10))
+
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
@@ -103,6 +108,8 @@ object GameEngine {
             .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(blue, CollisionComponent(10))
+            .addEntityComponent(blue, ScoreComponent(10))
+
         case Polar(position, shape, _, velocity)
         =>
           logger info "add polar"
@@ -112,6 +119,8 @@ object GameEngine {
             .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(polar, CollisionComponent(4))
+            .addEntityComponent(polar, ScoreComponent(10))
+
         case JumpPowerUp(position, shape)
         =>
           logger info "add jump powerUp"
@@ -143,7 +152,7 @@ object GameEngine {
             .addEntityComponent(s, VelocityComponent((0, 0)))
             .addEntityComponent(s, PowerUpComponent(effect = PowerUpEffect.SpeedBoostPowerUp(duration = 20, _ dot 0.5)))
       }
-      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
+      mediator.publishEvent(LevelSetupEvent(SetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"
     }
     override def start(): Unit = {

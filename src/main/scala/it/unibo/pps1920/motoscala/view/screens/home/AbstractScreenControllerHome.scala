@@ -4,7 +4,8 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import javafx.fxml.FXML
 import javafx.scene.CacheHint
@@ -48,7 +49,7 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
   override def whenDisplayed(): Unit = {}
 
   private def initializeButtons(): Unit = {
-    def buttonClicked(screenEvent: ScreenEvent): Unit = {
+    def buttonClicked(screenEvent: ChangeScreenEvent): Unit = {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       viewFacade.changeScreen(screenEvent)
     }
@@ -57,10 +58,10 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
       .foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
 
     buttonHovered(textPlay, textPlayMultiplayer, textSettings, textStats, textExit)
-    this.textPlay.setOnAction(_ => buttonClicked(ScreenEvent.GotoLevels))
-    this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ScreenEvent.GotoSelection))
-    this.textSettings.setOnAction(_ => buttonClicked(ScreenEvent.GotoSettings))
-    this.textStats.setOnAction(_ => buttonClicked(ScreenEvent.GotoStats))
+    this.textPlay.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoLevels))
+    this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSelection))
+    this.textSettings.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSettings))
+    this.textStats.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoStats))
     this.textExit.setOnAction(_ => System.exit(0))
   }
 

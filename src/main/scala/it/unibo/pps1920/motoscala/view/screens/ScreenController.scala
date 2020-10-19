@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.view.screens
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.{ObserverUI, ViewFacade}
 import javafx.fxml.FXML
 import javafx.scene.control.Button
@@ -17,7 +18,7 @@ abstract class ScreenController(protected val viewFacade: ViewFacade,
   def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
-      viewFacade.changeScreen(ScreenEvent.GoBack)
+      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     })
     buttonBack.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
   }

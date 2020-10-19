@@ -4,7 +4,7 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{LevelEndEvent, RedirectSoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
-import it.unibo.pps1920.motoscala.ecs.components.PositionComponent
+import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ScoreComponent}
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
@@ -16,7 +16,7 @@ object EndGameSystem {
             canvasSize: Vector2,
             engine: Engine): System = new EndGameSystemImpl(coordinator, mediator, canvasSize, engine: Engine)
   private class EndGameSystemImpl(coordinator: Coordinator, mediator: Mediator, canvasSize: Vector2, engine: Engine)
-    extends AbstractSystem(ECSSignature(classOf[PositionComponent])) {
+    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[ScoreComponent])) {
     override def update(): Unit = {
       entitiesRef()
         .filter(e => {
@@ -25,18 +25,20 @@ object EndGameSystem {
         }).foreach(e => {
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
-          this.coordinator.removeEntity(e)
+          //          this.coordinator.removeEntity(e)
           mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.GameOver)))
-          this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e)))
         } else {
           mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Out)))
-          this.coordinator.removeEntity(e)
         }
+        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e, coordinator
+          .getEntityComponent[ScoreComponent](e).score))
+                                   )
+        this.coordinator.removeEntity(e)
       })
       if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
         mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
-        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head)))
+        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
   }

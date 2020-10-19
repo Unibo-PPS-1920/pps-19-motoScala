@@ -4,8 +4,9 @@ import akka.actor.{Actor, ActorLogging, ActorSelection, Timers}
 import it.unibo.pps1920.motoscala.controller.ActorController
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
-import it.unibo.pps1920.motoscala.view.JavafxEnums
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent, ShowDialogEvent}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent}
+import it.unibo.pps1920.motoscala.view.{JavafxEnums, showNotificationPopup}
+import javafx.application.Platform
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -92,9 +93,8 @@ private class ClientActor(protected val actorController: ActorController) extend
     case msg => logger warn s"Received unexpected message $msg"
   }
   private def sendViewMessage(title: String, text: String): Unit = {
-    this.actorController.sendToViewStrategy(view => view
-      .notify(ShowDialogEvent(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
-        .INFO_NOTIFICATION)))
+    Platform.runLater(() => showNotificationPopup(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
+      .INFO_NOTIFICATION, _))
   }
   private case object SchedulerTickKey
 }

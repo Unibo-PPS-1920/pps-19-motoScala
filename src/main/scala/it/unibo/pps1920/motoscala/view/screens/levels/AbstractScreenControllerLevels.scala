@@ -5,7 +5,8 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
@@ -29,7 +30,7 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
 
   private def selectLevel(level: Int): Unit = {
     controller.setupGame(level)
-    viewFacade.changeScreen(ScreenEvent.GoNext)
+    viewFacade.changeScreen(ChangeScreenEvent.GoNext)
   }
 
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
