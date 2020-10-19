@@ -4,8 +4,8 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusicEvent
 import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.fsm.{ChangeScreenEvent, ViewStateMachine}
 import it.unibo.pps1920.motoscala.view.screens._
-import it.unibo.pps1920.motoscala.view.screens.`end`.ScreenControllerEndGame
 import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
 import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
 import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
@@ -13,7 +13,7 @@ import it.unibo.pps1920.motoscala.view.screens.lobby.ScreenControllerLobby
 import it.unibo.pps1920.motoscala.view.screens.modeSelection.ScreenControllerModeSelection
 import it.unibo.pps1920.motoscala.view.screens.settings.ScreenControllerSettings
 import it.unibo.pps1920.motoscala.view.screens.stats.ScreenControllerStats
-import it.unibo.pps1920.motoscala.view.utilities.{ViewStateMachine, ViewUtils}
+import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.stage.Stage
@@ -22,7 +22,7 @@ import scalafx.scene.layout.StackPane
 
 private[view] trait ViewFacade {
   def getStage: Stage
-  def changeScreen(screen: ScreenEvent): Unit
+  def changeScreen(screen: ChangeScreenEvent): Unit
   def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
 
@@ -50,14 +50,14 @@ object View {
     override def start(): Unit = {
       Platform.runLater(() => {
         val stage = ViewUtils.createStage(scene)
-        changeScreen(ScreenEvent.GotoHome)
+        changeScreen(ChangeScreenEvent.GotoHome)
         this.stage = Some(stage)
         logger info s"View started on ${Thread.currentThread()}"
         controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
       })
     }
 
-    override def changeScreen(event: ScreenEvent): Unit = {
+    override def changeScreen(event: ChangeScreenEvent): Unit = {
       Platform.runLater(() => {
         screenLoader.applyScreen(stateMachine.consume(event), root)
         screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
@@ -74,9 +74,7 @@ object View {
       case event: ViewEvent.SettingsEvent => screenLoader.getScreenController(FXMLScreens.SETTINGS).notify(event)
       case event: ViewEvent.StatsEvent => screenLoader.getScreenController(FXMLScreens.STATS).notify(event)
       case event: ViewEvent.SelectionEvent => screenLoader.getScreenController(FXMLScreens.SELECTION).notify(event)
-      case ViewEvent.ShowDialogEvent(title, msg, duration, notificationType) => Platform
-        .runLater(() => showNotificationPopup(title, msg, duration, notificationType, _ => {}))
-      case _ => logger warn s"Strange message ${ev}"
+      case _ =>
     }
 
     private def loadScreens(): Unit = {
@@ -87,7 +85,6 @@ object View {
       loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
       loadFXMLNode(FXMLScreens.SELECTION, new ScreenControllerModeSelection(this, controller))
-      loadFXMLNode(FXMLScreens.END, new ScreenControllerEndGame(this, controller))
     }
 
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader

@@ -6,11 +6,12 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.SetupData
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.systems._
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
 import org.slf4j.LoggerFactory
@@ -48,10 +49,13 @@ object GameEngine {
         .registerComponentType(classOf[AIComponent])
         .registerComponentType(classOf[JumpComponent])
         .registerComponentType(classOf[PowerUpComponent])
+        .registerComponentType(classOf[ScoreComponent])
 
         .registerSystem(DrawSystem(mediator, coordinator, myUuid))
         .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
-        .registerSystem(EndGameSystem(coordinator, mediator, (level.mapSize.x, level.mapSize.y), this))
+
+        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
         .registerSystem(InputSystem(coordinator, eventQueue))
@@ -143,7 +147,7 @@ object GameEngine {
                                VelocityComponent((0, 0)),
                                PowerUpComponent(effect = PowerUpEffect.SpeedBoostPowerUp(duration = 20, _ dot 0.5)))
       }
-      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
+      mediator.publishEvent(LevelSetupEvent(SetupData(level, isSinglePlayer = true, isHosting = true, player)))
       logger info "engine init done"
     }
 
@@ -153,6 +157,7 @@ object GameEngine {
         case _ => logger error "GameLoop already started"
       }
     }
+
     override def pause(): Unit = gameLoop.pause()
 
     override def resume(): Unit = gameLoop.unPause()

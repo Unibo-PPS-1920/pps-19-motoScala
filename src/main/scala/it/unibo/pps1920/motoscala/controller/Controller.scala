@@ -22,7 +22,8 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI}
+import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
+import javafx.application.Platform
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
@@ -36,6 +37,7 @@ object Controller {
     override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val myUuid: UUID = randomUUID()
+    private var score: Int = 0
 
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
@@ -65,7 +67,10 @@ object Controller {
       engine.get.init(levels.filter(data => data.index == level).head)
     }
 
-    override def start(): Unit = engine.get.start()
+    override def start(): Unit = {
+      score = 0
+      engine.get.start()
+    }
     override def loadAllLevels(): Unit = {
       levels = List(
         LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
@@ -164,8 +169,8 @@ object Controller {
     override def gotKicked(): Unit = {
       this.observers.foreach(obs => {
         obs.notify(LeaveLobbyEvent())
-        obs.notify(ShowDialogEvent("Sorry, i hate you", "You have been kicked", JavafxEnums.SHORT_DURATION, JavafxEnums
-          .ERROR_NOTIFICATION))
+        Platform.runLater(() => showNotificationPopup("Sorry, i hate you", "You have been kicked", JavafxEnums
+          .SHORT_DURATION, JavafxEnums.ERROR_NOTIFICATION, _))
         this.shutdownMultiplayer()
       })
     }
@@ -188,6 +193,10 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
+    override def updateScore(delta: Int): Int = {
+      score += delta
+      score
+    }
   }
 }
 
