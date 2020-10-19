@@ -7,7 +7,6 @@ private[view] object ScreenEvent {
   final case object GotoGame extends ScreenEvent
   final case object GotoLevels extends ScreenEvent
   final case object GotoLobby extends ScreenEvent
-  final case object GotoEnd extends ScreenEvent
   final case object GotoSelection extends ScreenEvent
   final case object GotoSettings extends ScreenEvent
   final case object GotoStats extends ScreenEvent

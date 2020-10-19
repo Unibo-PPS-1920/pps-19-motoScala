@@ -5,7 +5,6 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlayMusic
 import it.unibo.pps1920.motoscala.controller.managers.audio.Music
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.screens._
-import it.unibo.pps1920.motoscala.view.screens.`end`.ScreenControllerEndGame
 import it.unibo.pps1920.motoscala.view.screens.game.ScreenControllerGame
 import it.unibo.pps1920.motoscala.view.screens.home.ScreenControllerHome
 import it.unibo.pps1920.motoscala.view.screens.levels.ScreenControllerLevels
@@ -74,9 +73,7 @@ object View {
       case event: ViewEvent.SettingsEvent => screenLoader.getScreenController(FXMLScreens.SETTINGS).notify(event)
       case event: ViewEvent.StatsEvent => screenLoader.getScreenController(FXMLScreens.STATS).notify(event)
       case event: ViewEvent.SelectionEvent => screenLoader.getScreenController(FXMLScreens.SELECTION).notify(event)
-      case ViewEvent.ShowDialogEvent(title, msg, duration, notificationType) => Platform
-        .runLater(() => showNotificationPopup(title, msg, duration, notificationType, _ => {}))
-      case _ => logger warn s"Strange message ${ev}"
+      case _ =>
     }
 
     private def loadScreens(): Unit = {
@@ -87,7 +84,6 @@ object View {
       loadFXMLNode(FXMLScreens.LEVELS, new ScreenControllerLevels(this, controller))
       loadFXMLNode(FXMLScreens.HOME, new ScreenControllerHome(this, controller))
       loadFXMLNode(FXMLScreens.SELECTION, new ScreenControllerModeSelection(this, controller))
-      loadFXMLNode(FXMLScreens.END, new ScreenControllerEndGame(this, controller))
     }
 
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
