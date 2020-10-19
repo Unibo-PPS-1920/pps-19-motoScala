@@ -1,5 +1,7 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
+import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, MediaEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.WeightBoostPowerUp
 import it.unibo.pps1920.motoscala.ecs.components._
@@ -27,6 +29,7 @@ object PowerUpSystem {
                 .getEntityComponent[VelocityComponent](entity)
                 affComp.inputVel = modifier(affComp.inputVel)
                 effect.duration = effect.duration - 1
+                mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp3)))
                 if (effect.duration == 0) {
                   pUp.entity = None
                 }
@@ -34,18 +37,18 @@ object PowerUpSystem {
                 .getEntityComponent[JumpComponent](entity)
                 affComp.isActive = true
                 effect.duration = effect.duration - 1
+                mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp2)))
                 if (effect.duration == 0) {
                   pUp.entity = None
                   affComp.isActive = false
                 }
-                logger info "am jumping"
 
               case PowerUpEffect.WeightBoostPowerUp(_, modifier, oldMass) => val affComp = coordinator
                 .getEntityComponent[CollisionComponent](entity)
                 effect.asInstanceOf[WeightBoostPowerUp].oldMass = affComp.mass
                 affComp.mass = modifier(affComp.mass)
                 effect.duration = effect.duration - 1
-                logger info "am fat"
+                mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp1)))
                 if (effect.duration == 0) {
                   affComp.mass = oldMass
                   pUp.entity = None
