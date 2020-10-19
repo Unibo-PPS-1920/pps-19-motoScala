@@ -23,7 +23,7 @@ object CollisionsSystem {
                                         classOf[ShapeComponent],
                                         classOf[VelocityComponent],
                                         classOf[CollisionComponent])) {
-    private val CollisionDuration = fps / 8
+    private val CollisionDuration = fps / 6
 
     private var positionCompE1: PositionComponent = _
     private var shapeCompE1: ShapeComponent = _
@@ -71,8 +71,7 @@ object CollisionsSystem {
                   if (areCirclesTouching(positionCompE2.pos, positionCompE1.pos, shapeCompE2.shape.asInstanceOf[Circle]
                     .radius, shapeCompE1.shape.asInstanceOf[Circle].radius)) addBumperToPowUp(bumperCar, powerUp)
                 case _ => checkCollision(e1, e2, shapeCompE1.shape, shapeCompE2.shape, positionCompE1
-                  .pos, positionCompE2
-                                           .pos, velocityCompE1, velocityCompE2)
+                  .pos, positionCompE2.pos, velocityCompE1, velocityCompE2)
               }
             }
           }
@@ -128,7 +127,6 @@ object CollisionsSystem {
       //check distance from closest edge
       if ((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
       else Vector2(1, 1) //do not collide: same direction
-
     }
 
     private def collide(): Unit = {
@@ -174,6 +172,7 @@ object CollisionsSystem {
       collisionCompE1.duration = CollisionDuration
       collisionCompE2.duration = CollisionDuration
     }
+
     private def extractComponent[T: ClassTag](e: Entity): T =
       coordinator.getEntityComponent(e, implicitly[ClassTag[T]].runtimeClass).get.asInstanceOf[T]
 
