@@ -93,7 +93,7 @@ object GameEngine {
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(15))
-            .addEntityComponent(red, AIComponent(40, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, AIComponent(20, Random.shuffle(mutable.Stack(player))))
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
