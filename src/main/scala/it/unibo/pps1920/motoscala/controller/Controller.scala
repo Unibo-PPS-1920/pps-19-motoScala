@@ -37,13 +37,12 @@ object Controller {
     override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val myUuid: UUID = randomUUID()
-    private var score: Int = 0
-
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
     private val config = ConfigFactory.load("application")
     private val system = ActorSystem("MotoSystem", config)
     private val soundAgent: SoundAgent = SoundAgent()
+    private var score: Int = 0
     private var engine: Option[Engine] = None
     this.dataManager.initAppDirectory()
     private var observers: Set[ObserverUI] = Set()
@@ -85,6 +84,12 @@ object Controller {
                        Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
                        Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
                        )))
+
+
+
+
+      // levels = dataManager.loadLvl()
+
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
@@ -160,6 +165,16 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
+    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -174,16 +189,6 @@ object Controller {
         this.shutdownMultiplayer()
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
         this.serverActor.get ! CloseLobbyActorMessage()
@@ -192,11 +197,11 @@ object Controller {
       }
     }
     override def getMediator: Mediator = this.mediator
-    private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
     override def updateScore(delta: Int): Int = {
       score += delta
       score
     }
+    private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
 }
 

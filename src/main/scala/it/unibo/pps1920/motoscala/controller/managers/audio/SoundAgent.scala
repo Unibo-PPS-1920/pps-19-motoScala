@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 
 import java.util.concurrent.ArrayBlockingQueue
 
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
+import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJarToString
 import javafx.application.Platform
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
@@ -15,9 +15,9 @@ trait SoundAgent extends Thread with SoundAgentLogic {
 }
 
 private final class ConcreteSoundAgent extends SoundAgent {
-  final val QUEUE_SIZE = 100
+  final val QueueSize = 100
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
-  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)
+  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
   private var actualMusicPlayer: Option[MediaPlayer] = None
@@ -36,7 +36,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   }
   override def playMusic(media: Music): Unit = {
     if (!this.medias.contains(media)) {
-      this.medias += (media -> new MediaPlayer(new Media(loadFromJar(media.entryName))))
+      this.medias += (media -> new MediaPlayer(new Media(loadFromJarToString(media.entryName))))
     }
     Platform.runLater(() => {
       this.actualMusicPlayer = this.medias.get(media)
@@ -51,7 +51,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   override def resumeMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.play()))
   override def playClip(clip: Clips): Unit = {
     if (!this.clips.contains(clip)) {
-      this.clips += (clip -> new AudioClip(loadFromJar(clip.entryName)))
+      this.clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
     }
     Platform.runLater(() => {
       this.actualClipPlayer = Some(this.clips(clip))
@@ -77,8 +77,8 @@ private final class ConcreteSoundAgent extends SoundAgent {
 
   private def cacheSounds(): Unit = {
     //Increase loading speed with cache
-    this.medias += (Music.Home -> new MediaPlayer(new Media(loadFromJar(Music.Home.entryName))))
-    this.medias += (Music.Game -> new MediaPlayer(new Media(loadFromJar(Music.Game.entryName))))
+    this.medias += (Music.Home -> new MediaPlayer(new Media(loadFromJarToString(Music.Home.entryName))))
+    this.medias += (Music.Game -> new MediaPlayer(new Media(loadFromJarToString(Music.Game.entryName))))
     this.medias(Music.Home).play()
     this.medias(Music.Home).stop()
     this.medias(Music.Game).play()

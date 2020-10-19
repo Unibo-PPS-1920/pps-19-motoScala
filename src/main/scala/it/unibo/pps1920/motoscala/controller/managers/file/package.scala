@@ -17,19 +17,29 @@ package object file {
     .fold(error => {logger.warn(error.getMessage); false }, _ => true)
 
   object FileConstants {
-    final val SYSTEM_SEPARATOR: String = File.separator
-    final val USER_HOME: String = System.getProperty("user.home")
-    final val APP_MAIN_FOLDER: String = USER_HOME + SYSTEM_SEPARATOR + "MotoScala"
-    final val APP_SETTINGS_FOLDER: String = APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Settings"
-    final val APP_SCORE_FOLDER: String = APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Score"
-    final val APP_USER_LEVEL_FOLDER: String = APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "UserLevels"
+    final val LevelNumber = 2
+    final val SystemSeparator: String = File.separator
+    final val UserHome: String = System.getProperty("user.home")
+    final val AppMainFolder: String = UserHome + SystemSeparator + "MotoScala"
+    final val AppSettingsFolder: String = AppMainFolder + SystemSeparator + "Settings"
+    final val AppScoreFolder: String = AppMainFolder + SystemSeparator + "Score"
+    final val AppUserLevelFolder: String = AppMainFolder + SystemSeparator + "UserLevels"
 
   }
 
   object ResourcesPaths {
-    final val SCORE_FILE: String = APP_SCORE_FOLDER + SYSTEM_SEPARATOR + "Stats.yml"
-    final val SETTINGS_FILE: String = APP_SETTINGS_FOLDER + SYSTEM_SEPARATOR + "Settings.yml"
-    final val USER_LVL: String = APP_SCORE_FOLDER + SYSTEM_SEPARATOR + "Lvl.yml"
+    final val ScoreFile: String = AppScoreFolder + SystemSeparator + "Stats.yaml"
+    final val SettingsFile: String = AppSettingsFolder + SystemSeparator + "Settings.yaml"
+    final val UserCustomLvl: String = AppScoreFolder + SystemSeparator + "Lvl.yaml"
+
+  }
+
+  object ResourcesJarPaths {
+    final val Levels: String = "/levels/"
+    final val Music: String = "/music/"
+    final val Clips: String = "/clips/"
+    final val SettingsFile2: String = AppSettingsFolder + SystemSeparator + "Settings.yaml"
+    final val UserCustomLvl: String = AppScoreFolder + SystemSeparator + "Lvl.yaml"
 
   }
 }

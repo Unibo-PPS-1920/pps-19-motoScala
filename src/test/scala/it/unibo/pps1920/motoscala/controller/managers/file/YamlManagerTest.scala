@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller.managers.file
 import java.nio.file.Paths
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{APP_MAIN_FOLDER, SYSTEM_SEPARATOR}
+import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants.{AppMainFolder, SystemSeparator}
 import org.junit.runner.RunWith
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -23,13 +23,13 @@ private class InnerTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     "Save o read file" should {
       "Save a yaml from class" in {
         this.manager
-          .saveYaml(Paths.get(APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Test.yaml"))(TestClass(1)) shouldBe true
+          .saveYaml(Paths.get(AppMainFolder + SystemSeparator + "Test.yaml"))(TestClass(1)) shouldBe true
 
       }
       "Read a yaml from file" in {
         this.manager
           .loadYaml(Paths
-                      .get(APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Test.yaml"))(classOf[TestClass]) shouldBe Some(TestClass(1))
+                      .get(AppMainFolder + SystemSeparator + "Test.yaml"))(classOf[TestClass]) shouldBe Some(TestClass(1))
       }
     }
 
@@ -42,11 +42,11 @@ private class InnerTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
 class YamlManagerTest extends Suites(new InnerTest) with BeforeAndAfterAll {
 
   override def afterAll(): Unit = {
-    FileManager.deleteLocalFile(APP_MAIN_FOLDER + SYSTEM_SEPARATOR + "Test.yaml")
+    FileManager.deleteLocalFile(AppMainFolder + SystemSeparator + "Test.yaml")
   }
 
   override def beforeAll(): Unit = {
-    FileManager.createLocalDirectoryTreeFromFile(APP_MAIN_FOLDER)
+    FileManager.createLocalDirectoryTreeFromFile(AppMainFolder)
   }
 }
 case class TestClass(

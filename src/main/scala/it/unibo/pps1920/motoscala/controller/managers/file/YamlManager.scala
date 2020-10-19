@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.controller.managers.file
 
+import java.net.URL
 import java.nio.file.Path
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -13,6 +14,11 @@ final class YamlManager {
   private final val logger = LoggerFactory getLogger classOf[YamlManager]
   private final val mapper = new ObjectMapper(new YAMLFactory())
   def loadYaml[T](location: Path)(cl: Class[T]): Option[T] = {
+    this.initializeMapper()
+    Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
+  }
+
+  def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
     this.initializeMapper()
     Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
