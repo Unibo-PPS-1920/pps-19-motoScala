@@ -55,8 +55,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
     }
     Platform.runLater(() => {
       this.actualClipPlayer = Some(this.clips(clip))
-      this.actualClipPlayer.get.setVolume(0f)
-      this.actualClipPlayer.get.play(0f)
+      this.actualClipPlayer.get.play(volumeEffect)
     })
   }
   override def setVolumeMusic(value: Double): Unit = {
