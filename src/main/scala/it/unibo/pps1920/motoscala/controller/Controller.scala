@@ -11,7 +11,6 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAg
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
-import it.unibo.pps1920.motoscala.engine.Constants.MaxFps
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
@@ -54,9 +53,9 @@ object Controller {
     private var matchSetupSp: Option[SinglePlayerSetup] = None
     private var status: Boolean = false
     this.soundAgent.start()
-    /*
-        this.setAudioVolume(this.actualSettings.volume)
-    */
+
+    this.setAudioVolume(this.actualSettings.volume)
+
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -68,29 +67,17 @@ object Controller {
 
     override def start(): Unit = engine.get.start()
     override def loadAllLevels(): Unit = {
-      levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-
-                              List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0),
-                                                Coordinate(10 * MaxFps, 10 * MaxFps)),
-                                   //                                   Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
-                                   //                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   //                                   Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0),
-                                   //                                                   Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   //                                   Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0),
-                                   //                                               Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0),
-                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   Level.JumpPowerUp(Coordinate(100, 100), Circle(25)),
-                                   Level.WeightBoostPowerUp(Coordinate(200, 200), Circle(25)),
-                                   Level.SpeedBoostPowerUp(Coordinate(300, 300), Circle(10))
-
-                                   //                                   Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0),
-                                   //                                                 Coordinate(5 * MaxFps, 5 * MaxFps)),
-                                   //                                   Level
-                                   //                                     .BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(5 * MaxFps, 5 * MaxFps))
-
-                                   )))
-
+      levels = List(
+        LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                  List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                       Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                       Level.JumpPowerUp(Coordinate(100, 100), Circle(20))
+                       )))
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
@@ -166,16 +153,6 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -189,6 +166,16 @@ object Controller {
           .ERROR_NOTIFICATION))
         this.shutdownMultiplayer()
       })
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {

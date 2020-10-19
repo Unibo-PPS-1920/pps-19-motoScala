@@ -71,7 +71,7 @@ object GameEngine {
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
             .addEntityComponent(player, JumpComponent())
-            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
+            .addEntityComponent(player, CollisionComponent(20))
 
         case BlackPupa(position, shape, _, velocity)
         =>
@@ -82,7 +82,7 @@ object GameEngine {
             .addEntityComponent(black, ShapeComponent(shape))
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(black, CollisionComponent(10))
             .addEntityComponent(black, AIComponent(10, Random.shuffle(mutable.Stack(player))))
         case RedPupa(position, shape, _, velocity)
         =>
@@ -92,8 +92,8 @@ object GameEngine {
             .addEntityComponent(red, ShapeComponent(shape))
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(red, AIComponent(20, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, CollisionComponent(15))
+            .addEntityComponent(red, AIComponent(40, Random.shuffle(mutable.Stack(player))))
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
@@ -102,7 +102,7 @@ object GameEngine {
             .addEntityComponent(blue, ShapeComponent(shape))
             .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(blue, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(blue, CollisionComponent(10))
         case Polar(position, shape, _, velocity)
         =>
           logger info "add polar"
@@ -111,7 +111,7 @@ object GameEngine {
             .addEntityComponent(polar, ShapeComponent(shape))
             .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponent(polar, CollisionComponent(4))
         case JumpPowerUp(position, shape)
         =>
           logger info "add jump powerUp"
@@ -121,7 +121,7 @@ object GameEngine {
             .addEntityComponent(jmp, PositionComponent((position.x, position.y)))
             .addEntityComponent(jmp, CollisionComponent(mass = 0))
             .addEntityComponent(jmp, VelocityComponent((0, 0)))
-            .addEntityComponent(jmp, PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(40)))
+            .addEntityComponent(jmp, PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(400)))
         case WeightBoostPowerUp(position, shape)
         =>
           logger info "add weight powerUp"
