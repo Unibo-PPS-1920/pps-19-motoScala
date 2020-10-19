@@ -29,8 +29,8 @@ trait Engine extends UpdatableEngine with Commandable {
 }
 
 object GameEngine {
-  def apply(controller: EngineController, myUuid: UUID): Engine = new GameEngineImpl(controller, myUuid)
-  private class GameEngineImpl(controller: EngineController, myUuid: UUID) extends Engine {
+  def apply(controller: EngineController, players: List[BumperCarEntity]): Engine = new GameEngineImpl(controller, players)
+  private class GameEngineImpl(controller: EngineController, players: List[BumperCarEntity]) extends Engine {
     private val mediator = controller.mediator
     private val Fps = 160
     private val logger = LoggerFactory getLogger classOf[Engine]
@@ -50,19 +50,24 @@ object GameEngine {
       coordinator.registerComponentType(classOf[AIComponent])
       coordinator.registerComponentType(classOf[JumpComponent])
 
-      coordinator.registerSystem(DrawSystem(mediator, coordinator, myUuid))
+      coordinator.registerSystem(DrawSystem(mediator, coordinator, players.map(_.uuid)))
       coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
       coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
       coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
       coordinator.registerSystem(MovementSystem(coordinator, Fps))
       coordinator.registerSystem(InputSystem(coordinator, eventQueue))
 
-      val player = BumperCarEntity(myUuid)
+
       logger info "" + level.entities
+      val iterablePlayers = players.iterator
+      val playerStack = mutable.Stack[BumperCarEntity]()
       level.entities.foreach {
 
         case Player(position, shape, _, velocity) =>
           logger info "add player"
+          val player = iterablePlayers.next()
+
+          playerStack.push(player)
           coordinator.addEntity(player)
             .addEntityComponent(player, ShapeComponent(shape))
             .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
@@ -80,7 +85,7 @@ object GameEngine {
             .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(black, AIComponent(10, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(black, AIComponent(10, Random.shuffle(playerStack)))
         case RedPupa(position, shape, _, velocity)
         =>
           logger info "add red pupa"
@@ -90,7 +95,7 @@ object GameEngine {
             .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(red, AIComponent(40, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, AIComponent(40, Random.shuffle(playerStack)))
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
@@ -110,7 +115,7 @@ object GameEngine {
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
       }
-      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, player)))
+      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, playerStack.toList.head)))
       logger info "engine init done"
     }
     override def start(): Unit = {

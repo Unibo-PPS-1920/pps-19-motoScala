@@ -12,18 +12,19 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
 object DrawSystem {
   def apply(mediator: Mediator, coordinator: Coordinator,
-            myUuid: UUID): System = new DrawSystemImpl(mediator, coordinator, myUuid)
+            UUIDs: List[UUID]): System = new DrawSystemImpl(mediator, coordinator, UUIDs)
 
-  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator, myUuid: UUID)
+  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator, UUIDs: List[UUID])
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent], classOf[ShapeComponent])) {
     override def update(): Unit = {
+
       val entitiesToView = entitiesRef().collect(e => {
         val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
         val s = coordinator.getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]
         val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]
         DrawEntityData(p.pos, Direction.vecToDir(v.currentVel), s.shape, e)
-      }).partition(_.entity.uuid == myUuid)
-      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.headOption, entitiesToView._2))
+      }).partition(x => UUIDs.contains(x.entity.uuid))
+      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.map(e=> Some(e)), entitiesToView._2))
     }
   }
 }

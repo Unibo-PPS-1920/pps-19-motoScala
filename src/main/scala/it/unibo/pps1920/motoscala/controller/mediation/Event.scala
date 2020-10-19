@@ -16,7 +16,7 @@ object Event {
   type CommandData = EventData.CommandData
   type SoundEvent = MediaEvent
   sealed trait DisplayableEvent extends Event
-  final case class DrawEntityEvent(player: Option[EntityData], entity: Set[EntityData]) extends DisplayableEvent
+  final case class DrawEntityEvent(players: Set[Option[EntityData]], entity: Set[EntityData]) extends DisplayableEvent
   final case class LevelSetupEvent(data: LevelSetupData) extends DisplayableEvent
   final case class LevelEndEvent(data: LevelEndData) extends DisplayableEvent
   final case class RedirectSoundEvent(event: SoundEvent) extends DisplayableEvent

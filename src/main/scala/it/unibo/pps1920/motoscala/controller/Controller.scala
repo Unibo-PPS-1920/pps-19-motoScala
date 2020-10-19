@@ -23,6 +23,7 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI}
 import org.slf4j.LoggerFactory
 
@@ -36,8 +37,7 @@ object Controller {
   private class ControllerImpl private[Controller](
     override val mediator: Mediator = Mediator()) extends Controller {
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
-    private val myUuid: UUID = randomUUID()
-    private val maxPlayers = 5
+    private val maxPlayers = 4
     private val dataManager: DataManager = new DataManager()
     //campi che arrivano dal fu ConcreteActorController
     private val config = ConfigFactory.load("application")
@@ -62,8 +62,18 @@ object Controller {
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
-      engine = Option(motoscala.engine.GameEngine(this, myUuid))
-      engine.get.init(levels.filter(data => data.index == level).head)
+      val lvl = levels.filter(_.index == level).head
+      var playerNum = 1
+      val players =  if (serverActor.isDefined) {
+        playerNum = matchSetupMp.get.numReadyPlayers()
+        (0 to playerNum).map(_ => BumperCarEntity(UUID.randomUUID())).toList
+      } else {
+        List(BumperCarEntity(UUID.randomUUID()))
+      }
+      val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
+      lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
+      engine = Option(motoscala.engine.GameEngine(this, players))
+      engine.get.init(lvl)
     }
 
     override def start(): Unit = engine.get.start()
@@ -71,6 +81,12 @@ object Controller {
       levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
 
                               List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0),
+                                                Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                   Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0),
+                                               Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                   Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0),
+                                                Coordinate(10 * MaxFps, 10 * MaxFps)),
+                                   Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0),
                                                 Coordinate(10 * MaxFps, 10 * MaxFps)),
                                    Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0),
                                                  Coordinate(5 * MaxFps, 5 * MaxFps)),
@@ -99,6 +115,7 @@ object Controller {
       }
 
     }
+
 
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
 
