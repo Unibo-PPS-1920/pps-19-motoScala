@@ -53,7 +53,7 @@ object GameEngine {
         .registerComponentType(classOf[ScoreComponent])
 
         .registerSystem(DrawSystem(mediator, coordinator, myUuid))
-        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
+        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
         .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
