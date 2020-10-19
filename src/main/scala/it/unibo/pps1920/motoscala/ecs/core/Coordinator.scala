@@ -1,15 +1,19 @@
-package it.unibo.pps1920.motoscala.ecs.managers
+package it.unibo.pps1920.motoscala.ecs.core
 
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
 import it.unibo.pps1920.motoscala.ecs.{Component, Entity, System}
+
+import scala.reflect.ClassTag
 
 trait Coordinator {
   def addEntity(entity: Entity): Coordinator
   def removeEntity(entity: Entity): Coordinator
+  def isEntityAlive(entity: Entity): Boolean
   def registerComponentType(compType: ComponentType): Coordinator
   def addEntityComponent(entity: Entity, component: Component): Coordinator
+  def addEntityComponents(entity: Entity, components: Component*): Coordinator
   def removeEntityComponent(entity: Entity, component: Component): Coordinator
-  def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component]
+  def getEntityComponent[T: ClassTag](entity: Entity): T
   def registerSystem(sys: System): Coordinator
   def updateSystems(): Unit
 }
@@ -30,6 +34,7 @@ object Coordinator {
       componentManager entityDestroyed entity
       this
     }
+    override def isEntityAlive(entity: Entity): Boolean = entityManager.entities.contains(entity)
     override def registerComponentType(compType: ComponentType): Coordinator = {
       componentManager.registerComponentType(compType)
       this
@@ -39,14 +44,19 @@ object Coordinator {
         .bindComponentToEntity(entity, component)))
       this
     }
-    override def removeEntityComponent(entity: Entity, component: Component): Coordinator = {
+    override def addEntityComponents(entity: Entity,
+                                     components: Component*): Coordinator = {
+      components.foreach(this.addEntityComponent(entity, _))
+      this
+    }
 
+    override def removeEntityComponent(entity: Entity, component: Component): Coordinator = {
       this.synchronized(systemManager.entitySignatureChanged(entity, componentManager
         .unbindComponentFromEntity(entity, component)))
       this
     }
-    override def getEntityComponent(entity: Entity, compType: ComponentType): Option[Component] =
-      this.synchronized(componentManager.getEntityComponent(entity, compType))
+    override def getEntityComponent[T: ClassTag](entity: Entity): T =
+      this.synchronized(componentManager.getEntityComponent[T](entity))
     override def registerSystem(sys: System): Coordinator = {
       this.synchronized(systemManager.registerSystem(sys))
       this

@@ -6,12 +6,10 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
 import it.unibo.pps1920.motoscala.ecs.systems._
-import it.unibo.pps1920.motoscala.ecs.util
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
@@ -32,7 +30,7 @@ object GameEngine {
   def apply(controller: EngineController, players: List[BumperCarEntity]): Engine = new GameEngineImpl(controller, players)
   private class GameEngineImpl(controller: EngineController, players: List[BumperCarEntity]) extends Engine {
     private val mediator = controller.mediator
-    private val Fps = 160
+    private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
     private val gameLoop = GameLoop(Fps, this)
     private val coordinator: Coordinator = Coordinator()
@@ -45,17 +43,20 @@ object GameEngine {
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
       coordinator.registerComponentType(classOf[CollisionComponent])
-      coordinator.registerComponentType(classOf[ShapeComponent])
-      coordinator.registerComponentType(classOf[VelocityComponent])
-      coordinator.registerComponentType(classOf[AIComponent])
-      coordinator.registerComponentType(classOf[JumpComponent])
+        .registerComponentType(classOf[ShapeComponent])
+        .registerComponentType(classOf[VelocityComponent])
+        .registerComponentType(classOf[AIComponent])
+        .registerComponentType(classOf[JumpComponent])
+        .registerComponentType(classOf[PowerUpComponent])
+        .registerComponentType(classOf[ScoreComponent])
 
       coordinator.registerSystem(DrawSystem(mediator, coordinator, players.map(_.uuid)))
-      coordinator.registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
-      coordinator.registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
-      coordinator.registerSystem(CollisionsSystem(coordinator, controller, Fps))
-      coordinator.registerSystem(MovementSystem(coordinator, Fps))
-      coordinator.registerSystem(InputSystem(coordinator, eventQueue))
+        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
+        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+        .registerSystem(CollisionsSystem(coordinator, controller, Fps))
+        .registerSystem(MovementSystem(coordinator, Fps))
+        .registerSystem(InputSystem(coordinator, eventQueue))
+        .registerSystem(PowerUpSystem(coordinator))
 
 
       logger info "" + level.entities
@@ -69,61 +70,98 @@ object GameEngine {
 
           playerStack.push(player)
           coordinator.addEntity(player)
-            .addEntityComponent(player, ShapeComponent(shape))
-            .addEntityComponent(player, PositionComponent(util.Vector2(position.x, position.y)))
-            .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(player, JumpComponent())
-            .addEntityComponent(player, CollisionComponent(4, isColliding = false, 0, (0, 0)))
+            .addEntityComponents(player,
+                                 ShapeComponent(shape),
+                                 PositionComponent((position.x, position.y)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 JumpComponent(),
+                                 CollisionComponent(20))
 
         case BlackPupa(position, shape, _, velocity)
         =>
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
-
-            .addEntityComponent(black, ShapeComponent(shape))
-            .addEntityComponent(black, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
-            .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(black, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(black, AIComponent(10, Random.shuffle(playerStack)))
+            .addEntityComponents(black, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(10),
+                                 AIComponent(10, Random.shuffle(playerStack))
+                                 )
         case RedPupa(position, shape, _, velocity)
         =>
           logger info "add red pupa"
           val red = RedPupaEntity(UUID.randomUUID())
           coordinator.addEntity(red)
-            .addEntityComponent(red, ShapeComponent(shape))
-            .addEntityComponent(red, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
-            .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(red, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
-            .addEntityComponent(red, AIComponent(40, Random.shuffle(playerStack)))
+            .addEntityComponents(red, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(10),
+                                 AIComponent(20, Random.shuffle(playerStack))
+                                 )
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
           val blue = BluePupaEntity(UUID.randomUUID())
           coordinator.addEntity(blue)
-            .addEntityComponent(blue, ShapeComponent(shape))
-            .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
-            .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(blue, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponents(blue, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(10)
+                                 )
         case Polar(position, shape, _, velocity)
         =>
           logger info "add polar"
           val polar = PolarEntity(UUID.randomUUID())
           coordinator.addEntity(polar)
-            .addEntityComponent(polar, ShapeComponent(shape))
-            .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
-            .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
-            .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
+            .addEntityComponents(polar, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(4)
+                                 )
+        case JumpPowerUp(position, shape)
+        =>
+          logger info "add jump powerUp"
+          val jmp = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(jmp)
+            .addEntityComponents(jmp, ShapeComponent(shape),
+                                 PositionComponent((position.x, position.y)),
+                                 CollisionComponent(mass = 0),
+                                 VelocityComponent((0, 0)),
+                                 PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(400)))
+        case WeightBoostPowerUp(position, shape)
+        =>
+          logger info "add weight powerUp"
+          val w = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(w)
+            .addEntityComponents(w, ShapeComponent(shape),
+                                 PositionComponent((position.x, position.y)),
+                                 CollisionComponent(mass = 0),
+                                 VelocityComponent((0, 0)),
+                                 PowerUpComponent(effect = PowerUpEffect.WeightBoostPowerUp(duration = 4, _ * 10)))
+        case SpeedBoostPowerUp(position, shape)
+        =>
+          logger info "add weight powerUp"
+          val s = PowerUpEntity(UUID.randomUUID())
+          coordinator.addEntity(s)
+            .addEntityComponents(s, ShapeComponent(shape),
+                                 PositionComponent((position.x, position.y)),
+                                 CollisionComponent(mass = 0),
+                                 VelocityComponent((0, 0)),
+                                 PowerUpComponent(effect = PowerUpEffect.SpeedBoostPowerUp(duration = 20, _ dot 0.5)))
       }
       //mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, playerStack.toList.head)))
+
       logger info "engine init done"
     }
+
     override def start(): Unit = {
       gameLoop.status match {
         case Stopped => gameLoop.start()
         case _ => logger error "GameLoop already started"
       }
     }
+
     override def pause(): Unit = gameLoop.pause()
 
     override def resume(): Unit = gameLoop.unPause()

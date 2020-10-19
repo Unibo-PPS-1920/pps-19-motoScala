@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJ
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData
 import it.unibo.pps1920.motoscala.ecs.components.{AIComponent, PositionComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Scala2P._
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
@@ -33,23 +33,23 @@ object AISystem {
       if (frames % skipframes == 0) {
         entitiesRef().foreach(f = e => {
           val positions = entitiesRef().filter(_.uuid != e.uuid).map(e2 => {
-            val p = coordinator.getEntityComponent(e2, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
-              .pos
+            val p = coordinator.getEntityComponent[PositionComponent](e2).pos
             (p.x, p.y)
           }).toSeq
-          val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]
-            .pos
-          val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]
-          ai.targets.popWhile(coordinator.getEntityComponent(_, classOf[PositionComponent]).isEmpty)
+          val pos = coordinator.getEntityComponent[PositionComponent](e).pos
+          val ai = coordinator.getEntityComponent[AIComponent](e)
+          ai.targets.popWhile(!coordinator.isEntityAlive(_))
           val tPos: Vector2 = if (ai.targets.nonEmpty) {
-            coordinator.getEntityComponent(ai.targets.head, classOf[PositionComponent]).get
-              .asInstanceOf[PositionComponent].pos
+            coordinator.getEntityComponent[PositionComponent](ai.targets.head).pos
           } else {
             (0, 0)
           }
-
-          val query = new Struct("move_avoiding2", ai.foolishness, (pos.x, pos.y).toString(), (tPos.x, tPos.y)
-            .toString(), positions, new Var(), new Var())
+          val query = new Struct("move_avoiding", ai.foolishness,
+                                 (pos.x, pos.y),
+                                 (tPos.x, tPos.y),
+                                 positions,
+                                 new Var(),
+                                 new Var())
           val s = engine.solve(query).getSolution
           val v = Vector2(x = extractTerm(s, 4), y = extractTerm(s, 5))
           queue

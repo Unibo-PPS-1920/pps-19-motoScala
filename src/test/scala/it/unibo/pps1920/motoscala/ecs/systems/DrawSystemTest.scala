@@ -6,7 +6,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
 import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 import org.junit.runner.RunWith

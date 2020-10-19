@@ -1,6 +1,6 @@
-package it.unibo.pps1920.motoscala.ecs.managers
+package it.unibo.pps1920.motoscala.ecs.core
 
-import it.unibo.pps1920.motoscala.ecs.managers.Coordinator.ComponentType
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
 
 trait ECSSignature {
   def signComponent(componentType: ComponentType*): ECSSignature

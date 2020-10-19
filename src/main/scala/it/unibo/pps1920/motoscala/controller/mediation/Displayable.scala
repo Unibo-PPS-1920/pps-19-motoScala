@@ -1,11 +1,12 @@
 package it.unibo.pps1920.motoscala.controller.mediation
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+
 /**
  * This interfaced wraps an [[EventObserver]] for [[DisplayableEvent]].
  */
 trait Displayable extends EventObserver[DisplayableEvent] {
+
   def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit
   def notifyLevelEnd(data: LevelEndData): Unit
   def notifyRedirectSound(event: SoundEvent): Unit

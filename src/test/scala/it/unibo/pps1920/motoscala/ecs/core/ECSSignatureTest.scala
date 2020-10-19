@@ -1,7 +1,7 @@
-package it.unibo.pps1920.motoscala.ecs.managers
+package it.unibo.pps1920.motoscala.ecs.core
 
 import it.unibo.pps1920.motoscala.ecs.Component
-import it.unibo.pps1920.motoscala.ecs.managers.ECSSignatureTestClasses._
+import it.unibo.pps1920.motoscala.ecs.core.ECSSignatureTestClasses._
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers

@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller.mediation
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData, LevelSetupData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData, SetupData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
@@ -41,10 +41,10 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       "allow to send command" in {
         mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South)))
         mediator.publishEvent(Event.DrawEntityEvent(null, Set.empty))
-        mediator.publishEvent(Event.LevelSetupEvent(LevelSetupData(
+        mediator.publishEvent(Event.LevelSetupEvent(SetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
-        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(hasWon = true, null)))
+        mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(hasWon = true, null, 0)))
       }
     }
     "publishing" should {
@@ -70,7 +70,7 @@ object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
     override def notifyDrawEntities(player: Option[EntityData], entities: Set[Event.EntityData]): Unit =
       ToggleFlags.drawFlag = !ToggleFlags.drawFlag
-    override def notifyLevelSetup(data: LevelSetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
+    override def notifyLevelSetup(data: SetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
     override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }

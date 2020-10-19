@@ -5,7 +5,8 @@ import java.util.function.UnaryOperator
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.model.NetworkAddr
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import javafx.fxml.FXML
 import javafx.scene.control.{Button, TextField, TextFormatter}
 import javafx.scene.layout.{AnchorPane, BorderPane}
@@ -48,7 +49,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
     buttonHost.setOnAction(_ => {
       this.controller.becomeHost()
-      viewFacade.changeScreen(ScreenEvent.GotoLobby)
+      viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     })
     buttonJoin.setOnAction(_ => {
       this.toggleButtons()
@@ -135,7 +136,7 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
   protected def displayResult(res: Boolean): Unit = {
     this.toggleButtons()
     if (res) {
-      viewFacade.changeScreen(ScreenEvent.GotoLobby)
+      viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     }
   }
 

@@ -25,6 +25,7 @@ trait ObservableUI extends SoundController {
   def pause(): Unit
   def resume(): Unit
   def stop(): Unit
+  def updateScore(delta: Int): Int
 }
 
 
