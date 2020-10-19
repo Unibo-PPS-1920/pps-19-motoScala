@@ -131,7 +131,7 @@ object GameEngine {
           .addEntityComponents(nabi, ShapeComponent(shape),
                                PositionComponent((position.x + 100, position.y + 100)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
-                               CollisionComponent(4000),
+                               CollisionComponent(Integer.MAX_VALUE),
                                ScoreComponent(50000)
                                )
       case Beecon(position, shape, _, velocity)
