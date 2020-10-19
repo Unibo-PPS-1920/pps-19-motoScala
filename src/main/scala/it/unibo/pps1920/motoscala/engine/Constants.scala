@@ -1,5 +1,5 @@
 package it.unibo.pps1920.motoscala.engine
 
 object Constants {
-  val MaxFps = 60
+  val MaxFps: Double = 60.0
 }
