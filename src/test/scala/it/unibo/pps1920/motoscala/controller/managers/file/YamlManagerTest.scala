@@ -28,7 +28,7 @@ private class InnerTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
       }
       "Read a yaml from file" in {
         this.manager
-          .loadYaml(Paths
+          .loadYamlFromPath(Paths
                       .get(AppMainFolder + SystemSeparator + "Test.yaml"))(classOf[TestClass]) shouldBe Some(TestClass(1))
       }
     }

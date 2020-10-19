@@ -14,8 +14,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 600
-    y: 600
+    x: 15
+    y: 15
 - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
   position:
     x: 600
@@ -26,9 +26,9 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 300
-    y: 300
-- !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
+    x: 3
+    y: 3
+- !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
   position:
     x: 600
     y: 100
@@ -38,9 +38,9 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 300
-    y: 300
-- !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
+    x: 3
+    y: 3
+- !<it.unibo.pps1920.motoscala.model.Level$Polar>
   position:
     x: 600
     y: 300
@@ -50,8 +50,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 300
-    y: 300
+    x: 3
+    y: 3
 - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
   position:
     x: 300
@@ -62,8 +62,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 300
-    y: 300
+    x: 3
+    y: 3
 - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
   position:
     x: 600
@@ -74,8 +74,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
-    x: 300
-    y: 300
+    x: 3
+    y: 3
 - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
   position:
     x: 700
@@ -86,5 +86,23 @@ entities: !<scala.collection.immutable.$colon$colon>
     x: 0
     y: 0
   velocity:
+    x: 3
+    y: 3
+- !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
+  position:
+    x: 100
+    y: 100
+  shape:
+    radius: 20.0
+- !<it.unibo.pps1920.motoscala.model.Level$SpeedBoostPowerUp>
+  position:
+    x: 200
+    y: 200
+  shape:
+    radius: 20.0
+- !<it.unibo.pps1920.motoscala.model.Level$WeightBoostPowerUp>
+  position:
     x: 300
     y: 300
+  shape:
+    radius: 20.0

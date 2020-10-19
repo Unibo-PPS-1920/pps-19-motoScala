@@ -39,7 +39,7 @@ package object file {
     final val Music: String = "/music/"
     final val Clips: String = "/clips/"
     final val SettingsFile2: String = AppSettingsFolder + SystemSeparator + "Settings.yaml"
-    final val UserCustomLvl: String = AppScoreFolder + SystemSeparator + "Lvl.yaml"
+    final val UserCustomLvl: String = AppScoreFolder + SystemSeparator + "lvl.yaml"
 
   }
 }

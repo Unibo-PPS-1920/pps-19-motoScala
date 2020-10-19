@@ -10,18 +10,16 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{SetVolum
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.engine.Engine
-import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
+import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
-import it.unibo.pps1920.motoscala.model.{Level, MultiPlayerSetup, NetworkAddr, SinglePlayerSetup}
+import it.unibo.pps1920.motoscala.model.{MultiPlayerSetup, NetworkAddr, SinglePlayerSetup}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent._
-import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
 import javafx.application.Platform
 import org.slf4j.LoggerFactory
@@ -71,24 +69,32 @@ object Controller {
       engine.get.start()
     }
     override def loadAllLevels(): Unit = {
-      levels = List(
-        LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                  List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                       Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                       Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                       Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                       )))
+      /*      levels = List(
+              LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                        List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                             Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                             Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                             Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                             )))
 
-
-
-
-      // levels = dataManager.loadLvl()
+            this.dataManager
+              .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                                 List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                                      Level.BlackPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BlackPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BluePupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BluePupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BluePupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                      )))*/
+      levels = dataManager.loadLvl()
 
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }

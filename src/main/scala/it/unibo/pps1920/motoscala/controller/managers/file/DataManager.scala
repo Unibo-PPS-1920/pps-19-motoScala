@@ -12,9 +12,9 @@ final class DataManager {
 
   private final val logger = LoggerFactory getLogger classOf[DataManager]
   private val yamlManager: YamlManager = new YamlManager
-  def loadSettings(): Option[SettingsData] = yamlManager.loadYaml(SettingsFile)(classOf[SettingsData])
+  def loadSettings(): Option[SettingsData] = yamlManager.loadYamlFromPath(SettingsFile)(classOf[SettingsData])
   def saveSettings(sett: SettingsData): Boolean = yamlManager.saveYaml(SettingsFile)(sett)
-  def loadScore(): Option[ScoresData] = yamlManager.loadYaml(ScoreFile)(classOf[ScoresData])
+  def loadScore(): Option[ScoresData] = yamlManager.loadYamlFromPath(ScoreFile)(classOf[ScoresData])
   def saveScore(scores: ScoresData): Boolean = yamlManager.saveYaml(ScoreFile)(scores)
   def initAppDirectory(): Boolean = {
     tryAndBoolResult(FileManager.createLocalDirectoryTreeFromFile(AppMainFolder),
@@ -25,7 +25,7 @@ final class DataManager {
   }
   def loadUserLvl(): List[LevelData] = {
     FileManager.getListFiles(AppUserLevelFolder)
-      .map(pf => this.yamlManager.loadYaml(AppUserLevelFolder + pf)(classOf[LevelData]))
+      .map(pf => this.yamlManager.loadYamlFromPath(AppUserLevelFolder + pf)(classOf[LevelData]))
       .filter(_.isDefined).map(_.get)
   }
   def saveLvl(data: LevelData): Unit = {
