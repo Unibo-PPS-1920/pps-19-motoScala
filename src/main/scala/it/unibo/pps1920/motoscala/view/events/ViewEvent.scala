@@ -7,6 +7,8 @@ import it.unibo.pps1920.motoscala.view
 
 sealed trait ViewEvent
 object ViewEvent {
+
+  import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
   import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
   sealed trait HomeEvent extends ViewEvent
   sealed trait LevelEvent extends ViewEvent
@@ -16,6 +18,7 @@ object ViewEvent {
   sealed trait GlobalViewEvent extends ViewEvent
   sealed trait SettingsEvent extends ViewEvent
   sealed trait StatsEvent extends ViewEvent
+  final case class LevelSetupEvent(data: LevelSetupData) extends GameEvent
   final case class ShowDialogEvent(title: String, msg: String, secondsDuration: view.JavafxEnums.Notification_Duration,
                                    notificationType: view.JavafxEnums.NotificationType) extends GlobalViewEvent
   final case class JoinResultEvent(result: Boolean) extends SelectionEvent

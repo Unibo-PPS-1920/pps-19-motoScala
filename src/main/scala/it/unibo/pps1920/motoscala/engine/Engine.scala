@@ -5,7 +5,7 @@ import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Commandable
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent, LevelSetupEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandData, CommandEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.entities._
@@ -115,7 +115,7 @@ object GameEngine {
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(polar, CollisionComponent(4, isColliding = false, 0, Vector2(0, 0)))
       }
-      mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, playerStack.toList.head)))
+      //mediator.publishEvent(LevelSetupEvent(LevelSetupData(level, isSinglePlayer = true, isHosting = true, playerStack.toList.head)))
       logger info "engine init done"
     }
     override def start(): Unit = {

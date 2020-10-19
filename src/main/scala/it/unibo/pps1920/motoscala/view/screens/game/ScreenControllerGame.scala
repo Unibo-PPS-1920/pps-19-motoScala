@@ -1,5 +1,5 @@
 package it.unibo.pps1920.motoscala.view.screens.game
-
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
@@ -15,12 +15,14 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   logger info "Game Screen"
   mediator.subscribe(this)
 
-  override def notifyLevelSetup(data: LevelSetupData): Unit = Platform.runLater(() => handleSetup(data))
   override def notifyDrawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = Platform
     .runLater(() => drawEntities(player, entities))
   override def notifyLevelEnd(data: LevelEndData): Unit = {}
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
 
-  override def notify(ev: ViewEvent): Unit = ???
+  override def notify(ev: ViewEvent): Unit = ev match {
+    case LevelSetupEvent(data) => Platform.runLater(() => handleSetup(data))
+    case _ => logger info "Unexpected message"
+  }
   override def sendCommandEvent(event: Event.CommandEvent): Unit = mediator.publishEvent(event)
 }

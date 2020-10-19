@@ -26,7 +26,7 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI}
 import org.slf4j.LoggerFactory
-
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
 import scala.collection.immutable.HashMap
 
 trait Controller extends ActorController with SoundController with EngineController with ObservableUI {
@@ -61,6 +61,8 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
+
+
       logger info s"level selected: $level"
       val lvl = levels.filter(_.index == level).head
       var playerNum = 1
@@ -74,6 +76,8 @@ object Controller {
       lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
       engine = Option(motoscala.engine.GameEngine(this, players))
       engine.get.init(lvl)
+
+      observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = false, isHosting = true, players.head))))
     }
 
     override def start(): Unit = engine.get.start()
