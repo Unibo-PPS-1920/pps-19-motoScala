@@ -18,7 +18,7 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   override def notifyLevelSetup(data: LevelSetupData): Unit = Platform.runLater(() => handleSetup(data))
   override def notifyDrawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = Platform
     .runLater(() => drawEntities(player, entities))
-  override def notifyLevelEnd(data: LevelEndData): Unit = {}
+  override def notifyLevelEnd(data: LevelEndData): Unit = Platform.runLater(() => updateScore(data.score))
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
 
   override def notify(ev: ViewEvent): Unit = ???

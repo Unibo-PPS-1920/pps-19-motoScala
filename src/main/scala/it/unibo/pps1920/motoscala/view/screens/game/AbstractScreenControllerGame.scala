@@ -33,10 +33,12 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var canvasStack: StackPane = _
   @FXML protected var buttonStart: Button = _
   @FXML protected var labelTitle: Label = _
+  @FXML protected var labelScore: Label = _
   private var context: GraphicsContext = _
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)
+  private var score: Int = 0
 
   def initialize(): Unit = {
     assertNodeInjected()
@@ -57,6 +59,7 @@ abstract class AbstractScreenControllerGame(
     assert(buttonStart != null, "fx:id=\"buttonStart\" was not injected: check your FXML file 'Game.fxml'.")
     assert(buttonBack != null, "fx:id=\"buttonBack\" was not injected: check your FXML file 'Game.fxml'.")
     assert(labelTitle != null, "fx:id=\"labelTitle\" was not injected: check your FXML file 'Game.fxml'.")
+    assert(labelScore != null, "fx:id=\"scoreTile\" was not injected: check your FXML file 'Game.fxml'.")
   }
 
   private def initButtons(): Unit = {
@@ -75,6 +78,7 @@ abstract class AbstractScreenControllerGame(
     })
   }
   protected def handleSetup(data: LevelSetupData): Unit = {
+
     playerEntity = data.playerEntity.some
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
@@ -85,9 +89,15 @@ abstract class AbstractScreenControllerGame(
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
     } else {buttonStart setVisible false }
+    score = 0
+    labelScore.setText(s"Score: ${score}")
     initButtons()
     gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
     viewFacade.getStage.setFullScreen(true)
+  }
+  protected def updateScore(points: Int): Unit = {
+    score += points
+    labelScore.setText(s"Score: ${score}")
   }
 
   protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {

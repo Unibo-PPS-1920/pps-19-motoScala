@@ -50,6 +50,7 @@ object GameEngine {
         .registerComponentType(classOf[AIComponent])
         .registerComponentType(classOf[JumpComponent])
         .registerComponentType(classOf[PowerUpComponent])
+        .registerComponentType(classOf[ScoreComponent])
 
         .registerSystem(DrawSystem(mediator, coordinator, myUuid))
         .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
@@ -72,6 +73,7 @@ object GameEngine {
             .addEntityComponent(player, VelocityComponent(Vector2(0, 0), Vector2(velocity.x, velocity.y)))
             .addEntityComponent(player, JumpComponent())
             .addEntityComponent(player, CollisionComponent(20))
+            .addEntityComponent(player, ScoreComponent(0))
 
         case BlackPupa(position, shape, _, velocity)
         =>
@@ -84,6 +86,7 @@ object GameEngine {
             .addEntityComponent(black, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(black, CollisionComponent(10))
             .addEntityComponent(black, AIComponent(10, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(black, ScoreComponent(10))
         case RedPupa(position, shape, _, velocity)
         =>
           logger info "add red pupa"
@@ -94,6 +97,8 @@ object GameEngine {
             .addEntityComponent(red, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(red, CollisionComponent(15))
             .addEntityComponent(red, AIComponent(20, Random.shuffle(mutable.Stack(player))))
+            .addEntityComponent(red, ScoreComponent(10))
+
         case BluePupa(position, shape, _, velocity)
         =>
           logger info "add blue pupa"
@@ -103,6 +108,8 @@ object GameEngine {
             .addEntityComponent(blue, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(blue, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(blue, CollisionComponent(10))
+            .addEntityComponent(blue, ScoreComponent(10))
+
         case Polar(position, shape, _, velocity)
         =>
           logger info "add polar"
@@ -112,6 +119,8 @@ object GameEngine {
             .addEntityComponent(polar, PositionComponent(util.Vector2(position.x + 100, position.y + 100)))
             .addEntityComponent(polar, VelocityComponent(Vector2(0, 0), util.Vector2(velocity.x, velocity.y)))
             .addEntityComponent(polar, CollisionComponent(4))
+            .addEntityComponent(polar, ScoreComponent(10))
+
         case JumpPowerUp(position, shape)
         =>
           logger info "add jump powerUp"
