@@ -11,7 +11,6 @@ import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.systems._
-import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
 import org.slf4j.LoggerFactory
@@ -51,8 +50,8 @@ object GameEngine {
         .registerComponentType(classOf[PowerUpComponent])
 
         .registerSystem(DrawSystem(mediator, coordinator, myUuid))
-        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 3))
-        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
+        .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
+        .registerSystem(EndGameSystem(coordinator, mediator, (level.mapSize.x, level.mapSize.y), this))
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
         .registerSystem(InputSystem(coordinator, eventQueue))
