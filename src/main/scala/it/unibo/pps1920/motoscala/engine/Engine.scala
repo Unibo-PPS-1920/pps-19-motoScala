@@ -73,7 +73,8 @@ object GameEngine {
                                PositionComponent((position.x, position.y)),
                                VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                JumpComponent(),
-                               CollisionComponent(20))
+                               CollisionComponent(20),
+                               ScoreComponent(0))
       case BlackPupa(position, shape, _, velocity)
       =>
         logger info "add black pupa"

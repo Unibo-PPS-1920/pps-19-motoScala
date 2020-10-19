@@ -21,8 +21,9 @@ object EndGameSystem {
       entitiesRef()
         .filter(e => {
           val p = coordinator.getEntityComponent[PositionComponent](e).pos
-          p.x < 0 || p.y < 0 || p.x > canvasSize.x || p.y > canvasSize.y
+          p.x <= 0 || p.y <= 0 || p.x >= canvasSize.x || p.y >= canvasSize.y
         }).foreach(e => {
+        logger info "out"
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
           //          this.coordinator.removeEntity(e)
@@ -31,8 +32,7 @@ object EndGameSystem {
           mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Out)))
         }
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e, coordinator
-          .getEntityComponent[ScoreComponent](e).score))
-                                   )
+          .getEntityComponent[ScoreComponent](e).score)))
         this.coordinator.removeEntity(e)
       })
       if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
