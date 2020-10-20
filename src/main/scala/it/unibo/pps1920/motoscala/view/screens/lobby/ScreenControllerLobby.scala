@@ -13,7 +13,8 @@ final class ScreenControllerLobby(protected override val viewFacade: ViewFacade,
   override def whenDisplayed(): Unit = {}
 
   override def notify(ev: ViewEvent): Unit = ev match {
-    case ViewEvent.SetupLobbyEvent(ip, port, name) => this.setIpAndPort(ip, port, name)
+    case ViewEvent.SetupLobbyEvent(ip, port, name, levels, difficulties) => this
+      .setIpAndPort(ip, port, name, levels, difficulties)
     case ViewEvent.LobbyDataEvent(lobbyData) => this.updateLobby(lobbyData)
     case ViewEvent.LeaveLobbyEvent() => this.leaveLobby()
     case ViewEvent.LoadLevelEvent() => this.startMulti()

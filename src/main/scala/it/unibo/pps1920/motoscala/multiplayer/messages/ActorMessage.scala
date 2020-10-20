@@ -59,7 +59,8 @@ object ActorMessage {
 }
 
 object MessageData {
-  final case class LobbyData(difficulty: Option[Int] = None, mode: Option[Boolean] = None,
+  final case class LobbyData(difficulty: Option[Int] = None, level: Option[Int] = None,
+                             mode: Option[Boolean] = None,
                              readyPlayers: mutable.Map[ActorRef, PlayerData])
 }
 

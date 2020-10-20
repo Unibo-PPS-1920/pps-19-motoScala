@@ -17,8 +17,10 @@
          <children>
             <VBox alignment="CENTER" layoutX="146.0" layoutY="125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
+                  <Label text="Effect" textFill="WHITE" />
+                  <Slider fx:id="effectSlider" blockIncrement="0.0" majorTickUnit="0.01" max="1.0" min="0.01" minorTickCount="0" prefHeight="52.0" prefWidth="450.0" showTickMarks="true" value="0.01" />
                   <Label text="Volume" textFill="WHITE" />
-                  <Slider fx:id="volumeSlider" blockIncrement="0.0" majorTickUnit="0.01" max="1.0" min="0.01" minorTickCount="0" prefHeight="52.0" prefWidth="450.0" showTickMarks="true" value="0.01" />
+                  <Slider fx:id="musicSlider" blockIncrement="0.0" majorTickUnit="0.01" max="1.0" min="0.01" minorTickCount="0" prefHeight="52.0" prefWidth="450.0" showTickMarks="true" value="0.01" />
                   <Label text="Difficulty" textFill="WHITE" />
                   <Slider fx:id="diffSlider" blockIncrement="0.0" majorTickUnit="1.0" max="3.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" />
                   <Label text="Player name" textFill="WHITE" />
