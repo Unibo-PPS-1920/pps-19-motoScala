@@ -11,6 +11,7 @@ import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
+
 import scala.math.signum
 object CollisionsSystem {
 
@@ -103,24 +104,22 @@ object CollisionsSystem {
           }
         }
         case (circle: Circle, rectangle: Rectangle) =>
-             val inv = getDirInversion(circle, pos1, rectangle, pos2)
-            if (inv != Vector2(1,1)) {
-              collisionCompE1.isColliding = true
-              collisionCompE1.duration = CollisionDuration/2
-              checkLifePoint()
-            }
+          val inv = getDirInversion(circle, pos1, rectangle, pos2)
+          if (inv != Vector2(1, 1)) {
+            collisionCompE1.isColliding = true
+            collisionCompE1.duration = CollisionDuration / 2
+            checkLifePoint()
+          }
           vel1.currentVel = vel1.currentVel mul inv
 
         case (rectangle: Rectangle, circle: Circle) =>
-            val inv = getDirInversion(circle, pos2, rectangle, pos1)
-            if (!(inv == Vector2(1,1))) {
-              collisionCompE2.isColliding = true
-              collisionCompE2.duration = CollisionDuration/2
-              checkLifePoint()
-            }
+          val inv = getDirInversion(circle, pos2, rectangle, pos1)
+          if (!(inv == Vector2(1, 1))) {
+            collisionCompE2.isColliding = true
+            collisionCompE2.duration = CollisionDuration / 2
+            checkLifePoint()
+          }
           vel2.currentVel = vel2.currentVel mul inv
-
-
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
@@ -176,24 +175,27 @@ object CollisionsSystem {
       val testEdge = Vector2(circlePos.x, circlePos.y)
       val inversionVec = Vector2(1, 1)
       //find closest edge
-      if (circlePos.x < (rectanglePos.x - rectangle.dimX/2)) { //left edge
-        testEdge.x = rectanglePos.x - rectangle.dimX/2
+      if (circlePos.x < (rectanglePos.x - rectangle.dimX / 2)) { //left edge
+        testEdge.x = rectanglePos.x - rectangle.dimX / 2
         inversionVec.x = -1
       }
-      else if (circlePos.x > (rectanglePos.x + rectangle.dimX/2)) { //right edge
-        testEdge.x = rectanglePos.x + rectangle.dimX/2
+      else if (circlePos.x > (rectanglePos.x + rectangle.dimX / 2)) { //right edge
+        testEdge.x = rectanglePos.x + rectangle.dimX / 2
         inversionVec.x = -1
       }
-      if (circlePos.y < rectanglePos.y - rectangle.dimY/2) { //top edge
-        testEdge.y = rectanglePos.y - rectangle.dimY/2
+      if (circlePos.y < rectanglePos.y - rectangle.dimY / 2) { //top edge
+        testEdge.y = rectanglePos.y - rectangle.dimY / 2
         inversionVec.y = -1
       }
-      else if (circlePos.y > rectanglePos.y + rectangle.dimY/2) { //bottom edge
-        testEdge.y = rectanglePos.y + rectangle.dimY/2
+      else if (circlePos.y > rectanglePos.y + rectangle.dimY / 2) { //bottom edge
+        testEdge.y = rectanglePos.y + rectangle.dimY / 2
         inversionVec.y = -1
       }
       //check distance from closest edge
-      if ((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
+      if ((circlePos dist testEdge) <= circle.radius) {
+        controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.CollisionSoft)))
+        inversionVec
+      } //collide: direction inverted
       else Vector2(1, 1) //do not collide: same direction
     }
 
