@@ -29,7 +29,7 @@ final class DataManager {
       .filter(_.isDefined).map(_.get)
   }
   def saveLvl(data: LevelData): Unit = {
-    this.yamlManager.saveYaml(AppMainFolder + SystemSeparator + "lvl.yaml")(data)
+    this.yamlManager.saveYaml(AppMainFolder + SystemSeparator + "lvl1.yaml")(data)
   }
   def loadLvl(): List[LevelData] = {
 
