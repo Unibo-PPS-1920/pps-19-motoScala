@@ -24,4 +24,5 @@ object Clips extends Enum[Clips] {
   case object Out extends Clips("/clips/out.wav")
   case object Out2 extends Clips("/clips/out2.wav")
   case object Fx1 extends Clips("/clips/fx1.wav")
+  case object Swish extends Clips("/clips/generalFx.wav")
 }

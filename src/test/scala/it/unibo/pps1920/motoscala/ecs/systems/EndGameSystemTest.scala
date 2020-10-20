@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelE
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
-import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ScoreComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.systems.EndGameSystemTestClasses.{DisplayMock, EngineControllerMock}
@@ -21,7 +21,6 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
-
   var coordinator: Coordinator = _
   var endsys: System = _
   var mediator: Mediator = _
@@ -35,15 +34,18 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     display = new DisplayMock()
     mediator = controller.mediator
     controller.mediator.subscribe(display)
-    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(controller, List(BumperCarEntity(UUID.randomUUID()))))
+    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(controller, List(BumperCarEntity(UUID
+                                                                                                                 .randomUUID()))))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val v = VelocityComponent(Vector2(0, -10))
     val s = ScoreComponent(1)
+    val c = CollisionComponent(10, 20)
     coordinator.registerComponentType(classOf[PositionComponent])
     coordinator.registerComponentType(classOf[ShapeComponent])
     coordinator.registerComponentType(classOf[VelocityComponent])
     coordinator.registerComponentType(classOf[ScoreComponent])
+    coordinator.registerComponentType(classOf[CollisionComponent])
     coordinator.registerSystem(endsys)
 
     coordinator.addEntity(entity)
@@ -51,6 +53,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     coordinator.addEntityComponent(entity, v)
     coordinator.addEntityComponent(entity, pos)
     coordinator.addEntityComponent(entity, shape)
+    coordinator.addEntityComponent(entity, c)
 
   }
   override def afterAll(): Unit = {
@@ -69,11 +72,13 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
         val shape = ShapeComponent(Circle(3))
         val v = VelocityComponent(Vector2(0, -10))
         val s = ScoreComponent(1)
+        val c = CollisionComponent(10, 10)
         coordinator.addEntity(e)
         coordinator.addEntityComponent(e, v)
         coordinator.addEntityComponent(e, pos)
         coordinator.addEntityComponent(e, shape)
         coordinator.addEntityComponent(e, s)
+        coordinator.addEntityComponent(e, c)
         endsys.entitiesRef() shouldBe Set(entity, e)
         endsys.update()
         endsys.entitiesRef() shouldBe Set(entity)

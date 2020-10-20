@@ -31,12 +31,12 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
   val playerShape: ShapeComponent = ShapeComponent(Circle(5))
   val playerPos: PositionComponent = PositionComponent(Vector2(100, 100))
   val playerVel: VelocityComponent = VelocityComponent(currentVel = Vector2(10, 0), inputVel = Vector2(10, 0))
-  val playerColl: CollisionComponent = CollisionComponent(5)
+  val playerColl: CollisionComponent = CollisionComponent(0, 5)
   val playerJump: JumpComponent = JumpComponent()
   val pupa: RedPupaEntity = RedPupaEntity(UUID.randomUUID())
   val pupaPos: PositionComponent = PositionComponent(Vector2(108, 100))
   val pupaVel: VelocityComponent = VelocityComponent(currentVel = Vector2(-5, 0), inputVel = Vector2(-5, 0))
-  val pupaColl: CollisionComponent = CollisionComponent(10)
+  val pupaColl: CollisionComponent = CollisionComponent(1, 10)
 
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
