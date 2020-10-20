@@ -16,6 +16,7 @@ final class ScreenControllerLobby(protected override val viewFacade: ViewFacade,
     case ViewEvent.SetupLobbyEvent(ip, port, name) => this.setIpAndPort(ip, port, name)
     case ViewEvent.LobbyDataEvent(lobbyData) => this.updateLobby(lobbyData)
     case ViewEvent.LeaveLobbyEvent() => this.leaveLobby()
+    case ViewEvent.LoadLevelEvent() => this.startMulti()
     case _ =>
   }
 }

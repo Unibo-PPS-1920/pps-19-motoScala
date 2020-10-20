@@ -6,7 +6,7 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 object Level {
   sealed trait LevelEntity
   case class LevelData12(index: Int, mapSize: Vector2, entities: List[LevelEntity])
-  case class LevelData(index: Int, mapSize: Coordinate, entities: List[LevelEntity])
+  case class LevelData(index: Int, mapSize: Coordinate, var entities: List[LevelEntity])
   case class Coordinate(x: Int, y: Int)
 
   case class Player(position: Coordinate, shape: Circle, direction: Coordinate,

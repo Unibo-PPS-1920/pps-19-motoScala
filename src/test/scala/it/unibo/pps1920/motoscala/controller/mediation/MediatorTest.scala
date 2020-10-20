@@ -3,11 +3,12 @@ package it.unibo.pps1920.motoscala.controller.mediation
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData, SetupData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
 import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import org.junit.runner.RunWith
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -41,7 +42,7 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       "allow to send command" in {
         mediator.publishEvent(Event.CommandEvent(CommandData(TestEntity(UUID.randomUUID()), South)))
         mediator.publishEvent(Event.DrawEntityEvent(null, Set.empty))
-        mediator.publishEvent(Event.LevelSetupEvent(SetupData(
+        mediator.publishEvent(LevelSetupEvent(LevelSetupData(
           LevelData(0, Coordinate(0, 0), List()), isSinglePlayer = true, isHosting = true,
           BumperCarEntity(UUID.randomUUID()))))
         mediator.publishEvent(Event.LevelEndEvent(EventData.EndData(hasWon = true, null, 0)))
@@ -51,7 +52,6 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
       "set flags true" in {
         ToggleFlags.cmdFlag shouldBe true
         ToggleFlags.drawFlag shouldBe true
-        ToggleFlags.setupFlag shouldBe true
         ToggleFlags.endFlag shouldBe true
       }
     }
@@ -68,9 +68,8 @@ class MediatorTest extends AnyWordSpec with Matchers with BeforeAndAfter with Be
 }
 object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
-    override def notifyDrawEntities(player: Option[EntityData], entities: Set[Event.EntityData]): Unit =
+    override def notifyDrawEntities(player: Set[Option[EntityData]], entities: Set[Event.EntityData]): Unit =
       ToggleFlags.drawFlag = !ToggleFlags.drawFlag
-    override def notifyLevelSetup(data: SetupData): Unit = ToggleFlags.setupFlag = !ToggleFlags.setupFlag
     override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }
@@ -80,7 +79,6 @@ object MediatorTestClasses {
 }
 object ToggleFlags {
   var drawFlag = false
-  var setupFlag = false
   var endFlag = false
   var cmdFlag = false
 }

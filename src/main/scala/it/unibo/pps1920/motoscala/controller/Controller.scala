@@ -1,8 +1,6 @@
 package it.unibo.pps1920.motoscala.controller
 
 import java.util.UUID
-import java.util.UUID.randomUUID
-
 import akka.actor.{ActorRef, ActorSystem, ExtendedActorSystem}
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps1920.motoscala
@@ -20,13 +18,16 @@ import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-import it.unibo.pps1920.motoscala.view.events.ViewEvent._
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
+import it.unibo.pps1920.motoscala.view.events.ViewEvent._
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelSetupData, LevelSetupEvent}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
 import javafx.application.Platform
 import org.slf4j.LoggerFactory
-
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{ScoreDataEvent, SettingsDataEvent}
 import scala.collection.immutable.HashMap
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
 
 trait Controller extends ActorController with SoundController with EngineController with ObservableUI {
 }
@@ -35,12 +36,15 @@ object Controller {
 
   private class ControllerImpl private[Controller](
     override val mediator: Mediator = Mediator()) extends Controller {
+
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
-    private val myUuid: UUID = randomUUID()
+
+    private val maxPlayers = 4
+
     private var score: Int = 0
 
     private val dataManager: DataManager = new DataManager()
-    //campi che arrivano dal fu ConcreteActorController
+
     private val config = ConfigFactory.load("application")
     private val system = ActorSystem("MotoSystem", config)
     private val soundAgent: SoundAgent = SoundAgent()
@@ -62,9 +66,29 @@ object Controller {
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
     override def setupGame(level: Level): Unit = {
+
       logger info s"level selected: $level"
-      engine = Option(motoscala.engine.GameEngine(this, myUuid))
-      engine.get.init(levels.filter(data => data.index == level).head)
+      val lvl = levels.filter(_.index == level).head
+      var playerNum = 1
+      val players =  if (serverActor.isDefined) {
+        playerNum = matchSetupMp.get.numReadyPlayers()
+        (0 to playerNum).map(_ => BumperCarEntity(UUID.randomUUID())).toList
+      } else {
+        List(BumperCarEntity(UUID.randomUUID()))
+      }
+      val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
+      lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
+      engine = Option(motoscala.engine.GameEngine(this, players))
+      engine.get.init(lvl)
+
+      var setups: List[LevelSetupData] = List()
+
+
+      players.slice(1, players.size).foreach(player => setups = setups.:+(LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player)))
+
+      observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = false, isHosting = true, players.head))))
+
+      if(serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
     }
 
     override def start(): Unit = {
@@ -72,9 +96,14 @@ object Controller {
       engine.get.start()
     }
     override def loadAllLevels(): Unit = {
+
+
       levels = List(
         LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
                   List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                       Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                       Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                       Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
                        Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
                        Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
                        Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
@@ -85,14 +114,19 @@ object Controller {
                        Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
                        Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
                        )))
+
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def pause(): Unit = engine.get.pause()
     override def resume(): Unit = engine.get.resume()
     override def stop(): Unit = {
-      engine.get.stop()
-      engine = None
+      if (engine.isDefined){
+        engine.get.stop()
+        engine = None
+      }
+
     }
+
 
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
 
@@ -114,6 +148,7 @@ object Controller {
     override def setSelfReady(): Unit = {
       this.status = !this.status
       if (serverActor.isDefined) {
+
         this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.status)
         this.serverActor.get
           .tell(LobbyDataActorMessage(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers)), this.serverActor
@@ -126,13 +161,19 @@ object Controller {
       }
     }
     override def kickSomeone(name: String): Unit = {
+
       this.serverActor.get ! KickActorMessage(this.matchSetupMp.get.removePlayer(name))
       observers
         .foreach(observer => observer
           .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
     }
     /*Used by Client Actor*/
-    override def gameStart(): Unit = ???
+    override def gameStart(): Unit = {
+
+      observers
+        .foreach(observer => observer
+          .notify(LoadLevelEvent()))
+    }
     override def gameEnd(): Unit = {
 
     }
@@ -144,8 +185,9 @@ object Controller {
       this.clientActor.get ! TryJoin(s"akka://MotoSystem@$ip:$port/user/Server*", this.actualSettings.name)
     }
     override def becomeHost(): Unit = {
+      import it.unibo.pps1920.motoscala.view.events.ViewEvent.SetupLobbyEvent
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
-      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, 10))
+      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, this.actualSettings.name)
       observers
         .foreach(observer => observer
@@ -157,6 +199,7 @@ object Controller {
         this.shutdownMultiplayer()
       }
       this.observers.foreach(obs => {
+
         obs.notify(JoinResultEvent(result))
       })
     }
@@ -168,6 +211,7 @@ object Controller {
     }
     override def gotKicked(): Unit = {
       this.observers.foreach(obs => {
+
         obs.notify(LeaveLobbyEvent())
         Platform.runLater(() => showNotificationPopup("Sorry, i hate you", "You have been kicked", JavafxEnums
           .SHORT_DURATION, JavafxEnums.ERROR_NOTIFICATION, _))
@@ -193,6 +237,13 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
+
+    override def startMultiplayer(): Unit = {
+      loadAllLevels()
+      serverActor.get ! GameStartActorMessage()
+      setupGame(0)
+    }
+
     override def updateScore(delta: Int): Int = {
       score += delta
       score
