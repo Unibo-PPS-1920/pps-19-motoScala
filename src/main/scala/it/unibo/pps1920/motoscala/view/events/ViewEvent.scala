@@ -23,9 +23,11 @@ object ViewEvent {
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
   final case class LeaveLobbyEvent() extends LobbyEvent
   final case class LoadLevelEvent() extends LobbyEvent
-  final case class SetupLobbyEvent(ip: String, port: String, name: String) extends LobbyEvent
+  final case class SetupLobbyEvent(ip: String, port: String, name: String, levels: List[Int],
+                                   difficulties: List[Int]) extends LobbyEvent
   final case class LevelDataEvent(levels: Seq[LevelData]) extends LevelEvent
   final case class SettingsDataEvent(settings: SettingsData) extends SettingsEvent
   final case class ScoreDataEvent(scores: ScoresData) extends StatsEvent
-  final case class LevelSetupData(level: LevelData, isSinglePlayer: Boolean, isHosting: Boolean, player: BumperCarEntity)
+  final case class LevelSetupData(level: LevelData, isSinglePlayer: Boolean, isHosting: Boolean,
+                                  player: BumperCarEntity)
 }

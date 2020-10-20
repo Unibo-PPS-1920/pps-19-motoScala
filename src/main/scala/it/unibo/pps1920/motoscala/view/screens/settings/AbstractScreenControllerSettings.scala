@@ -17,9 +17,9 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
                                                 protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
-
+  @FXML protected var effectSlider: Slider = _
   @FXML protected var diffSlider: Slider = _
-  @FXML protected var volumeSlider: Slider = _
+  @FXML protected var musicSlider: Slider = _
   @FXML protected var textPlayerName: TextField = _
 
 
@@ -35,10 +35,14 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Settings.fxml'.")
     assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Settings.fxml'.")
     assert(diffSlider != null, "fx:id=\"diffSlider\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(volumeSlider != null, "fx:id=\"volumeSlider\" was not injected: check your FXML file 'Settings.fxml'.")
+    assert(musicSlider != null, "fx:id=\"volumeSlider\" was not injected: check your FXML file 'Settings.fxml'.")
+    assert(effectSlider != null, "fx:id=\"effectSlider\" was not injected: check your FXML file 'Settings.fxml'.")
     assert(textPlayerName != null, "fx:id=\"textPlayerName\" was not injected: check your FXML file 'Settings.fxml'.")
   }
   private def initSlider(): Unit = {
+    musicSlider.setOnMouseReleased(_ => sendStats())
+    effectSlider.setOnMouseReleased(_ => sendStats())
+
     diffSlider.setLabelFormatter(new StringConverter[lang.Double]() {
       override def toString(`object`: lang.Double): String = `object` match {
         case n if n <= 1.0d => "Easy"
@@ -65,13 +69,18 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
   }
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
-      this.controller
-        .saveSettings(SettingsData(this.volumeSlider.getValue.toFloat, this.diffSlider.getValue.toInt, if (this
-          .textPlayerName.getText.isBlank) "Player" else this.textPlayerName.getText))
+      sendStats()
     })
   }
+  private def sendStats(): Unit = {
+    controller
+      .saveSettings(SettingsData(this.musicSlider.getValue.toFloat, this.effectSlider.getValue.toFloat, this.diffSlider
+        .getValue.toInt, if (this
+        .textPlayerName.getText.isBlank) "Player" else this.textPlayerName.getText))
+  }
   def displaySettings(settings: SettingsData): Unit = {
-    this.volumeSlider.setValue(settings.volume)
+    this.effectSlider.setValue(settings.effectVolume)
+    this.musicSlider.setValue(settings.musicVolume)
     this.diffSlider.setValue(settings.diff)
     this.textPlayerName.setText(settings.name)
   }

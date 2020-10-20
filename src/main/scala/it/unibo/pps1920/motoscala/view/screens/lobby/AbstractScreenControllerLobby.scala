@@ -20,7 +20,6 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   @FXML protected var buttonKick: Button = _
   @FXML protected var buttonReady: Button = _
   @FXML protected var buttonStart: Button = _
-  @FXML protected var dropMenuSkin: SplitMenuButton = _
   @FXML protected var dropMenuDifficult: SplitMenuButton = _
   @FXML protected var dropMenuLevel: SplitMenuButton = _
   @FXML protected var listPlayer: ListView[Label] = _
@@ -61,15 +60,17 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
     this.buttonReady.setDisable(false)
   }
-
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       this.controller.leaveLobby()
-      this.cleanAll()
+      cleanAll()
     })
   }
   private def cleanAll(): Unit = {
+    this.buttonKick.setDisable(true)
+    this.buttonStart.setDisable(true)
     this.buttonKick.setVisible(false)
+    this.buttonStart.setVisible(false)
     this.ipLabel.setVisible(false)
     this.portLabel.setVisible(false)
     this.dropMenuDifficult.setDisable(true)
@@ -85,21 +86,31 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(buttonKick != null, "fx:id=\"buttonKick\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(buttonReady != null, "fx:id=\"buttonReady\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(buttonStart != null, "fx:id=\"buttonStart\" was not injected: check your FXML file 'Lobby.fxml'.")
-    assert(dropMenuSkin != null, "fx:id=\"dropMenuSkin\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(dropMenuDifficult != null, "fx:id=\"dropMenuDifficult\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(dropMenuLevel != null, "fx:id=\"dropMenuLevel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(listPlayer != null, "fx:id=\"listPlayer\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
-
   }
-  def updateLobby(lobbyData: LobbyData): Unit = {
+  protected def leaveLobby(): Unit = {
     Platform.runLater(() => {
+      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
+    })
+  }
+  protected def updateLobby(lobbyData: LobbyData): Unit = {
+    Platform.runLater(() => {
+
       lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
+      lobbyData.mode.foreach(diff => this.dropMenuLevel.setText("1"))
+
 
       val rpValues = lobbyData.readyPlayers.values
-      if(rpValues.size >= 1 && (rpValues.map(pd=> pd.status).count(s=> !s) == 0)){
+
+      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0)) {
+
         this.buttonStart.setDisable(false)
+      } else {
+        this.buttonStart.setDisable(true)
       }
 
       val lisPlayerStatus = this.listPlayer.getItems
@@ -114,51 +125,33 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
         lisPlayerStatus.add(label)
       })
     })
-
-
   }
-
-
-  def leaveLobby(): Unit = {
-    Platform.runLater(() => {
-      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
-    })
-  }
-
-  protected def startMulti(): Unit ={
+  protected def startMulti(): Unit = {
     this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
-  protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
-    this.buttonKick.setVisible(true)
-    this.ipLabel.setVisible(true)
-    this.portLabel.setVisible(true)
-    this.dropMenuDifficult.setDisable(false)
-    this.dropMenuLevel.setDisable(false)
+
+  protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
+                             difficulties: List[Int]): Unit = {
+    reset()
     this.ipLabel.setText(s"${this.ipLabel.getText}$ip")
     this.portLabel.setText(s"${this.portLabel.getText} $port")
     val label = new Label(name)
     label.setTextFill(Color.Red)
     this.listPlayer.getItems.add(label)
-
-    /*    this.listPlayer.setCellFactory(x => {
-          new ListCell[String]() {
-            override protected def updateItem(item: String, empty: Boolean): Unit = {
-              super.updateItem(item, empty)
-              if (item != null) {
-                setText(item)
-                getIndex
-                /*            if(){
-                              setStyle("-fx-background-color: red;")
-                            }else{
-                              setStyle("-fx-background-color: blue;")
-                            }*/
-              }
-            }
-          }
-        })*/
-
   }
 
+  private def reset(): Unit = {
+    //   lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
+
+    cleanAll()
+    this.listPlayer.getItems.clear()
+    this.buttonStart.setVisible(true)
+    this.buttonKick.setVisible(true)
+    this.ipLabel.setVisible(true)
+    this.portLabel.setVisible(true)
+    this.dropMenuDifficult.setDisable(false)
+    this.dropMenuLevel.setDisable(false)
+  }
 
 }
 
