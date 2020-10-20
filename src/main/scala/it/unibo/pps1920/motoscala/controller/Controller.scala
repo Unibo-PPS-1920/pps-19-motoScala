@@ -135,16 +135,6 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -159,6 +149,16 @@ object Controller {
           .SHORT_DURATION, JavafxEnums.ERROR_NOTIFICATION, _))
         this.shutdownMultiplayer()
       })
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
@@ -239,11 +239,10 @@ object Controller {
     }
     override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
       score += value.getOrElse(0)
-      if (gameIsEnded) {
-        var stats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap()))
-        stats.scoreTable = stats.scoreTable + (this.actualSettings.name -> score)
-        this.saveStats(stats)
-
+      if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
+        val loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+        this.saveStats(ScoresData(loadedStats.updated(this.actualSettings.name, loadedStats
+          .getOrElse(this.actualSettings.name, 0) + score)))
       }
       score
     }
