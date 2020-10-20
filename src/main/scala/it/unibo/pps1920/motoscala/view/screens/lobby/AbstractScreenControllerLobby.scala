@@ -20,7 +20,6 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   @FXML protected var buttonKick: Button = _
   @FXML protected var buttonReady: Button = _
   @FXML protected var buttonStart: Button = _
-  @FXML protected var dropMenuSkin: SplitMenuButton = _
   @FXML protected var dropMenuDifficult: SplitMenuButton = _
   @FXML protected var dropMenuLevel: SplitMenuButton = _
   @FXML protected var listPlayer: ListView[Label] = _
@@ -85,7 +84,6 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(buttonKick != null, "fx:id=\"buttonKick\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(buttonReady != null, "fx:id=\"buttonReady\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(buttonStart != null, "fx:id=\"buttonStart\" was not injected: check your FXML file 'Lobby.fxml'.")
-    assert(dropMenuSkin != null, "fx:id=\"dropMenuSkin\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(dropMenuDifficult != null, "fx:id=\"dropMenuDifficult\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(dropMenuLevel != null, "fx:id=\"dropMenuLevel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(listPlayer != null, "fx:id=\"listPlayer\" was not injected: check your FXML file 'Lobby.fxml'.")
@@ -98,7 +96,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
       lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
 
       val rpValues = lobbyData.readyPlayers.values
-      if(rpValues.size >= 1 && (rpValues.map(pd=> pd.status).count(s=> !s) == 0)){
+      if (rpValues.size >= 1 && (rpValues.map(pd => pd.status).count(s => !s) == 0)) {
         this.buttonStart.setDisable(false)
       }
 
@@ -125,7 +123,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
   }
 
-  protected def startMulti(): Unit ={
+  protected def startMulti(): Unit = {
     this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
   protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
