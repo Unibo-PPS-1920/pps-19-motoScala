@@ -10,6 +10,7 @@ import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
@@ -20,7 +21,6 @@ import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 
 abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
@@ -47,6 +47,7 @@ abstract class AbstractScreenControllerGame(
   }
   private def dismiss(): Unit = {
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
+    clearScreen()
     gameEventHandler.foreach(_.dismiss())
     controller.stop()
     viewFacade.changeScreen(ChangeScreenEvent.GoBack)
@@ -78,6 +79,7 @@ abstract class AbstractScreenControllerGame(
       controller.pause()
     })
   }
+  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
 
   protected def handleSetup(data: LevelSetupData): Unit = {
     playerEntity = data.player.some
@@ -99,17 +101,15 @@ abstract class AbstractScreenControllerGame(
   protected def handleTearDown(data: LevelEndData): Unit = data match {
     case EndData(true, BumperCarEntity(_), _) =>
       showDialog(this.canvasStack, "You Win!",
-                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG,
-                 _ => dismiss())
+                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
     case EndData(false, BumperCarEntity(_), _) =>
       showDialog(this.canvasStack, "Game Over!",
-                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG,
-                 _ => dismiss())
+                 controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
     case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(score)}")
   }
 
   protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
-    context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
+    clearScreen()
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
       case RedPupaEntity(_) => Drawables.RedPupaDrawable.draw(e)
@@ -119,10 +119,10 @@ abstract class AbstractScreenControllerGame(
       case WeightPowerUpEntity(_) => Drawables.WeightDrawable.draw(e)
       case JumpPowerUpEntity(_) => Drawables.JumpDrawable.draw(e)
       case SpeedPowerUpEntity(_) => Drawables.SpeedDrawable.draw(e)
-      case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e)
-      case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e)
+      case NabiconEntity(_) => Drawables.Block2Drawable.draw(e)
+      case BeeconEntity(_) => Drawables.Block1Drawable.draw(e)
     })
-    player.foreach(_ foreach(Drawables.PlayerDrawable.draw(_)))
+    player.foreach(_ foreach (Drawables.PlayerDrawable.draw(_)))
   }
 
   override def whenDisplayed(): Unit = {
@@ -138,12 +138,11 @@ abstract class AbstractScreenControllerGame(
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
     val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
-    val NabiconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Nabicon), context)
-    val BeeconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Beecon), context)
+    val Block2Drawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Block2), context)
+    val Block1Drawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Block1), context)
     val JumpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Jump), context)
     val WeightDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Weight), context)
     val SpeedDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Speed), context)
-    val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }
 
