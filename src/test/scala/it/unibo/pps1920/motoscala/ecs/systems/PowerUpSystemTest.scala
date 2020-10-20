@@ -29,7 +29,7 @@ class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
   val ep3 = WeightPowerUpEntity(UUID.randomUUID())
   val pos: PositionComponent = PositionComponent((0, 0))
   val vel: VelocityComponent = VelocityComponent((0, 20), (20, 20))
-  val col: CollisionComponent = CollisionComponent(mass = 2, oldSpeed = (1.0, 2.0))
+  val col: CollisionComponent = CollisionComponent(10, mass = 2, oldSpeed = (1.0, 2.0))
   var jmp: JumpComponent = JumpComponent()
   val pUp1: PowerUpComponent = PowerUpComponent(effect = SpeedBoostPowerUp(2, _.dot(2)))
   val pUp2: PowerUpComponent = PowerUpComponent(effect = JumpPowerUp(2))

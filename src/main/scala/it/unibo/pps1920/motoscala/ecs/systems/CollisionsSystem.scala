@@ -24,11 +24,13 @@ object CollisionsSystem {
                                         classOf[CollisionComponent])) {
     private val CollisionDuration = fps / 6
 
+    private var entity1: Entity = _
     private var positionCompE1: PositionComponent = _
     private var shapeCompE1: ShapeComponent = _
     private var velocityCompE1: VelocityComponent = _
     private var collisionCompE1: CollisionComponent = _
 
+    private var entity2: Entity = _
     private var positionCompE2: PositionComponent = _
     private var shapeCompE2: ShapeComponent = _
     private var velocityCompE2: VelocityComponent = _
@@ -44,8 +46,6 @@ object CollisionsSystem {
         velocityCompE1 = coordinator.getEntityComponent[VelocityComponent](e1)
         if (collisionCompE1.isColliding) collisionStep(collisionCompE1)
         else velocityCompE1.currentVel = velocityCompE1.inputVel
-
-
         entitiesToCheck.foreach(e2 => {
           if (!((e1.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e1).isActive)
             || (e2.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e2).isActive))) {
@@ -55,8 +55,11 @@ object CollisionsSystem {
             shapeCompE2 = coordinator.getEntityComponent[ShapeComponent](e2)
             positionCompE1 = coordinator.getEntityComponent[PositionComponent](e1)
             positionCompE2 = coordinator.getEntityComponent[PositionComponent](e2)
-            if (collisionCompE1.isColliding && (collisionCompE1.collEntity == e2 || collisionCompE1.collEntity == e1)) {
+            if (collisionCompE1.isColliding && collisionCompE2.isColliding && (collisionCompE1
+              .collEntity == e2 && collisionCompE2.collEntity == e1)) {
             } else {
+              entity1 = e1
+              entity2 = e2
               (e1, e2) match {
                 case (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =>
                   if (areCirclesTouching(positionCompE1.pos, positionCompE2.pos, shapeCompE1.shape.asInstanceOf[Circle]
@@ -78,8 +81,7 @@ object CollisionsSystem {
               }
             }
           }
-        }
-                                )
+        })
       })
     }
 
@@ -95,6 +97,7 @@ object CollisionsSystem {
             collisionCompE1.collEntity = e2
             collisionCompE2.collEntity = e1
             collide()
+            checkLifePoint()
             collisionStep(collisionCompE1)
             collisionStep(collisionCompE2)
           }
@@ -105,32 +108,6 @@ object CollisionsSystem {
           .currentVel mul getDirInversion(circle, pos2, rectangle, pos1)
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
-    }
-
-    private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
-                                rectanglePos: Vector2): Vector2 = {
-      val testEdge = circlePos
-      val inversionVec = Vector2(1, 1)
-      //find closest edge
-      if (circlePos.x < rectanglePos.x) { //left edge
-        testEdge.x = rectanglePos.x
-        inversionVec.x = -1
-      }
-      else if (circlePos.x > rectanglePos.x + rectangle.dimX) { //right edge
-        testEdge.x = rectanglePos.x + rectangle.dimX
-        inversionVec.x = -1
-      }
-      if (circlePos.y < rectanglePos.y) { //top edge
-        testEdge.y = rectanglePos.y
-        inversionVec.y = -1
-      }
-      else if (circlePos.y > rectanglePos.y + rectangle.dimY) { //bottom edge
-        testEdge.y = rectanglePos.y + rectangle.dimY
-        inversionVec.y = -1
-      }
-      //check distance from closest edge
-      if ((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
-      else Vector2(1, 1) //do not collide: same direction
     }
 
     private def collide(): Unit = {
@@ -163,6 +140,45 @@ object CollisionsSystem {
         velocityCompE2.currentVel = newNorVec2 add newTanVec2
       }
     }
+
+    private def checkLifePoint(): Unit = {
+      (entity1, entity2) match {
+        case (_: BumperCarEntity, _) =>
+          collisionCompE1.life -= 1
+          collisionCompE2.life -= collisionCompE2.damage
+        case (_, _: BumperCarEntity) =>
+          collisionCompE2.life -= 1
+          collisionCompE1.life -= collisionCompE1.damage
+        case _ =>
+      }
+    }
+
+    private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
+                                rectanglePos: Vector2): Vector2 = {
+      val testEdge = circlePos
+      val inversionVec = Vector2(1, 1)
+      //find closest edge
+      if (circlePos.x < rectanglePos.x) { //left edge
+        testEdge.x = rectanglePos.x
+        inversionVec.x = -1
+      }
+      else if (circlePos.x > rectanglePos.x + rectangle.dimX) { //right edge
+        testEdge.x = rectanglePos.x + rectangle.dimX
+        inversionVec.x = -1
+      }
+      if (circlePos.y < rectanglePos.y) { //top edge
+        testEdge.y = rectanglePos.y
+        inversionVec.y = -1
+      }
+      else if (circlePos.y > rectanglePos.y + rectangle.dimY) { //bottom edge
+        testEdge.y = rectanglePos.y + rectangle.dimY
+        inversionVec.y = -1
+      }
+      //check distance from closest edge
+      if ((circlePos dist testEdge) <= circle.radius) inversionVec //collide: direction inverted
+      else Vector2(1, 1) //do not collide: same direction
+    }
+
 
     private def computeCollVel(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double = {
       var newVel = (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)
