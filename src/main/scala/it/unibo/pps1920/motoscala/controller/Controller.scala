@@ -81,9 +81,9 @@ object Controller {
                              Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
                              Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
                              Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                             )))
+                             )))*/
 
-            this.dataManager
+      /*      this.dataManager
               .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
                                  List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
                                       Level.BlackPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
