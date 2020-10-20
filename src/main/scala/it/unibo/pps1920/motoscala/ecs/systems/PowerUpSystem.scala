@@ -29,6 +29,7 @@ object PowerUpSystem {
                 val affComp = coordinator.getEntityComponent[VelocityComponent](entity)
                 effect.duration = effect.duration - 1
                 if (!isActive) {
+                  mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.Slower)))
                   effect.asInstanceOf[SpeedBoostPowerUp].oldVel = affComp.defVel
                   effect.asInstanceOf[SpeedBoostPowerUp].isActive = true
                   affComp.defVel = modifier(affComp.defVel)
@@ -44,6 +45,7 @@ object PowerUpSystem {
                 val affComp = coordinator.getEntityComponent[CollisionComponent](entity)
                 effect.duration = effect.duration - 1
                 if (!isActive) {
+                  mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.Heavy)))
                   effect.asInstanceOf[WeightBoostPowerUp].oldMass = affComp.mass
                   effect.asInstanceOf[WeightBoostPowerUp].isActive = true
                   affComp.mass = modifier(affComp.mass)
@@ -59,8 +61,8 @@ object PowerUpSystem {
                 val affComp = coordinator.getEntityComponent[JumpComponent](entity)
                 effect.duration = effect.duration - 1
                 if (!isActive) {
-                  effect.asInstanceOf[JumpPowerUp].isActive = true
                   mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.Invisible)))
+                  effect.asInstanceOf[JumpPowerUp].isActive = true
                 }
                 affComp.isActive = true
                 if (effect.duration % (fps / 2) == 0)
