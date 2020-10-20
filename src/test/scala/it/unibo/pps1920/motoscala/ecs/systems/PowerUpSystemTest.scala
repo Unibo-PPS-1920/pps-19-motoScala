@@ -18,7 +18,6 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers {
-
   var coordinator: Coordinator = _
   var powerup: System = _
   var mediator: Mediator = _
@@ -31,17 +30,15 @@ class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
   val vel: VelocityComponent = VelocityComponent((0, 20), (20, 20))
   val col: CollisionComponent = CollisionComponent(10, mass = 2, oldSpeed = (1.0, 2.0))
   var jmp: JumpComponent = JumpComponent()
-  val pUp1: PowerUpComponent = PowerUpComponent(effect = SpeedBoostPowerUp(2, _.dot(2)))
+  val pUp1: PowerUpComponent = PowerUpComponent(effect = SpeedBoostPowerUp(2, isActive = false, _.dot(2)))
   val pUp2: PowerUpComponent = PowerUpComponent(effect = JumpPowerUp(2))
-  val pUp3: PowerUpComponent = PowerUpComponent(effect = PowerUpEffect.WeightBoostPowerUp(2, _ * 2))
-
-
+  val pUp3: PowerUpComponent = PowerUpComponent(effect = PowerUpEffect.WeightBoostPowerUp(2, isActive = false, _ * 2))
   val pos2: PositionComponent = PositionComponent((10, 10))
 
   override def beforeAll(): Unit = {
     mediator = Mediator()
     coordinator = Coordinator()
-    powerup = PowerUpSystem(coordinator, mediator)
+    powerup = PowerUpSystem(coordinator, mediator, 60)
     coordinator
       .registerComponentType(classOf[PositionComponent])
       .registerComponentType(classOf[VelocityComponent])
@@ -68,10 +65,10 @@ class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
   "A powerupSystem" when {
     "updating" should {
       "make the player go faster" in {
-        vel.inputVel = (1, 1)
+        vel.defVel = (1, 1)
         pUp1.entity = Some(entity)
         coordinator.updateSystems()
-        vel.inputVel shouldBe Vector2(2, 2)
+        vel.defVel shouldBe Vector2(2, 2)
       }
       "make the player jump for the right amount of ticks" in {
         jmp.isActive shouldBe false
