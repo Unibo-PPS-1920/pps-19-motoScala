@@ -1,5 +1,5 @@
 ---
-index: 4
+index: 1
 mapSize:
   x: 800
   y: 800
@@ -8,6 +8,33 @@ entities: !<scala.collection.immutable.$colon$colon>
     position:
       x: 500
       y: 500
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 550
+      y: 550
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 600
+      y: 600
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 400
+      y: 300
     shape:
       radius: 25.0
     velocity:

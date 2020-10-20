@@ -59,11 +59,11 @@ private final class ConcreteSoundAgent extends SoundAgent {
     })
   }
   override def setVolumeMusic(value: Double): Unit = {
-    this.volumeMusic = value
+    this.volumeMusic = if (value < 0.05) 0.0 else value
     Platform.runLater(() => {this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic)) })
   }
   override def setVolumeEffect(value: Double): Unit = {
-    this.volumeEffect = value
+    this.volumeEffect = if (value < 0.05) 0.0 else value
     Platform.runLater(() => {this.actualClipPlayer.foreach(_.setVolume(this.volumeEffect)) })
   }
   override def restartMusic(): Unit = {

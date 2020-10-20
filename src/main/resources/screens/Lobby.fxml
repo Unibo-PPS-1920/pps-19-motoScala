@@ -80,7 +80,7 @@
       <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="25.0" BorderPane.alignment="CENTER">
          <children>
               <Button id="Button" fx:id="buttonBack" mnemonicParsing="false" text="Back" />
-            <Button id="Button" fx:id="buttonStart" disable="true" mnemonicParsing="false" text="Start" />
+            <Button id="Button" fx:id="buttonStart" disable="true" mnemonicParsing="false" text="Start" visible="false" />
             <Button id="Button" fx:id="buttonReady" mnemonicParsing="false" text="Ready" />
          </children>
       </HBox>

@@ -60,15 +60,17 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
     this.buttonReady.setDisable(false)
   }
-
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       this.controller.leaveLobby()
-      this.cleanAll()
+      cleanAll()
     })
   }
   private def cleanAll(): Unit = {
+    this.buttonKick.setDisable(true)
+    this.buttonStart.setDisable(true)
     this.buttonKick.setVisible(false)
+    this.buttonStart.setVisible(false)
     this.ipLabel.setVisible(false)
     this.portLabel.setVisible(false)
     this.dropMenuDifficult.setDisable(true)
@@ -91,13 +93,18 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
 
   }
+
   def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
       lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
 
       val rpValues = lobbyData.readyPlayers.values
-      if (rpValues.size >= 1 && (rpValues.map(pd => pd.status).count(s => !s) == 0)) {
+
+      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0)) {
+
         this.buttonStart.setDisable(false)
+      } else {
+        this.buttonStart.setDisable(true)
       }
 
       val lisPlayerStatus = this.listPlayer.getItems
@@ -115,46 +122,32 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
 
   }
-
-
   def leaveLobby(): Unit = {
     Platform.runLater(() => {
       viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     })
   }
-
   protected def startMulti(): Unit = {
     this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
   protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
-    this.buttonKick.setVisible(true)
-    this.ipLabel.setVisible(true)
-    this.portLabel.setVisible(true)
-    this.dropMenuDifficult.setDisable(false)
-    this.dropMenuLevel.setDisable(false)
+    reset()
     this.ipLabel.setText(s"${this.ipLabel.getText}$ip")
     this.portLabel.setText(s"${this.portLabel.getText} $port")
     val label = new Label(name)
     label.setTextFill(Color.Red)
     this.listPlayer.getItems.add(label)
 
-    /*    this.listPlayer.setCellFactory(x => {
-          new ListCell[String]() {
-            override protected def updateItem(item: String, empty: Boolean): Unit = {
-              super.updateItem(item, empty)
-              if (item != null) {
-                setText(item)
-                getIndex
-                /*            if(){
-                              setStyle("-fx-background-color: red;")
-                            }else{
-                              setStyle("-fx-background-color: blue;")
-                            }*/
-              }
-            }
-          }
-        })*/
-
+  }
+  private def reset(): Unit = {
+    cleanAll()
+    this.listPlayer.getItems.clear()
+    this.buttonStart.setVisible(true)
+    this.buttonKick.setVisible(true)
+    this.ipLabel.setVisible(true)
+    this.portLabel.setVisible(true)
+    this.dropMenuDifficult.setDisable(false)
+    this.dropMenuLevel.setDisable(false)
   }
 
 
