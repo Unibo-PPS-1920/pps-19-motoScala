@@ -14,6 +14,7 @@ object Event {
   type EntityData = EventData.EntityData
   type SoundEvent = MediaEvent
   type LifeData = EventData.LifeData
+  
   sealed trait DisplayableEvent extends Event
   final case class DrawEntityEvent(players: Set[Option[EntityData]], entity: Set[EntityData]) extends DisplayableEvent
   final case class LevelEndEvent(data: EndData) extends DisplayableEvent
