@@ -40,6 +40,6 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
         .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })
-    grid.addRow(levels.size, buttonBack)
+    grid.addRow(levels.size + 1, buttonBack)
   }
 }

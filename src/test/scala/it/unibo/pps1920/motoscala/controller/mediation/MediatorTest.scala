@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller.mediation
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.{CommandData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.CommandData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Direction.{North, South}
@@ -70,7 +70,8 @@ object MediatorTestClasses {
   final class DisplayableImpl extends Displayable {
     override def notifyDrawEntities(player: Set[Option[EntityData]], entities: Set[Event.EntityData]): Unit =
       ToggleFlags.drawFlag = !ToggleFlags.drawFlag
-    override def notifyLevelEnd(data: LevelEndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
+    override def notifyLevelEnd(data: EndData): Unit = ToggleFlags.endFlag = !ToggleFlags.endFlag
+    override def notifyEntityLife(data: LifeData): Unit = {}
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }
   final class CommandableImpl extends Commandable {

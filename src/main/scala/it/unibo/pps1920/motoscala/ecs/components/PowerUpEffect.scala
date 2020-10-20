@@ -12,7 +12,6 @@ object PowerUpEffect {
    * @param duration how many ticks the powerup will affect the entity
    * @param modifier transformation of the affected component
    */
-
   case class SpeedBoostPowerUp(override var duration: Int, modifier: Vector2 => Vector2) extends PowerUp
   case class WeightBoostPowerUp(override var duration: Int, modifier: Double => Double,
                                 var oldMass: Double = 0) extends PowerUp
