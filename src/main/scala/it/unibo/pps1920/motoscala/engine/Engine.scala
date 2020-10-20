@@ -27,7 +27,8 @@ trait Engine extends UpdatableEngine with Commandable {
 }
 
 object GameEngine {
-  def apply(controller: EngineController, players: List[BumperCarEntity]): Engine = new GameEngineImpl(controller, players)
+  def apply(controller: EngineController,
+            players: List[BumperCarEntity]): Engine = new GameEngineImpl(controller, players)
   private class GameEngineImpl(controller: EngineController, players: List[BumperCarEntity]) extends Engine {
     private val mediator = controller.mediator
     private val Fps = 60
@@ -56,7 +57,7 @@ object GameEngine {
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
         .registerSystem(InputSystem(coordinator, eventQueue))
-        .registerSystem(PowerUpSystem(coordinator))
+        .registerSystem(PowerUpSystem(coordinator, mediator))
 
 
       logger info "" + level.entities
@@ -119,10 +120,32 @@ object GameEngine {
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(4)
                                  )
+        case Nabicon(position, shape, _, velocity)
+        =>
+          logger info "add nabicon"
+          val nabi = NabiconEntity(UUID.randomUUID())
+          coordinator.addEntity(nabi)
+            .addEntityComponents(nabi, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(Integer.MAX_VALUE),
+                                 ScoreComponent(50000)
+                                 )
+        case Beecon(position, shape, _, velocity)
+        =>
+          logger info "add nabicon"
+          val bee = BeeconEntity(UUID.randomUUID())
+          coordinator.addEntity(bee)
+            .addEntityComponents(bee, ShapeComponent(shape),
+                                 PositionComponent((position.x + 100, position.y + 100)),
+                                 VelocityComponent((0, 0), (velocity.x, velocity.y)),
+                                 CollisionComponent(400),
+                                 ScoreComponent(1000)
+                                 )
         case JumpPowerUp(position, shape)
         =>
           logger info "add jump powerUp"
-          val jmp = PowerUpEntity(UUID.randomUUID())
+          val jmp = JumpPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(jmp)
             .addEntityComponents(jmp, ShapeComponent(shape),
                                  PositionComponent((position.x, position.y)),
@@ -132,7 +155,7 @@ object GameEngine {
         case WeightBoostPowerUp(position, shape)
         =>
           logger info "add weight powerUp"
-          val w = PowerUpEntity(UUID.randomUUID())
+          val w = WeightPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(w)
             .addEntityComponents(w, ShapeComponent(shape),
                                  PositionComponent((position.x, position.y)),
@@ -142,7 +165,7 @@ object GameEngine {
         case SpeedBoostPowerUp(position, shape)
         =>
           logger info "add weight powerUp"
-          val s = PowerUpEntity(UUID.randomUUID())
+          val s = SpeedPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(s)
             .addEntityComponents(s, ShapeComponent(shape),
                                  PositionComponent((position.x, position.y)),

@@ -40,6 +40,11 @@ object ViewConstants {
       val BlackPupa: String = EntitiesFolder + "entity_09.png"
       val BluePupa: String = EntitiesFolder + "entity_10.png"
       val Polar: String = EntitiesFolder + "entity_20.png"
+      val Nabicon: String = EntitiesFolder + "block2.png"
+      val Beecon: String = EntitiesFolder + "block1.png"
+      val Jump: String = EntitiesFolder + "gem1.png"
+      val Weight: String = EntitiesFolder + "gem4.png"
+      val Speed: String = EntitiesFolder + "gem2.png"
     }
   }
 }
