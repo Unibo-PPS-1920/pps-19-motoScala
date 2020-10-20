@@ -23,10 +23,10 @@ class EntityDrawable(override val image: Image,
   })
   def size(data: EntityData): (Int, Int) = data.shape match {
     case Shape.Rectangle(dimX, dimY) => (dimX.toInt, dimY.toInt)
-    case Shape.Circle(radius) => ((radius * 2).toInt, (radius * 2).toInt)
+    case Shape.Circle(radius) => ((radius).toInt, (radius).toInt)
   }
   def draw(data: EntityData): Unit = {
     val s = size(data)
-    graphicsContext.drawImage(image, data.pos.x, data.pos.y, s._1, s._2)
+    graphicsContext.drawImage(image, data.pos.x - s._1, data.pos.y - s._2, s._1 * 2, s._2 * 2)
   }
 }
