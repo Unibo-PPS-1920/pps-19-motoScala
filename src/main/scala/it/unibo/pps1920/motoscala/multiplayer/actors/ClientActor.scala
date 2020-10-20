@@ -1,20 +1,17 @@
 package it.unibo.pps1920.motoscala.multiplayer.actors
 
-import akka.actor.{Actor, ActorLogging, ActorSelection, Timers}
+import akka.actor.{Actor, ActorLogging, ActorSelection, Props, Timers}
 import it.unibo.pps1920.motoscala.controller.ActorController
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
 import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
-import akka.actor.Props
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LevelSetupEvent, LobbyDataEvent}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, showNotificationPopup}
 import javafx.application.Platform
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
-
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-private class ClientActor(protected val actorController: ActorController) extends Actor with ActorLogging with Timers with EventObserver[CommandableEvent]{
+private class ClientActor(protected val actorController: ActorController) extends Actor with ActorLogging with Timers with EventObserver[CommandableEvent] {
   import akka.actor.ActorRef
   import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
   import org.slf4j.LoggerFactory
@@ -81,7 +78,7 @@ private class ClientActor(protected val actorController: ActorController) extend
       actorController.gameStart()
       this.levelMediator.subscribe(this)
     }
-    case KickActorMessage(ref) => {
+    case KickActorMessage(_) => {
       this.actorController.gotKicked()
     }
     case ev: LeaveEvent => {
@@ -106,14 +103,13 @@ private class ClientActor(protected val actorController: ActorController) extend
     Platform.runLater(() => showNotificationPopup(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
       .INFO_NOTIFICATION, _))
   }
-  private case object SchedulerTickKey
-
   /**
    * Notify the observer with the event.
    *
    * @param event the notified event.
    */
   override def notify(event: CommandableEvent): Unit = serverActor.get ! CommandableActorMessage(event)
+  private case object SchedulerTickKey
 }
 
 object ClientActor {

@@ -19,6 +19,7 @@ final class YamlManager {
   }
   private def loadResourceFromJar[T](location: URL)(cl: Class[T]): Option[T] = {
     this.initializeMapper()
+    //  mapper.readValue(location, cl)
     Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
   private def initializeMapper(): Unit = {
