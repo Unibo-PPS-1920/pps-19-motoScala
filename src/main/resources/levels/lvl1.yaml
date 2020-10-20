@@ -13,6 +13,33 @@ entities: !<scala.collection.immutable.$colon$colon>
     velocity:
       x: 15
       y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 200
+      y: 100
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 100
+      y: 500
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
+    position:
+      x: 250
+      y: 100
+    shape:
+      radius: 25.0
+    velocity:
+      x: 15
+      y: 15
   - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
     position:
       x: 500
@@ -21,5 +48,69 @@ entities: !<scala.collection.immutable.$colon$colon>
       dimX: 100.0
       dimY: 100.0
     velocity:
-      x: 0
-      y: 0
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
+    position:
+      x: 600
+      y: 100
+    shape:
+      radius: 25.0
+    velocity:
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$Polar>
+    position:
+      x: 600
+      y: 300
+    shape:
+      radius: 25.0
+    velocity:
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
+    position:
+      x: 300
+      y: 100
+    shape:
+      radius: 25.0
+    velocity:
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
+    position:
+      x: 600
+      y: 200
+    shape:
+      radius: 25.0
+    velocity:
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
+    position:
+      x: 700
+      y: 700
+    shape:
+      radius: 25.0
+    velocity:
+      x: 3
+      y: 3
+  - !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
+    position:
+      x: 100
+      y: 100
+    shape:
+      radius: 20.0
+  - !<it.unibo.pps1920.motoscala.model.Level$SpeedBoostPowerUp>
+    position:
+      x: 200
+      y: 200
+    shape:
+      radius: 20.0
+  - !<it.unibo.pps1920.motoscala.model.Level$WeightBoostPowerUp>
+    position:
+      x: 300
+      y: 300
+    shape:
+      radius: 20.0
+

@@ -4,10 +4,11 @@ import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData, LevelEndData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, LifeData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
@@ -18,7 +19,7 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter, showDialog}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
-import javafx.scene.control.{Button, Label}
+import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
@@ -33,10 +34,13 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var buttonStart: Button = _
   @FXML protected var labelTitle: Label = _
   @FXML protected var labelScore: Label = _
+  @FXML protected var lifeBar: ProgressBar = _
+
   private var gameEventHandler: Option[GameEventHandler] = None
   private var playerEntity: Option[Entity] = None
   private var mapSize: Option[Coordinate] = None
   private var isPlaying: Boolean = false
+
   private var context: GraphicsContext = _
   def initialize(): Unit = {
     assertNodeInjected()
@@ -60,8 +64,12 @@ abstract class AbstractScreenControllerGame(
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
     canvasStack.setMaxHeight(mapSize.get.y)
+    canvasStack.setMinWidth(mapSize.get.x)
+    canvasStack.setMinHeight(mapSize.get.y)
     canvas.heightProperty().bind(canvasStack.maxHeightProperty())
     canvas.widthProperty().bind(canvasStack.maxWidthProperty())
+    lifeBar.setMinWidth(mapSize.get.x)
+    lifeBar.setProgress(1.0)
     if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
@@ -71,6 +79,7 @@ abstract class AbstractScreenControllerGame(
     gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
     viewFacade.getStage.setFullScreen(true)
   }
+
   private def initButtons(): Unit = {
     //BACK
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))
@@ -86,17 +95,20 @@ abstract class AbstractScreenControllerGame(
       controller.pause()
     })
   }
-  protected def handleTearDown(data: LevelEndData): Unit = data match {
+
+  protected def handleTearDown(data: EndData): Unit = data match {
     case EndData(true, BumperCarEntity(_), _) =>
       showDialog(this.canvasStack, "You Win!",
                  controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
-
     case EndData(false, BumperCarEntity(_), _) =>
       showDialog(this.canvasStack, "Game Over!",
                  controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
-
     case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(Some(score))}")
   }
+
+  protected def handleEntityLife(data: LifeData): Unit =
+    if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
+
   private def dismiss(): Unit = {
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     clearScreen()
@@ -107,7 +119,9 @@ abstract class AbstractScreenControllerGame(
     controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
   }
+
   private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
+
   protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     clearScreen()
     entities.foreach(e => e.entity match {
@@ -123,7 +137,6 @@ abstract class AbstractScreenControllerGame(
       case BeeconEntity(_) => Drawables.Block1Drawable.draw(e)
     })
     player.foreach(_ foreach (Drawables.PlayerDrawable.draw(_)))
-
   }
 
   private object Drawables {
