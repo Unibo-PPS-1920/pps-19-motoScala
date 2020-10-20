@@ -12,7 +12,6 @@ trait GameLoop extends Thread {
   def halt(): GameStatus
 }
 
-
 private[engine] object GameLoop {
   def apply(fps: Int, engine: UpdatableEngine): GameLoop = new GameLoopImpl(fps, engine)
 

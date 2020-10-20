@@ -215,23 +215,23 @@ object Controller {
                              Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
                              )))*/
 
-      /*      this.dataManager
-              .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                                 List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0), Coordinate(0, 0)),
-                                      Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                                      Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                                      Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                                      )))*/
+      /*this.dataManager
+        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
+                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
+                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
+                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
+                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                )))*/
       levels = dataManager.loadLvl()
 
 

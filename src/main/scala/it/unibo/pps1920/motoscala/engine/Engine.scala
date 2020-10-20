@@ -56,25 +56,18 @@ object GameEngine {
         .registerSystem(PowerUpSystem(coordinator, mediator))
 
       logger info "" + level.entities
-
       val iterablePlayers = players.iterator
       addEntities(coordinator, level, iterablePlayers)
-
       logger info "engine init done"
     }
-
-
     override def start(): Unit = {
       gameLoop.status match {
         case Stopped => gameLoop.start()
         case _ => logger error "GameLoop already started"
       }
     }
-
     override def pause(): Unit = gameLoop.pause()
-
     override def resume(): Unit = gameLoop.unPause()
-
     override def stop(): Unit = {
       gameLoop.halt()
       mediator.unsubscribe(this)
@@ -84,6 +77,5 @@ object GameEngine {
       eventQueue.enqueue(CommandEvent(cmd))
     }
   }
-
 }
 
