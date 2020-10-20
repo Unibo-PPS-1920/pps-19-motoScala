@@ -122,10 +122,9 @@ abstract class AbstractScreenControllerGame(
 
   private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
 
-  protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
+  protected def drawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     clearScreen()
     entities.foreach(e => e.entity match {
-      case BumperCarEntity(_) =>
       case RedPupaEntity(_) => Drawables.RedPupaDrawable.draw(e)
       case BlackPupaEntity(_) => Drawables.BlackPupaDrawable.draw(e)
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
@@ -135,12 +134,16 @@ abstract class AbstractScreenControllerGame(
       case SpeedPowerUpEntity(_) => Drawables.SpeedDrawable.draw(e)
       case NabiconEntity(_) => Drawables.Block2Drawable.draw(e)
       case BeeconEntity(_) => Drawables.Block1Drawable.draw(e)
+      case _ =>
     })
-    player.foreach(_ foreach (Drawables.PlayerDrawable.draw(_)))
+    val playerPart = players.partition(_.get.entity == playerEntity.get)
+    playerPart._1.foreach(_ foreach (Drawables.PlayerDrawable.draw(_)))
+    playerPart._2.foreach(_ foreach (Drawables.PlayerMPDrawable.draw(_)))
   }
 
   private object Drawables {
     val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCar), context)
+    val PlayerMPDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCarMP), context)
     val BlackPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BlackPupa), context)
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)

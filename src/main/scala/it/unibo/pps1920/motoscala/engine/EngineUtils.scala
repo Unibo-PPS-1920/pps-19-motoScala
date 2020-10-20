@@ -22,10 +22,8 @@ object EngineUtils {
                  ): Unit = {
     val playerStack = mutable.Stack[BumperCarEntity]()
     level.entities.foreach {
-
       case Player(position, shape, velocity) =>
         val player = iterablePlayers.next()
-
         playerStack.push(player)
         coordinator.addEntity(player)
           .addEntityComponents(player,
@@ -39,7 +37,7 @@ object EngineUtils {
         val black = BlackPupaEntity(UUID.randomUUID())
         coordinator.addEntity(black)
           .addEntityComponents(black, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
                                AIComponent(10, Random.shuffle(playerStack)),
@@ -48,7 +46,7 @@ object EngineUtils {
         val red = RedPupaEntity(UUID.randomUUID())
         coordinator.addEntity(red)
           .addEntityComponents(red, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
                                AIComponent(20, Random.shuffle(playerStack)),
@@ -57,7 +55,7 @@ object EngineUtils {
         val blue = BluePupaEntity(UUID.randomUUID())
         coordinator.addEntity(blue)
           .addEntityComponents(blue, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
                                AIComponent(25, Random.shuffle(playerStack)),
@@ -66,7 +64,7 @@ object EngineUtils {
         val polar = PolarEntity(UUID.randomUUID())
         coordinator.addEntity(polar)
           .addEntityComponents(polar, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
                                AIComponent(5, mutable.Stack(playerStack.head)),
@@ -75,7 +73,7 @@ object EngineUtils {
         val nabi = NabiconEntity(UUID.randomUUID())
         coordinator.addEntity(nabi)
           .addEntityComponents(nabi, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(NabiconLife, damage = 0, mass = NabiconMass),
                                ScoreComponent(NabiconScore))
@@ -83,11 +81,10 @@ object EngineUtils {
         val bee = BeeconEntity(UUID.randomUUID())
         coordinator.addEntity(bee)
           .addEntityComponents(bee, ShapeComponent(shape),
-                               PositionComponent((position.x + 100, position.y + 100)),
+                               PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
                                CollisionComponent(BeeconLife, mass = BeeconMass),
-                               ScoreComponent(BeeconScore)
-                               )
+                               ScoreComponent(BeeconScore))
       case JumpPowerUp(position, shape) =>
         val jmp = JumpPowerUpEntity(UUID.randomUUID())
         coordinator.addEntity(jmp)

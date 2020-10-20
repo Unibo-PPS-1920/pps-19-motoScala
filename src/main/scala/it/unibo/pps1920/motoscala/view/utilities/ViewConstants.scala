@@ -23,7 +23,6 @@ object ViewConstants {
 
   /** Entities constants */
   object Entities {
-
     /** Colors constants */
     object Colors {
       val DefaultPlayerColor: Color = Color.Green
@@ -36,8 +35,9 @@ object ViewConstants {
       val BackgroundTexture: String = TextureFolder + "background.png"
       val ParticleTexture: String = TextureFolder + "particle.png"
       val BumperCar: String = EntitiesFolder + "entity_22.png"
-      val RedPupa: String = EntitiesFolder + "entity_13.png"
-      val BlackPupa: String = EntitiesFolder + "entity_09.png"
+      val BumperCarMP: String = EntitiesFolder + "entity_15.png"
+      val RedPupa: String = EntitiesFolder + "entity_18.png"
+      val BlackPupa: String = EntitiesFolder + "entity_19.png"
       val BluePupa: String = EntitiesFolder + "entity_10.png"
       val Polar: String = EntitiesFolder + "entity_20.png"
       val Block2: String = EntitiesFolder + "block2.png"
