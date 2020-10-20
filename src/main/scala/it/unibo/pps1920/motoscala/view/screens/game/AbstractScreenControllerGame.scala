@@ -4,10 +4,11 @@ import cats.syntax.option._
 import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData, LevelEndData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, LifeData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
@@ -100,7 +101,7 @@ abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(true)
   }
 
-  protected def handleTearDown(data: LevelEndData): Unit = data match {
+  protected def handleTearDown(data: EndData): Unit = data match {
     case EndData(true, BumperCarEntity(_), _) =>
       showDialog(this.canvasStack, "You Win!",
                  controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
@@ -109,6 +110,9 @@ abstract class AbstractScreenControllerGame(
                  controller.updateScore(0).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
     case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(score)}")
   }
+
+  protected def handleEntityLife(data: LifeData): Unit =
+    if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
 
   protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     clearScreen()

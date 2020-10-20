@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
 import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
@@ -51,7 +51,7 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
     "updating" should {
       "emit the correct event" in {
         drawSystem.update()
-        resulta.event shouldBe Event.DrawEntityEvent(Set(Option(DrawEntityData(Vector2(1, 2), Direction
+        resulta.event shouldBe Event.DrawEntityEvent(Set(Option(EntityData(Vector2(1, 2), Direction
           .North, Circle(3), TestEntity(pid)))), Set())
       }
       "emit the correct event for multiple entities" in {
@@ -66,8 +66,8 @@ class DrawSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
         coordinator.addEntityComponent(entity2, vel2)
         drawSystem.update()
         resulta
-          .event shouldBe Event.DrawEntityEvent(Set(Option(DrawEntityData(Vector2(1, 2), Direction
-          .North, Circle(3), TestEntity(pid)))), Set(DrawEntityData(Vector2(3, 2), Direction
+          .event shouldBe Event.DrawEntityEvent(Set(Option(EntityData(Vector2(1, 2), Direction
+          .North, Circle(3), TestEntity(pid)))), Set(EntityData(Vector2(3, 2), Direction
           .North, Circle(2), TestEntity(entity2id))))
       }
     }

@@ -3,7 +3,8 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
-import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityLifeEvent, RedirectSoundEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LifeData
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
@@ -128,8 +129,7 @@ object CollisionsSystem {
         val newNormProjection1 = computeCollVel(normProjection1, normProjection2, collisionCompE1
           .mass + 1, collisionCompE2.mass)
         val newNormProjection2 = computeCollVel(normProjection2, normProjection1, collisionCompE2
-          .mass, collisionCompE1
-                                                  .mass + 1)
+          .mass, collisionCompE1.mass + 1)
         // Compute new normal and tangential velocity vectors
         val newNorVec1 = unitNormalVector.dot(newNormProjection1)
         val newTanVec1 = unitTangentVector.dot(tangProjection1)
@@ -142,13 +142,15 @@ object CollisionsSystem {
     }
 
     private def checkLifePoint(): Unit = {
+      def addDamage(userEntity: Entity, c1: CollisionComponent, c2: CollisionComponent): Unit = {
+        c1.life -= 1
+        c2.life -= c2.damage
+        controller.mediator.publishEvent(EntityLifeEvent(LifeData(userEntity, c1.life)))
+      }
+
       (entity1, entity2) match {
-        case (_: BumperCarEntity, _) =>
-          collisionCompE1.life -= 1
-          collisionCompE2.life -= collisionCompE2.damage
-        case (_, _: BumperCarEntity) =>
-          collisionCompE2.life -= 1
-          collisionCompE1.life -= collisionCompE1.damage
+        case (_: BumperCarEntity, _) => addDamage(entity1, collisionCompE1, collisionCompE2)
+        case (_, _: BumperCarEntity) => addDamage(entity2, collisionCompE2, collisionCompE1)
         case _ =>
       }
     }

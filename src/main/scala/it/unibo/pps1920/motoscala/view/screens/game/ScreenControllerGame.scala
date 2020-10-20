@@ -1,10 +1,11 @@
 package it.unibo.pps1920.motoscala.view.screens.game
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
+
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{EndData, EntityData, LifeData, SoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, Event, Mediator}
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
 import javafx.application.Platform
 
 class ScreenControllerGame(protected override val viewFacade: ViewFacade,
@@ -15,9 +16,11 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   mediator.subscribe(this)
 
 
-  override def notifyDrawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = Platform.runLater(() => drawEntities(player, entities))
+  override def notifyDrawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = Platform
+    .runLater(() => drawEntities(player, entities))
 
-  override def notifyLevelEnd(data: LevelEndData): Unit = Platform.runLater(() => handleTearDown(data))
+  override def notifyLevelEnd(data: EndData): Unit = Platform.runLater(() => handleTearDown(data))
+  override def notifyEntityLife(data: LifeData): Unit = Platform.runLater(() => handleEntityLife(data))
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
 
   override def notify(ev: ViewEvent): Unit = ev match {
