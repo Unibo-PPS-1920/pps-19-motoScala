@@ -64,6 +64,8 @@ abstract class AbstractScreenControllerGame(
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
     canvasStack.setMaxHeight(mapSize.get.y)
+    canvasStack.setMinWidth(mapSize.get.x)
+    canvasStack.setMinHeight(mapSize.get.y)
     canvas.heightProperty().bind(canvasStack.maxHeightProperty())
     canvas.widthProperty().bind(canvasStack.maxWidthProperty())
     lifeBar.setMinWidth(mapSize.get.x)
