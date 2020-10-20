@@ -27,12 +27,12 @@ object PowerUpSystem {
             case PowerUpComponent(Some(entity), effect) => effect match {
               case PowerUpEffect.SpeedBoostPowerUp(_, isActive, modifier, oldVel) =>
                 val affComp = coordinator.getEntityComponent[VelocityComponent](entity)
+                effect.duration = effect.duration - 1
                 if (!isActive) {
                   effect.asInstanceOf[SpeedBoostPowerUp].oldVel = affComp.defVel
                   effect.asInstanceOf[SpeedBoostPowerUp].isActive = true
                   affComp.defVel = modifier(affComp.defVel)
                 } else {
-                  effect.duration = effect.duration - 1
                   if (effect.duration % (fps / 2) == 0)
                     mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp3)))
                   if (effect.duration == 0) {
@@ -42,12 +42,12 @@ object PowerUpSystem {
                 }
               case PowerUpEffect.WeightBoostPowerUp(_, isActive, modifier, oldMass) =>
                 val affComp = coordinator.getEntityComponent[CollisionComponent](entity)
+                effect.duration = effect.duration - 1
                 if (!isActive) {
                   effect.asInstanceOf[WeightBoostPowerUp].oldMass = affComp.mass
                   effect.asInstanceOf[WeightBoostPowerUp].isActive = true
                   affComp.mass = modifier(affComp.mass)
                 } else {
-                  effect.duration = effect.duration - 1
                   if (effect.duration % (fps / 2) == 0)
                     mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp1)))
                   if (effect.duration == 0) {
@@ -56,9 +56,9 @@ object PowerUpSystem {
                   }
                 }
               case PowerUpEffect.JumpPowerUp(_, isActive) =>
+                effect.duration = effect.duration - 1
                 val affComp = coordinator.getEntityComponent[JumpComponent](entity)
                 affComp.isActive = true
-                effect.duration = effect.duration - 1
                 if (effect.duration % (fps / 2) == 0)
                   mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp2)))
                 if (effect.duration == 0) {
