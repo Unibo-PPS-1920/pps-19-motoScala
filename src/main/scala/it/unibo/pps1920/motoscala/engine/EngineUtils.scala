@@ -5,6 +5,7 @@ import java.util.UUID
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.engine.Life.{BaseEnemyLife, BeeconLife, NabiconLife, PowerUpLife}
 import it.unibo.pps1920.motoscala.engine.Masses._
@@ -103,7 +104,7 @@ object EngineUtils {
                                CollisionComponent(PowerUpLife, mass = PowerUpMass),
                                VelocityComponent(),
                                PowerUpComponent(effect = PowerUpEffect
-                                 .WeightBoostPowerUp(duration = Duration.Long, _ + 10)))
+                                 .WeightBoostPowerUp(duration = Duration.Long, isActive = false, _ + 50)))
       case SpeedBoostPowerUp(position, shape) =>
         val s = SpeedPowerUpEntity(UUID.randomUUID())
         coordinator.addEntity(s)
@@ -112,14 +113,15 @@ object EngineUtils {
                                CollisionComponent(PowerUpLife, mass = PowerUpMass),
                                VelocityComponent(),
                                PowerUpComponent(effect = PowerUpEffect
-                                 .SpeedBoostPowerUp(duration = Duration.Medium, _ dot 0.2)))
+                                 .SpeedBoostPowerUp(duration = Duration.Medium, isActive = false,
+                                                    e => Vector2(e.x * 0.5, e.y * 0.5))))
     }
   }
 }
 private object Duration {
-  val Short: Int = 10
-  val Medium: Int = 50
-  val Long: Int = 100
+  val Short: Int = 5 * 60
+  val Medium: Int = 10 * 60
+  val Long: Int = 15 * 60
 }
 private object Scores {
   val PlayerScore: Int = 0
