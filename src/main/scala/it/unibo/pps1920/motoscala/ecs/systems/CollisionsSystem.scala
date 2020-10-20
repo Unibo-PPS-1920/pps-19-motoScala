@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
+import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
@@ -36,7 +36,9 @@ object CollisionsSystem {
 
     override def update(): Unit = {
       var entitiesToCheck = entitiesRef()
-      entitiesRef().filter(_.getClass != classOf[PowerUpEntity]).foreach(e1 => {
+      entitiesRef().filterNot(e => e.getClass.equals(classOf[JumpPowerUpEntity]) || e.getClass
+        .equals(classOf[SpeedPowerUpEntity]) || e.getClass.equals(classOf[WeightPowerUpEntity]) || e.getClass
+        .equals(classOf[PowerUpEntity])).foreach(e1 => {
         entitiesToCheck -= e1
         collisionCompE1 = coordinator.getEntityComponent[CollisionComponent](e1)
         velocityCompE1 = coordinator.getEntityComponent[VelocityComponent](e1)
@@ -67,14 +69,17 @@ object CollisionsSystem {
                       .removeEntityComponent(powerUp, positionCompE2)
                   }
                 case (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =>
-                  if (areCirclesTouching(positionCompE2.pos, positionCompE1.pos, shapeCompE2.shape.asInstanceOf[Circle]
+                  if (areCirclesTouching(positionCompE2.pos, positionCompE1.pos, shapeCompE2.shape
+                    .asInstanceOf[Circle]
                     .radius, shapeCompE1.shape.asInstanceOf[Circle].radius)) addBumperToPowUp(bumperCar, powerUp)
-                case _ => checkCollision(e1, e2, shapeCompE1.shape, shapeCompE2.shape, positionCompE1
-                  .pos, positionCompE2.pos, velocityCompE1, velocityCompE2)
+                case _ =>
+                  checkCollision(e1, e2, shapeCompE1.shape, shapeCompE2.shape, positionCompE1
+                    .pos, positionCompE2.pos, velocityCompE1, velocityCompE2)
               }
             }
           }
-        })
+        }
+                                )
       })
     }
 
@@ -145,8 +150,9 @@ object CollisionsSystem {
         // Compute new normal velocities using one-dimensional elastic collision equations in the normal direction
         val newNormProjection1 = computeCollVel(normProjection1, normProjection2, collisionCompE1
           .mass + 1, collisionCompE2.mass)
-        val newNormProjection2 = computeCollVel(normProjection2, normProjection1, collisionCompE2.mass, collisionCompE1
-          .mass + 1)
+        val newNormProjection2 = computeCollVel(normProjection2, normProjection1, collisionCompE2
+          .mass, collisionCompE1
+                                                  .mass + 1)
         // Compute new normal and tangential velocity vectors
         val newNorVec1 = unitNormalVector.dot(newNormProjection1)
         val newTanVec1 = unitTangentVector.dot(tangProjection1)

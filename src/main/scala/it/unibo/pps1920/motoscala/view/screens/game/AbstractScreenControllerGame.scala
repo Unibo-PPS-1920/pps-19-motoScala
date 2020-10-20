@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData, LevelEndData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, SetupData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
@@ -20,6 +20,7 @@ import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 
 abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
@@ -78,8 +79,8 @@ abstract class AbstractScreenControllerGame(
     })
   }
 
-  protected def handleSetup(data: SetupData): Unit = {
-    playerEntity = data.playerEntity.some
+  protected def handleSetup(data: LevelSetupData): Unit = {
+    playerEntity = data.player.some
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
     canvasStack.setMaxHeight(mapSize.get.y)
@@ -107,7 +108,7 @@ abstract class AbstractScreenControllerGame(
     case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(score)}")
   }
 
-  protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
+  protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
@@ -115,9 +116,13 @@ abstract class AbstractScreenControllerGame(
       case BlackPupaEntity(_) => Drawables.BlackPupaDrawable.draw(e)
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e)
-      case PowerUpEntity(_) => Drawables.PowerUpDrawable.draw(e)
+      case WeightPowerUpEntity(_) => Drawables.WeightDrawable.draw(e)
+      case JumpPowerUpEntity(_) => Drawables.JumpDrawable.draw(e)
+      case SpeedPowerUpEntity(_) => Drawables.SpeedDrawable.draw(e)
+      case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e)
+      case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e)
     })
-    player.foreach(Drawables.PlayerDrawable.draw(_))
+    player.foreach(_ foreach(Drawables.PlayerDrawable.draw(_)))
   }
 
   override def whenDisplayed(): Unit = {
@@ -133,6 +138,11 @@ abstract class AbstractScreenControllerGame(
     val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)
     val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)
     val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)
+    val NabiconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Nabicon), context)
+    val BeeconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Beecon), context)
+    val JumpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Jump), context)
+    val WeightDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Weight), context)
+    val SpeedDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Speed), context)
     val PowerUpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.ParticleTexture), context)
   }
 }

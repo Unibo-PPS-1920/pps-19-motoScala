@@ -2,15 +2,19 @@ package it.unibo.pps1920.motoscala.multiplayer.actors
 
 import akka.actor.{Actor, ActorLogging, ActorSelection, Timers}
 import it.unibo.pps1920.motoscala.controller.ActorController
-import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
+import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
+import akka.actor.Props
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LobbyDataEvent}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, showNotificationPopup}
 import javafx.application.Platform
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
+
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
-private class ClientActor(protected val actorController: ActorController) extends Actor with ActorLogging with Timers {
+private class ClientActor(protected val actorController: ActorController) extends Actor with ActorLogging with Timers with EventObserver[CommandableEvent]{
   import akka.actor.ActorRef
   import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
   import org.slf4j.LoggerFactory
@@ -20,7 +24,7 @@ private class ClientActor(protected val actorController: ActorController) extend
   private var serverActor: Option[ActorRef] = None
   private var serverAddress: ActorSelection = _
   //def connectToServer() = ???
-  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandActorMessage(commandEvent)
+  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandableActorMessage(commandEvent)
   override def receive: Receive = idleBehaviour
   private def idleBehaviour: Receive = {
     case TryJoin(selection, name) => {
@@ -72,7 +76,11 @@ private class ClientActor(protected val actorController: ActorController) extend
     case LobbyDataActorMessage(lobbyData) => actorController
       .sendToViewStrategy(obsUi => obsUi.notify(LobbyDataEvent(lobbyData)))
     case readyMsg: ReadyActorMessage => serverActor.get ! readyMsg
-    case GameStartActorMessage => actorController.gameStart(); this.context.become(inGameBehaviour)
+    case GameStartActorMessage() => {
+      this.context.become(inGameBehaviour)
+      actorController.gameStart()
+      this.levelMediator.subscribe(this)
+    }
     case KickActorMessage(ref) => {
       this.actorController.gotKicked()
     }
@@ -89,7 +97,9 @@ private class ClientActor(protected val actorController: ActorController) extend
   }
   private def inGameBehaviour: Receive = {
     case GameEndActorMessage => actorController.gameEnd()
-    case DisplayActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case DisplayableActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case LevelSetupMessage(levelSetupData) =>
+      actorController.sendToViewStrategy(obsUI => obsUI.notify(LevelSetupEvent(levelSetupData)))
     case msg => logger warn s"Received unexpected message $msg"
   }
   private def sendViewMessage(title: String, text: String): Unit = {
@@ -97,9 +107,15 @@ private class ClientActor(protected val actorController: ActorController) extend
       .INFO_NOTIFICATION, _))
   }
   private case object SchedulerTickKey
+
+  /**
+   * Notify the observer with the event.
+   *
+   * @param event the notified event.
+   */
+  override def notify(event: CommandableEvent): Unit = serverActor.get ! CommandableActorMessage(event)
 }
 
 object ClientActor {
-  import akka.actor.Props
   def props(controller: ActorController): Props = Props(new ClientActor(controller))
 }

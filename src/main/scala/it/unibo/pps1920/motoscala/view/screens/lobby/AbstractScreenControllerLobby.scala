@@ -48,12 +48,16 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
   }
   private def initButtons(): Unit = {
-    buttonStart.setOnAction(_ => viewFacade.changeScreen(ChangeScreenEvent.GotoGame))
+
     buttonReady.setOnAction(_ => {
       controller.setSelfReady()
     })
     buttonKick.setOnAction(_ => {
       controller.kickSomeone(this.listPlayer.getSelectionModel.getSelectedItem.getText)
+    })
+    buttonStart.setOnAction(_ => {
+      controller.startMultiplayer()
+      viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
     })
     this.buttonReady.setDisable(false)
   }
@@ -93,6 +97,11 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     Platform.runLater(() => {
       lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
 
+      val rpValues = lobbyData.readyPlayers.values
+      if(rpValues.size >= 1 && (rpValues.map(pd=> pd.status).count(s=> !s) == 0)){
+        this.buttonStart.setDisable(false)
+      }
+
       val lisPlayerStatus = this.listPlayer.getItems
       lisPlayerStatus.clear()
       lobbyData.readyPlayers.values.foreach(player => {
@@ -116,6 +125,9 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
   }
 
+  protected def startMulti(): Unit ={
+    this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
+  }
   protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
     this.buttonKick.setVisible(true)
     this.ipLabel.setVisible(true)

@@ -32,8 +32,11 @@ final class DataManager {
     this.yamlManager.saveYaml(AppMainFolder + SystemSeparator + "lvl.yaml")(data)
   }
   def loadLvl(): List[LevelData] = {
-    (1 to FileConstants.LevelNumber).map(i => this.yamlManager
+
+    (1 to LevelNumber).map(i => this.yamlManager
       .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}lvl${i}.yaml"))(classOf[LevelData]).get).toList
+
+
   }
 
 }

@@ -15,12 +15,15 @@ object DataType {
 
 
 object ActorMessage {
+
   import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
+  import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
   case class PlainActorMessage(
     text: String,
     num: Int
   ) extends ActorMessage
 
+  final case class SetupsForClientsMessage(setups: List[LevelSetupData])
   /*SERVER to client MESSAGES*/
 
 
@@ -28,7 +31,7 @@ object ActorMessage {
   final case class LobbyDataActorMessage(lobbyData: LobbyData) extends ActorMessage
   final case class GameStartActorMessage() extends ActorMessage
   final case class GameEndActorMessage() extends ActorMessage
-  final case class DisplayActorMessage(event: DisplayableEvent)
+  final case class DisplayableActorMessage(event: DisplayableEvent) extends ActorMessage
 
 
   /*CLIENT to server MESSAGES*/
@@ -38,6 +41,8 @@ object ActorMessage {
   final case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage
   final case class CloseLobbyActorMessage() extends ActorMessage
   final case class LeaveEvent(ref: ActorRef) extends ActorMessage
+  final case class LevelSetupMessage(levelData: LevelSetupData) extends ActorMessage
+
 
   /*Client to Server connection messages*/
   final case class JoinRequestActorMessage(name: String) extends ActorMessage
@@ -50,7 +55,7 @@ object ActorMessage {
   final case class TimeOut() extends ActorMessage
 
   /*in game messages*/
-  final case class CommandActorMessage(event: CommandableEvent) extends ActorMessage
+  final case class CommandableActorMessage(event: CommandableEvent) extends ActorMessage
 }
 
 object MessageData {

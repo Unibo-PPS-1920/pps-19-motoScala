@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.{JumpPowerUp, SpeedBoostPowerUp}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
-import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, PowerUpEntity}
+import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, JumpPowerUpEntity, WeightPowerUpEntity}
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
@@ -24,9 +24,9 @@ class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
   var mediator: Mediator = _
   val pid: UUID = UUID.randomUUID()
   val entity = BumperCarEntity(pid)
-  val ep1 = PowerUpEntity(UUID.randomUUID())
-  val ep2 = PowerUpEntity(UUID.randomUUID())
-  val ep3 = PowerUpEntity(UUID.randomUUID())
+  val ep1 = JumpPowerUpEntity(UUID.randomUUID())
+  val ep2 = JumpPowerUpEntity(UUID.randomUUID())
+  val ep3 = WeightPowerUpEntity(UUID.randomUUID())
   val pos: PositionComponent = PositionComponent((0, 0))
   val vel: VelocityComponent = VelocityComponent((0, 20), (20, 20))
   val col: CollisionComponent = CollisionComponent(mass = 2, oldSpeed = (1.0, 2.0))
@@ -39,8 +39,9 @@ class PowerUpSystemTest extends AnyWordSpec with BeforeAndAfterAll with Matchers
   val pos2: PositionComponent = PositionComponent((10, 10))
 
   override def beforeAll(): Unit = {
+    mediator = Mediator()
     coordinator = Coordinator()
-    powerup = PowerUpSystem(coordinator)
+    powerup = PowerUpSystem(coordinator, mediator)
     coordinator
       .registerComponentType(classOf[PositionComponent])
       .registerComponentType(classOf[VelocityComponent])

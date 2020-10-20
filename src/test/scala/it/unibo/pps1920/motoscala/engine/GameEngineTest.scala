@@ -7,13 +7,14 @@ import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatest.wordspec.AnyWordSpec
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 
 class GameEngineTest extends AnyWordSpec with BeforeAndAfterAll {
   var engine: Engine = _
   val controller: EngineController = Controller()
 
   override def beforeAll(): Unit = {
-    engine = GameEngine(controller, UUID.randomUUID())
+    engine = GameEngine(controller, List(BumperCarEntity(UUID.randomUUID())))
   }
 
   "A GameEngine" when {
