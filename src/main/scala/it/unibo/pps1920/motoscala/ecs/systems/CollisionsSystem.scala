@@ -148,11 +148,8 @@ object CollisionsSystem {
           collisionCompE2.life -= collisionCompE2.damage
         case (_, _: BumperCarEntity) =>
           collisionCompE2.life -= 1
-          collisionCompE1.life -= collisionCompE2.damage
+          collisionCompE1.life -= collisionCompE1.damage
         case _ =>
-      }
-      if (entity1.isInstanceOf[BumperCarEntity] || entity2.isInstanceOf[BumperCarEntity]) {
-        logger info s"${collisionCompE1.life}"
       }
     }
 
