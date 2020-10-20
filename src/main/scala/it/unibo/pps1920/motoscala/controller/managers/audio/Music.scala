@@ -8,8 +8,7 @@ sealed abstract class Music(override val entryName: String) extends EnumEntry
 
 object Music extends Enum[Music] {
   override def values: IndexedSeq[Music] = findValues
-
-  case object Home extends Music(s"${ResourcesJarPaths.Music}vectorMenu.mp3")
-  case object Game extends Music(s"${ResourcesJarPaths.Music}vector2.mp3")
+  case object Home extends Music(s"${ResourcesJarPaths.Music}Menu.mp3")
+  case object Game extends Music(s"${ResourcesJarPaths.Music}Game.mp3")
 }
 
