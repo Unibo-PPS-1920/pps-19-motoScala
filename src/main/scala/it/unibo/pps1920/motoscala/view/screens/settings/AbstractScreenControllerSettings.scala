@@ -66,7 +66,7 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       this.controller
-        .saveStats(SettingsData(this.volumeSlider.getValue.toFloat, this.diffSlider.getValue.toInt, if (this
+        .saveSettings(SettingsData(this.volumeSlider.getValue.toFloat, this.diffSlider.getValue.toInt, if (this
           .textPlayerName.getText.isBlank) "Player" else this.textPlayerName.getText))
     })
   }

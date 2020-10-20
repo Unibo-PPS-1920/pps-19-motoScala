@@ -75,20 +75,8 @@ object Controller {
 
     }
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
-    override def loadStats(): Unit = observers
-      .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
-                                                            .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
     override def loadSetting(): Unit = observers
       .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
-    override def saveStats(newSettings: SettingsData): Unit = {
-      this.actualSettings = newSettings
-      this.dataManager.saveSettings(this.actualSettings)
-      this.setAudioVolume(this.actualSettings.volume)
-    }
-    private def setAudioVolume(value: Double): Unit = {
-      this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
-      this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
-    }
     override def setSelfReady(): Unit = {
       this.status = !this.status
       if (serverActor.isDefined) {
@@ -227,31 +215,51 @@ object Controller {
                              Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
                              )))*/
 
-      /*      this.dataManager
-              .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                                 List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                                      Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                                      Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0), Coordinate(0, 0)),
-                                      Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                                      Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                                      Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                                      )))*/
+      /*this.dataManager
+        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
+                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
+                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
+                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
+                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                )))*/
       levels = dataManager.loadLvl()
 
 
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
-    override def updateScore(delta: Int): Int = {
-      score += delta
+    override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
+      score += value.getOrElse(0)
+      if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
+        val loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+        this.saveStats(ScoresData(loadedStats.updated(this.actualSettings.name, loadedStats
+          .getOrElse(this.actualSettings.name, 0) + score)))
+      }
       score
+    }
+    override def saveStats(newScore: ScoresData): Unit = {
+      this.dataManager.saveScore(newScore)
+    }
+    override def loadStats(): Unit = observers
+      .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
+                                                            .getOrElse(ScoresData(HashMap())))))
+    override def saveSettings(newSettings: SettingsData): Unit = {
+      this.actualSettings = newSettings
+      this.dataManager.saveSettings(this.actualSettings)
+      this.setAudioVolume(this.actualSettings.volume)
+    }
+    private def setAudioVolume(value: Double): Unit = {
+      this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
+      this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
