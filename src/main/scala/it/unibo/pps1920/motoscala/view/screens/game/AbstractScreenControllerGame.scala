@@ -18,7 +18,7 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter, showDialog}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
-import javafx.scene.control.{Button, Label}
+import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
@@ -36,6 +36,7 @@ abstract class AbstractScreenControllerGame(
   @FXML protected var buttonStart: Button = _
   @FXML protected var labelTitle: Label = _
   @FXML protected var labelScore: Label = _
+  @FXML protected var lifeBar: ProgressBar = _
   private var context: GraphicsContext = _
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)
@@ -88,6 +89,7 @@ abstract class AbstractScreenControllerGame(
     canvasStack.setMaxHeight(mapSize.get.y)
     canvas.heightProperty().bind(canvasStack.maxHeightProperty())
     canvas.widthProperty().bind(canvasStack.maxWidthProperty())
+    lifeBar.setMinWidth(mapSize.get.x)
     if (data.isSinglePlayer || data.isHosting) {
       buttonStart setVisible true
       labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
