@@ -75,7 +75,7 @@ object EngineUtils {
           .addEntityComponents(nabi, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(NabiconLife, mass = NabiconMass),
+                               CollisionComponent(NabiconLife, damage = 0, mass = NabiconMass),
                                ScoreComponent(NabiconScore))
       case Beecon(position, shape, velocity) =>
         val bee = BeeconEntity(UUID.randomUUID())
