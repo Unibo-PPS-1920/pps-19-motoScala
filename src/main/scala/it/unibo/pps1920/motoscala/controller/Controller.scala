@@ -75,20 +75,8 @@ object Controller {
 
     }
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
-    override def loadStats(): Unit = observers
-      .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
-                                                            .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
     override def loadSetting(): Unit = observers
       .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
-    override def saveStats(newSettings: SettingsData): Unit = {
-      this.actualSettings = newSettings
-      this.dataManager.saveSettings(this.actualSettings)
-      this.setAudioVolume(this.actualSettings.volume)
-    }
-    private def setAudioVolume(value: Double): Unit = {
-      this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
-      this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
-    }
     override def setSelfReady(): Unit = {
       this.status = !this.status
       if (serverActor.isDefined) {
@@ -147,6 +135,16 @@ object Controller {
         obs.notify(JoinResultEvent(result))
       })
     }
+    override def shutdownMultiplayer(): Unit = {
+
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      } else if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      this.serverActor = None
+      this.clientActor = None
+    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = {
       strategy.apply(this.matchSetupMp.get)
     }
@@ -161,16 +159,6 @@ object Controller {
           .SHORT_DURATION, JavafxEnums.ERROR_NOTIFICATION, _))
         this.shutdownMultiplayer()
       })
-    }
-    override def shutdownMultiplayer(): Unit = {
-
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      } else if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      this.serverActor = None
-      this.clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (this.serverActor.isDefined) {
@@ -249,9 +237,30 @@ object Controller {
 
       observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
-    override def updateScore(delta: Int): Int = {
-      score += delta
+    override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
+      score += value.getOrElse(0)
+      if (gameIsEnded) {
+        var stats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap()))
+        stats.scoreTable = stats.scoreTable + (this.actualSettings.name -> score)
+        this.saveStats(stats)
+
+      }
       score
+    }
+    override def saveStats(newScore: ScoresData): Unit = {
+      this.dataManager.saveScore(newScore)
+    }
+    override def loadStats(): Unit = observers
+      .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
+                                                            .getOrElse(ScoresData(HashMap())))))
+    override def saveSettings(newSettings: SettingsData): Unit = {
+      this.actualSettings = newSettings
+      this.dataManager.saveSettings(this.actualSettings)
+      this.setAudioVolume(this.actualSettings.volume)
+    }
+    private def setAudioVolume(value: Double): Unit = {
+      this.soundAgent.enqueueEvent(SetVolumeMusic(this.actualSettings.volume))
+      this.soundAgent.enqueueEvent(SetVolumeEffect(this.actualSettings.volume))
     }
     private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
