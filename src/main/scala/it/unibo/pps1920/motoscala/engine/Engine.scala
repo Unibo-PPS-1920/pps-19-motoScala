@@ -65,7 +65,7 @@ object GameEngine {
       val playerStack = mutable.Stack[BumperCarEntity]()
       level.entities.foreach {
 
-        case Player(position, shape, _, velocity) =>
+        case Player(position, shape, velocity) =>
           logger info "add player"
           val player = iterablePlayers.next()
 
@@ -78,7 +78,7 @@ object GameEngine {
                                  JumpComponent(),
                                  CollisionComponent(100, 20),
                                  ScoreComponent(0))
-        case BlackPupa(position, shape, _, velocity) =>
+        case BlackPupa(position, shape, velocity) =>
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
@@ -89,7 +89,7 @@ object GameEngine {
                                  AIComponent(10, Random.shuffle(playerStack)),
                                  ScoreComponent(300)
                                  )
-        case RedPupa(position, shape, _, velocity) =>
+        case RedPupa(position, shape, velocity) =>
           logger info "add red pupa"
           val red = RedPupaEntity(UUID.randomUUID())
           coordinator.addEntity(red)
@@ -100,7 +100,7 @@ object GameEngine {
                                  AIComponent(20, Random.shuffle(playerStack)),
                                  ScoreComponent(300)
                                  )
-        case BluePupa(position, shape, _, velocity) =>
+        case BluePupa(position, shape, velocity) =>
           logger info "add blue pupa"
           val blue = BluePupaEntity(UUID.randomUUID())
           coordinator.addEntity(blue)
@@ -110,7 +110,7 @@ object GameEngine {
                                  CollisionComponent(30, 10),
                                  AIComponent(40, Random.shuffle(playerStack)),
                                  ScoreComponent(300))
-        case Polar(position, shape, _, velocity) =>
+        case Polar(position, shape, velocity) =>
           logger info "add polar"
           val polar = PolarEntity(UUID.randomUUID())
           coordinator.addEntity(polar)
@@ -121,7 +121,7 @@ object GameEngine {
                                  AIComponent(5, Random.shuffle(playerStack)),
                                  ScoreComponent(300)
                                  )
-        case Nabicon(position, shape, _, velocity) =>
+        case Nabicon(position, shape, velocity) =>
           logger info "add nabicon"
           val nabi = NabiconEntity(UUID.randomUUID())
           coordinator.addEntity(nabi)
@@ -130,7 +130,7 @@ object GameEngine {
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(20, Integer.MAX_VALUE),
                                  ScoreComponent(300))
-        case Beecon(position, shape, _, velocity) =>
+        case Beecon(position, shape, velocity) =>
           logger info "add nabicon"
           val bee = BeeconEntity(UUID.randomUUID())
           coordinator.addEntity(bee)
