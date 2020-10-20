@@ -91,12 +91,18 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(listPlayer != null, "fx:id=\"listPlayer\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
-
   }
-
-  def updateLobby(lobbyData: LobbyData): Unit = {
+  protected def leaveLobby(): Unit = {
     Platform.runLater(() => {
+      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
+    })
+  }
+  protected def updateLobby(lobbyData: LobbyData): Unit = {
+    Platform.runLater(() => {
+
       lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
+      lobbyData.mode.foreach(diff => this.dropMenuLevel.setText("1"))
+
 
       val rpValues = lobbyData.readyPlayers.values
 
@@ -119,27 +125,24 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
         lisPlayerStatus.add(label)
       })
     })
-
-
-  }
-  def leaveLobby(): Unit = {
-    Platform.runLater(() => {
-      viewFacade.changeScreen(ChangeScreenEvent.GoBack)
-    })
   }
   protected def startMulti(): Unit = {
     this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
-  protected def setIpAndPort(ip: String, port: String, name: String): Unit = {
+
+  protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
+                             difficulties: List[Int]): Unit = {
     reset()
     this.ipLabel.setText(s"${this.ipLabel.getText}$ip")
     this.portLabel.setText(s"${this.portLabel.getText} $port")
     val label = new Label(name)
     label.setTextFill(Color.Red)
     this.listPlayer.getItems.add(label)
-
   }
+
   private def reset(): Unit = {
+    //   lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
+
     cleanAll()
     this.listPlayer.getItems.clear()
     this.buttonStart.setVisible(true)
@@ -149,7 +152,6 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     this.dropMenuDifficult.setDisable(false)
     this.dropMenuLevel.setDisable(false)
   }
-
 
 }
 

@@ -19,7 +19,7 @@ import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, _}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, SetupLobbyEvent, _}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
 import javafx.application.Platform
 import org.slf4j.LoggerFactory
@@ -107,16 +107,16 @@ object Controller {
     override def gameEnd(): Unit = {
 
     }
-    override def getLobbyData: DataType.LobbyData = LobbyData(Some(matchSetupMp.get.difficulty), Some(matchSetupMp.get
-                                                                                                        .mode), matchSetupMp
-                                                                .get.readyPlayers)
+    override def getLobbyData: DataType.LobbyData = LobbyData(Some(
+      matchSetupMp.get.difficulty), Some(1), Some(matchSetupMp.get.mode), matchSetupMp.get
+                                                                .readyPlayers)
+
     override def tryJoinLobby(ip: String, port: String): Unit = {
       shutdownMultiplayer()
       this.clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
       this.clientActor.get ! TryJoin(s"akka://MotoSystem@$ip:$port/user/Server*", this.actualSettings.name)
     }
     override def becomeHost(): Unit = {
-      import it.unibo.pps1920.motoscala.view.events.ViewEvent.SetupLobbyEvent
       shutdownMultiplayer()
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
       matchSetupMp = Some(MultiPlayerSetup(1, mode = true, maxPlayers))
@@ -124,7 +124,7 @@ object Controller {
       observers
         .foreach(observer => observer
           .notify(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
-            .getDefaultAddress.port.get.toString, this.actualSettings.name)))
+            .getDefaultAddress.port.get.toString, this.actualSettings.name, levels.map(_.index), List(1, 2, 3))))
     }
     override def shutdownMultiplayer(): Unit = {
       status = false
