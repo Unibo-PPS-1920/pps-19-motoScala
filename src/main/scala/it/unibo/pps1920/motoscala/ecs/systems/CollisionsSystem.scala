@@ -103,16 +103,26 @@ object CollisionsSystem {
           }
         }
         case (circle: Circle, rectangle: Rectangle) =>
-          val inv = getDirInversion(circle, pos1, rectangle, pos2)
-          if (inv != Vector2(1,1))
-            collisionCompE1.isColliding = true
-          vel1.currentVel = vel1.currentVel mul inv
-
+          if(!collisionCompE1.isColliding){
+             val inv = getDirInversion(circle, pos2, rectangle, pos1)
+               getDirInversion(circle, pos1, rectangle, pos2)
+            if (inv != Vector2(1,1)) {
+              collisionCompE1.isColliding = true
+              collisionCompE2.duration = CollisionDuration/2
+              vel1.currentVel = vel1.currentVel mul inv
+            }
+          }
         case (rectangle: Rectangle, circle: Circle) =>
-          val inv = getDirInversion(circle, pos2, rectangle, pos1)
-          if (!(inv == Vector2(1,1)))
-            collisionCompE2.isColliding = true
-          vel2.currentVel = vel2.currentVel mul inv
+          if(!collisionCompE2.isColliding){
+            val inv = getDirInversion(circle, pos2, rectangle, pos1)
+             getDirInversion(circle, pos2, rectangle, pos1)
+            if (!(inv == Vector2(1,1))) {
+              collisionCompE2.isColliding = true
+              collisionCompE2.duration = CollisionDuration/2
+              vel2.currentVel = vel2.currentVel mul inv
+            }
+          }
+
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
@@ -160,25 +170,45 @@ object CollisionsSystem {
       }
     }
 
-    private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
-                                rectanglePos: Vector2): Vector2 = {
-      val testEdge = circlePos
-      val inversionVec = Vector2(1, 1)
+
+    private def getClosestEdge(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
+                               rectanglePos: Vector2) : Vector2 = {
+      val testEdge = Vector2(circlePos.x, circlePos.y)
       //find closest edge
       if (circlePos.x < rectanglePos.x) { //left edge
         testEdge.x = rectanglePos.x
-        inversionVec.x = -1
       }
       else if (circlePos.x > (rectanglePos.x + rectangle.dimX)) { //right edge
         testEdge.x = rectanglePos.x + rectangle.dimX
-        inversionVec.x = -1
       }
       if (circlePos.y < rectanglePos.y) { //top edge
         testEdge.y = rectanglePos.y
-        inversionVec.y = -1
       }
       else if (circlePos.y > rectanglePos.y + rectangle.dimY) { //bottom edge
         testEdge.y = rectanglePos.y + rectangle.dimY
+      }
+      testEdge
+    }
+
+    private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
+                                rectanglePos: Vector2): Vector2 = {
+      val testEdge = Vector2(circlePos.x, circlePos.y)
+      val inversionVec = Vector2(1, 1)
+      //find closest edge
+      if (circlePos.x < (rectanglePos.x - rectangle.dimX/2)) { //left edge
+        testEdge.x = rectanglePos.x - rectangle.dimX/2
+        inversionVec.x = -1
+      }
+      else if (circlePos.x > (rectanglePos.x + rectangle.dimX/2)) { //right edge
+        testEdge.x = rectanglePos.x + rectangle.dimX/2
+        inversionVec.x = -1
+      }
+      if (circlePos.y < rectanglePos.y - rectangle.dimY/2) { //top edge
+        testEdge.y = rectanglePos.y - rectangle.dimY/2
+        inversionVec.y = -1
+      }
+      else if (circlePos.y > rectanglePos.y + rectangle.dimY/2) { //bottom edge
+        testEdge.y = rectanglePos.y + rectangle.dimY/2
         inversionVec.y = -1
       }
       //check distance from closest edge

@@ -13,7 +13,6 @@ import it.unibo.pps1920.motoscala.ecs.systems._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
-import it.unibo.pps1920.motoscala.ecs.components.Shape.Rectangle
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -127,7 +126,7 @@ object GameEngine {
           logger info "add nabicon"
           val nabi = NabiconEntity(UUID.randomUUID())
           coordinator.addEntity(nabi)
-            .addEntityComponents(nabi, ShapeComponent(Rectangle(100,50)),
+            .addEntityComponents(nabi, ShapeComponent(shape),
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(20, Integer.MAX_VALUE),
