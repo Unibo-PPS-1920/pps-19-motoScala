@@ -11,7 +11,6 @@ import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
-
 import scala.math.signum
 object CollisionsSystem {
 
@@ -103,10 +102,25 @@ object CollisionsSystem {
             collisionStep(collisionCompE2)
           }
         }
-        case (circle: Circle, rectangle: Rectangle) => vel1.currentVel = vel1
-          .currentVel mul getDirInversion(circle, pos1, rectangle, pos2)
-        case (rectangle: Rectangle, circle: Circle) => vel2.currentVel = vel2
-          .currentVel mul getDirInversion(circle, pos2, rectangle, pos1)
+        case (circle: Circle, rectangle: Rectangle) =>
+             val inv = getDirInversion(circle, pos1, rectangle, pos2)
+            if (inv != Vector2(1,1)) {
+              collisionCompE1.isColliding = true
+              collisionCompE1.duration = CollisionDuration/2
+              checkLifePoint()
+            }
+          vel1.currentVel = vel1.currentVel mul inv
+
+        case (rectangle: Rectangle, circle: Circle) =>
+            val inv = getDirInversion(circle, pos2, rectangle, pos1)
+            if (!(inv == Vector2(1,1))) {
+              collisionCompE2.isColliding = true
+              collisionCompE2.duration = CollisionDuration/2
+              checkLifePoint()
+            }
+          vel2.currentVel = vel2.currentVel mul inv
+
+
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
@@ -143,37 +157,39 @@ object CollisionsSystem {
 
     private def checkLifePoint(): Unit = {
       def addDamage(userEntity: Entity, c1: CollisionComponent, c2: CollisionComponent): Unit = {
-        c1.life -= 1
-        c2.life -= c2.damage
+        c1.life -= c2.damage
+        c2.life -= c1.damage
         controller.mediator.publishEvent(EntityLifeEvent(LifeData(userEntity, c1.life)))
       }
 
       (entity1, entity2) match {
         case (_: BumperCarEntity, _) => addDamage(entity1, collisionCompE1, collisionCompE2)
         case (_, _: BumperCarEntity) => addDamage(entity2, collisionCompE2, collisionCompE1)
+        case (_: NabiconEntity, _: BumperCarEntity) => addDamage(entity1, collisionCompE1, collisionCompE2)
+        case (_: NabiconEntity, _: BumperCarEntity) => addDamage(entity2, collisionCompE2, collisionCompE1)
         case _ =>
       }
     }
 
     private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
                                 rectanglePos: Vector2): Vector2 = {
-      val testEdge = circlePos
+      val testEdge = Vector2(circlePos.x, circlePos.y)
       val inversionVec = Vector2(1, 1)
       //find closest edge
-      if (circlePos.x < rectanglePos.x) { //left edge
-        testEdge.x = rectanglePos.x
+      if (circlePos.x < (rectanglePos.x - rectangle.dimX/2)) { //left edge
+        testEdge.x = rectanglePos.x - rectangle.dimX/2
         inversionVec.x = -1
       }
-      else if (circlePos.x > rectanglePos.x + rectangle.dimX) { //right edge
-        testEdge.x = rectanglePos.x + rectangle.dimX
+      else if (circlePos.x > (rectanglePos.x + rectangle.dimX/2)) { //right edge
+        testEdge.x = rectanglePos.x + rectangle.dimX/2
         inversionVec.x = -1
       }
-      if (circlePos.y < rectanglePos.y) { //top edge
-        testEdge.y = rectanglePos.y
+      if (circlePos.y < rectanglePos.y - rectangle.dimY/2) { //top edge
+        testEdge.y = rectanglePos.y - rectangle.dimY/2
         inversionVec.y = -1
       }
-      else if (circlePos.y > rectanglePos.y + rectangle.dimY) { //bottom edge
-        testEdge.y = rectanglePos.y + rectangle.dimY
+      else if (circlePos.y > rectanglePos.y + rectangle.dimY/2) { //bottom edge
+        testEdge.y = rectanglePos.y + rectangle.dimY/2
         inversionVec.y = -1
       }
       //check distance from closest edge
