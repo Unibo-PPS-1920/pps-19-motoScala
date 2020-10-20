@@ -22,7 +22,7 @@ class EntityDrawable(override val image: Image,
     case _ => 0
   })
   def size(data: EntityData): (Int, Int) = data.shape match {
-    case Shape.Rectangle(dimX, dimY) => (dimX.toInt, dimY.toInt)
+    case Shape.Rectangle(dimX, dimY) => ((dimX/2).toInt, (dimY/2).toInt)
     case Shape.Circle(radius) => ((radius).toInt, (radius).toInt)
   }
   def draw(data: EntityData): Unit = {
