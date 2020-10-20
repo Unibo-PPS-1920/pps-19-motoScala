@@ -6,6 +6,7 @@ import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityData, LevelEndData, SoundEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.{Displayable, EventData, Mediator}
 import it.unibo.pps1920.motoscala.ecs.systems.res
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.engine.GameLoopTestClasses.EngineControllerMock
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfter
@@ -23,7 +24,7 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
 
   }
   val controller: EngineController = new EngineControllerMock(Mediator())
-  val engine: Engine = GameEngine(controller, UUID.randomUUID())
+  val engine: Engine = GameEngine(controller, List(BumperCarEntity(UUID.randomUUID())))
   var loop: GameLoop = _
 
   before {
@@ -87,9 +88,8 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
 
 object GameLoopTestClasses {
   final class DisplayMock extends Displayable {
-    override def notifyDrawEntities(player: Option[EntityData],
+    override def notifyDrawEntities(player: Set[Option[EntityData]],
                                     entities: Set[EntityData]): Unit = {}
-    override def notifyLevelSetup(data: EventData.SetupData): Unit = {}
     override def notifyLevelEnd(data: LevelEndData): Unit = res.event = data
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }

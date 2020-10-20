@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData, LevelEndData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, SetupData}
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EndData
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
@@ -20,6 +20,7 @@ import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 
 abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
@@ -78,8 +79,8 @@ abstract class AbstractScreenControllerGame(
     })
   }
 
-  protected def handleSetup(data: SetupData): Unit = {
-    playerEntity = data.playerEntity.some
+  protected def handleSetup(data: LevelSetupData): Unit = {
+    playerEntity = data.player.some
     mapSize = data.level.mapSize.some
     canvasStack.setMaxWidth(mapSize.get.x)
     canvasStack.setMaxHeight(mapSize.get.y)
@@ -107,7 +108,7 @@ abstract class AbstractScreenControllerGame(
     case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(score)}")
   }
 
-  protected def drawEntities(player: Option[EntityData], entities: Set[EntityData]): Unit = {
+  protected def drawEntities(player: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
     entities.foreach(e => e.entity match {
       case BumperCarEntity(_) =>
@@ -121,7 +122,7 @@ abstract class AbstractScreenControllerGame(
       case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e)
       case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e)
     })
-    player.foreach(Drawables.PlayerDrawable.draw(_))
+    player.foreach(_ foreach(Drawables.PlayerDrawable.draw(_)))
   }
 
   override def whenDisplayed(): Unit = {

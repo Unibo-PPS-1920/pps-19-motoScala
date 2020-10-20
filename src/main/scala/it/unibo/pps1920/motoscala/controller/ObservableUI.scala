@@ -20,6 +20,7 @@ trait ObservableUI extends SoundController {
   def loadSetting(): Unit
   def loadStats(): Unit
   def saveStats(settings: SettingsData): Unit
+  def startMultiplayer(): Unit
   def start(): Unit
   def pause(): Unit
   def resume(): Unit
