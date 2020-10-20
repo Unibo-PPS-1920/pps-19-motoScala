@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, MediaEvent}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.{SpeedBoostPowerUp, WeightBoostPowerUp}
+import it.unibo.pps1920.motoscala.ecs.components.PowerUpEffect.{JumpPowerUp, SpeedBoostPowerUp, WeightBoostPowerUp}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
@@ -34,7 +34,7 @@ object PowerUpSystem {
                   affComp.defVel = modifier(affComp.defVel)
                 } else {
                   if (effect.duration % (fps / 2) == 0)
-                    mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp3)))
+                    mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUpSpeed)))
                   if (effect.duration == 0) {
                     affComp.defVel = oldVel
                     pUp.entity = None
@@ -49,18 +49,22 @@ object PowerUpSystem {
                   affComp.mass = modifier(affComp.mass)
                 } else {
                   if (effect.duration % (fps / 2) == 0)
-                    mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp1)))
+                    mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUpMass)))
                   if (effect.duration == 0) {
                     affComp.mass = oldMass
                     pUp.entity = None
                   }
                 }
               case PowerUpEffect.JumpPowerUp(_, isActive) =>
-                effect.duration = effect.duration - 1
                 val affComp = coordinator.getEntityComponent[JumpComponent](entity)
+                effect.duration = effect.duration - 1
+                if (!isActive) {
+                  effect.asInstanceOf[JumpPowerUp].isActive = true
+                  mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.Invisible)))
+                }
                 affComp.isActive = true
                 if (effect.duration % (fps / 2) == 0)
-                  mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUp2)))
+                  mediator.publishEvent(RedirectSoundEvent(MediaEvent.PlaySoundEffect(Clips.PowerUpInvisible)))
                 if (effect.duration == 0) {
                   pUp.entity = None
                   affComp.isActive = false
