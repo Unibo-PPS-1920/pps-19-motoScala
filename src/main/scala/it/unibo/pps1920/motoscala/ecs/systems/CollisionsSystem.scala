@@ -102,10 +102,17 @@ object CollisionsSystem {
             collisionStep(collisionCompE2)
           }
         }
-        case (circle: Circle, rectangle: Rectangle) => vel1.currentVel = vel1
-          .currentVel mul getDirInversion(circle, pos1, rectangle, pos2)
-        case (rectangle: Rectangle, circle: Circle) => vel2.currentVel = vel2
-          .currentVel mul getDirInversion(circle, pos2, rectangle, pos1)
+        case (circle: Circle, rectangle: Rectangle) =>
+          val inv = getDirInversion(circle, pos1, rectangle, pos2)
+          if (inv != Vector2(1,1))
+            collisionCompE1.isColliding = true
+          vel1.currentVel = vel1.currentVel mul inv
+
+        case (rectangle: Rectangle, circle: Circle) =>
+          val inv = getDirInversion(circle, pos2, rectangle, pos1)
+          if (!(inv == Vector2(1,1)))
+            collisionCompE2.isColliding = true
+          vel2.currentVel = vel2.currentVel mul inv
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
@@ -162,7 +169,7 @@ object CollisionsSystem {
         testEdge.x = rectanglePos.x
         inversionVec.x = -1
       }
-      else if (circlePos.x > rectanglePos.x + rectangle.dimX) { //right edge
+      else if (circlePos.x > (rectanglePos.x + rectangle.dimX)) { //right edge
         testEdge.x = rectanglePos.x + rectangle.dimX
         inversionVec.x = -1
       }

@@ -4,6 +4,7 @@ import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 
 object Level {
+  import it.unibo.pps1920.motoscala.ecs.components.Shape.Rectangle
   sealed trait LevelEntity
   case class LevelData12(index: Int, mapSize: Vector2, entities: List[LevelEntity])
   case class LevelData(index: Int, mapSize: Coordinate, var entities: List[LevelEntity])
@@ -18,7 +19,7 @@ object Level {
   case class BlackPupa(position: Coordinate, shape: Circle, direction: Coordinate,
                        velocity: Coordinate) extends LevelEntity
   case class Polar(position: Coordinate, shape: Circle, direction: Coordinate, velocity: Coordinate) extends LevelEntity
-  case class Nabicon(position: Coordinate, shape: Circle, direction: Coordinate,
+  case class Nabicon(position: Coordinate, shape: Rectangle, direction: Coordinate,
                      velocity: Coordinate) extends LevelEntity
   case class Beecon(position: Coordinate, shape: Circle, direction: Coordinate,
                     velocity: Coordinate) extends LevelEntity

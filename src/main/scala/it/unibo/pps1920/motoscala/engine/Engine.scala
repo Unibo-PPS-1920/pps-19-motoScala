@@ -122,10 +122,11 @@ object GameEngine {
                                  ScoreComponent(300)
                                  )
         case Nabicon(position, shape, _, velocity) =>
+          import it.unibo.pps1920.motoscala.ecs.components.Shape.Rectangle
           logger info "add nabicon"
           val nabi = NabiconEntity(UUID.randomUUID())
           coordinator.addEntity(nabi)
-            .addEntityComponents(nabi, ShapeComponent(shape),
+            .addEntityComponents(nabi, ShapeComponent(Rectangle(100,50)),
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(20, Integer.MAX_VALUE),
