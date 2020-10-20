@@ -76,10 +76,9 @@ object GameEngine {
                                  PositionComponent((position.x, position.y)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  JumpComponent(),
-                                 CollisionComponent(20))
-
-        case BlackPupa(position, shape, _, velocity)
-        =>
+                                 CollisionComponent(20),
+                                 ScoreComponent(0))
+        case BlackPupa(position, shape, _, velocity) =>
           logger info "add black pupa"
           val black = BlackPupaEntity(UUID.randomUUID())
           coordinator.addEntity(black)
@@ -87,10 +86,10 @@ object GameEngine {
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(10),
-                                 AIComponent(10, Random.shuffle(playerStack))
+                                 AIComponent(10, Random.shuffle(playerStack)),
+                                 ScoreComponent(300)
                                  )
-        case RedPupa(position, shape, _, velocity)
-        =>
+        case RedPupa(position, shape, _, velocity) =>
           logger info "add red pupa"
           val red = RedPupaEntity(UUID.randomUUID())
           coordinator.addEntity(red)
@@ -98,30 +97,30 @@ object GameEngine {
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(10),
-                                 AIComponent(20, Random.shuffle(playerStack))
+                                 AIComponent(20, Random.shuffle(playerStack)),
+                                 ScoreComponent(300)
                                  )
-        case BluePupa(position, shape, _, velocity)
-        =>
+        case BluePupa(position, shape, _, velocity) =>
           logger info "add blue pupa"
           val blue = BluePupaEntity(UUID.randomUUID())
           coordinator.addEntity(blue)
             .addEntityComponents(blue, ShapeComponent(shape),
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
-                                 CollisionComponent(10)
+                                 CollisionComponent(10),
+                                 ScoreComponent(300)
                                  )
-        case Polar(position, shape, _, velocity)
-        =>
+        case Polar(position, shape, _, velocity) =>
           logger info "add polar"
           val polar = PolarEntity(UUID.randomUUID())
           coordinator.addEntity(polar)
             .addEntityComponents(polar, ShapeComponent(shape),
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
-                                 CollisionComponent(4)
+                                 CollisionComponent(4),
+                                 ScoreComponent(300)
                                  )
-        case Nabicon(position, shape, _, velocity)
-        =>
+        case Nabicon(position, shape, _, velocity) =>
           logger info "add nabicon"
           val nabi = NabiconEntity(UUID.randomUUID())
           coordinator.addEntity(nabi)
@@ -129,10 +128,10 @@ object GameEngine {
                                  PositionComponent((position.x + 100, position.y + 100)),
                                  VelocityComponent((0, 0), (velocity.x, velocity.y)),
                                  CollisionComponent(Integer.MAX_VALUE),
-                                 ScoreComponent(50000)
+                                 ScoreComponent(50000),
+                                 ScoreComponent(300)
                                  )
-        case Beecon(position, shape, _, velocity)
-        =>
+        case Beecon(position, shape, _, velocity) =>
           logger info "add nabicon"
           val bee = BeeconEntity(UUID.randomUUID())
           coordinator.addEntity(bee)
@@ -142,8 +141,7 @@ object GameEngine {
                                  CollisionComponent(400),
                                  ScoreComponent(1000)
                                  )
-        case JumpPowerUp(position, shape)
-        =>
+        case JumpPowerUp(position, shape) =>
           logger info "add jump powerUp"
           val jmp = JumpPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(jmp)
@@ -152,8 +150,7 @@ object GameEngine {
                                  CollisionComponent(mass = 0),
                                  VelocityComponent((0, 0)),
                                  PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(400)))
-        case WeightBoostPowerUp(position, shape)
-        =>
+        case WeightBoostPowerUp(position, shape) =>
           logger info "add weight powerUp"
           val w = WeightPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(w)
@@ -162,8 +159,7 @@ object GameEngine {
                                  CollisionComponent(mass = 0),
                                  VelocityComponent((0, 0)),
                                  PowerUpComponent(effect = PowerUpEffect.WeightBoostPowerUp(duration = 4, _ * 10)))
-        case SpeedBoostPowerUp(position, shape)
-        =>
+        case SpeedBoostPowerUp(position, shape) =>
           logger info "add weight powerUp"
           val s = SpeedPowerUpEntity(UUID.randomUUID())
           coordinator.addEntity(s)
