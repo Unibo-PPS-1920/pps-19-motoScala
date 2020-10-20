@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import java.net.URL
 
 import alice.tuprolog._
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
+import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJarToString
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData
 import it.unibo.pps1920.motoscala.ecs.components.{AIComponent, PositionComponent}
@@ -24,7 +24,7 @@ object AISystem {
     val position = "/prolog/movement.pl"
 
     val engine = new Prolog()
-    engine.setTheory(new Theory(new URL(loadFromJar(position)).openStream()))
+    engine.setTheory(new Theory(new URL(loadFromJarToString(position)).openStream()))
 
     var frames = 0
 

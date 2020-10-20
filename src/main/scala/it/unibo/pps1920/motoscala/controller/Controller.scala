@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.controller
 
 import java.util.UUID
+
 import akka.actor.{ActorRef, ActorSystem, ExtendedActorSystem}
 import com.typesafe.config.ConfigFactory
 import it.unibo.pps1920.motoscala
@@ -8,9 +9,9 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{SetVolum
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
 import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.engine.Engine
-import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
+import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.model.{Level, MultiPlayerSetup, NetworkAddr, SinglePlayerSetup}
@@ -18,16 +19,12 @@ import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
-import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
-import it.unibo.pps1920.motoscala.view.events.ViewEvent._
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelSetupData, LevelSetupEvent}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, _}
 import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
 import javafx.application.Platform
 import org.slf4j.LoggerFactory
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{ScoreDataEvent, SettingsDataEvent}
+
 import scala.collection.immutable.HashMap
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
 
 trait Controller extends ActorController with SoundController with EngineController with ObservableUI {
 }
@@ -39,15 +36,14 @@ object Controller {
 
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
 
+
     private val maxPlayers = 4
-
-    private var score: Int = 0
-
     private val dataManager: DataManager = new DataManager()
-
     private val config = ConfigFactory.load("application")
     private val system = ActorSystem("MotoSystem", config)
     private val soundAgent: SoundAgent = SoundAgent()
+    private var score: Int = 0
+
     private var engine: Option[Engine] = None
     this.dataManager.initAppDirectory()
     private var observers: Set[ObserverUI] = Set()
@@ -65,78 +61,25 @@ object Controller {
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
-    override def setupGame(level: Level): Unit = {
-
-      logger info s"level selected: $level"
-      val lvl = levels.filter(_.index == level).head
-      var playerNum = 1
-      val players =  if (serverActor.isDefined) {
-        playerNum = matchSetupMp.get.numReadyPlayers()
-        (0 to playerNum).map(_ => BumperCarEntity(UUID.randomUUID())).toList
-      } else {
-        List(BumperCarEntity(UUID.randomUUID()))
-      }
-      val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
-      lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
-      engine = Option(motoscala.engine.GameEngine(this, players))
-      engine.get.init(lvl)
-
-      var setups: List[LevelSetupData] = List()
-
-
-      players.slice(1, players.size).foreach(player => setups = setups.:+(LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player)))
-
-      observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = false, isHosting = true, players.head))))
-
-      if(serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
-    }
-
     override def start(): Unit = {
       score = 0
       engine.get.start()
     }
-    override def loadAllLevels(): Unit = {
-
-
-      levels = List(
-        LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                  List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                       Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                       Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                       Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
-                       Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
-                       Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0), Coordinate(0, 0)),
-                       Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                       Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                       Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                       )))
-
-      observers.foreach(o => o.notify(LevelDataEvent(levels)))
-    }
     override def pause(): Unit = engine.get.pause()
     override def resume(): Unit = engine.get.resume()
     override def stop(): Unit = {
-      if (engine.isDefined){
+      if (engine.isDefined) {
         engine.get.stop()
         engine = None
       }
 
     }
-
-
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
-
     override def loadStats(): Unit = observers
       .foreach(observer => observer.notify(ScoreDataEvent(this.dataManager.loadScore()
                                                             .getOrElse(ScoresData(HashMap("GINO" -> 100000, "GINO2" -> 100000))))))
     override def loadSetting(): Unit = observers
       .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
-
     override def saveStats(newSettings: SettingsData): Unit = {
       this.actualSettings = newSettings
       this.dataManager.saveSettings(this.actualSettings)
@@ -237,18 +180,80 @@ object Controller {
       }
     }
     override def getMediator: Mediator = this.mediator
-    private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
-
     override def startMultiplayer(): Unit = {
       loadAllLevels()
       serverActor.get ! GameStartActorMessage()
       setupGame(0)
     }
+    override def setupGame(level: Level): Unit = {
 
+      logger info s"level selected: $level"
+      val lvl = levels.filter(_.index == level).head
+      var playerNum = 1
+      val players = if (serverActor.isDefined) {
+        playerNum = matchSetupMp.get.numReadyPlayers()
+        (0 to playerNum).map(_ => BumperCarEntity(UUID.randomUUID())).toList
+      } else {
+        List(BumperCarEntity(UUID.randomUUID()))
+      }
+      val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
+      lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
+      engine = Option(motoscala.engine.GameEngine(this, players))
+      engine.get.init(lvl)
+
+      var setups: List[LevelSetupData] = List()
+
+
+      players.slice(1, players.size)
+        .foreach(player => setups = setups.:+(LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player)))
+
+      observers
+        .foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = false, isHosting = true, players.head))))
+
+      if (serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
+    }
+    override def loadAllLevels(): Unit = {
+      /*      levels = List(
+              LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                        List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                             Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                             Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                             Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                             Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                             )))*/
+
+      /*      this.dataManager
+              .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                                 List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                                      Level.Player(Coordinate(200, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                                      Level.Player(Coordinate(100, 500), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                                      Level.Player(Coordinate(250, 100), Circle(25), Coordinate(0, 0), Coordinate(15, 15)),
+                                      Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(0, 0), Coordinate(3, 3)),
+                                      Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0), Coordinate(0, 0)),
+                                      Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                                      Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                                      Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                      )))*/
+      levels = dataManager.loadLvl()
+
+
+      observers.foreach(o => o.notify(LevelDataEvent(levels)))
+    }
     override def updateScore(delta: Int): Int = {
       score += delta
       score
     }
+    private def loadSettings(): SettingsData = this.dataManager.loadSettings().getOrElse(SettingsData())
   }
 }
 

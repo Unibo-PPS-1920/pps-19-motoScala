@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.controller.managers.file
 
+import java.net.URL
 import java.nio.file.Path
 
 import org.slf4j.LoggerFactory
@@ -14,9 +15,12 @@ object FileManager {
   final def createLocalFile(path: Path): Boolean = tryAndBoolResult(path.createNewFile())(this.logger)
   final def deleteLocalFile(path: Path): Boolean = tryAndBoolResult(path.delete())(this.logger)
   final def getListFiles(path: Path): List[String] = path.list((file, _) => file.isFile).toList
-  final def loadFromJar(position: String): String = {
-    this.getClass.getResource(position).toString
+  final def loadFromJarToString(position: String): String = {
+    loadFromJarToURL(position).toString
+  }
 
+  final def loadFromJarToURL(position: String): URL = {
+    this.getClass.getResource(position)
   }
 }
 
