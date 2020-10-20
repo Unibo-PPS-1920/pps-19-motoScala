@@ -157,8 +157,8 @@ object CollisionsSystem {
 
     private def checkLifePoint(): Unit = {
       def addDamage(userEntity: Entity, c1: CollisionComponent, c2: CollisionComponent): Unit = {
-        c1.life -= 1
-        c2.life -= c2.damage
+        c1.life -= c2.damage
+        c2.life -= c1.damage
         controller.mediator.publishEvent(EntityLifeEvent(LifeData(userEntity, c1.life)))
       }
 
