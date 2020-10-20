@@ -11,7 +11,7 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
  * @param duration keeps track of how long an active collision will last
  * @param oldSpeed original speed to be restored after collision has happened
  */
-final case class CollisionComponent(var life: Long,
+final case class CollisionComponent(var life: Long = 100,
                                     var mass: Double,
                                     var damage: Int = 1,
                                     var collEntity: Entity = new Entity {override def uuid: UUID = UUID.randomUUID()},
