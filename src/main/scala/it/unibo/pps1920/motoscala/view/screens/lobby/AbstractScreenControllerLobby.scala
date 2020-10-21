@@ -8,12 +8,19 @@ import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
-import javafx.scene.control._
+import javafx.scene.control.{SplitMenuButton, _}
 import javafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 
-abstract class AbstractScreenControllerLobby(protected override val viewFacade: ViewFacade,
-                                             protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+/** Abstract ScreenController dedicated to show the multiplayer lobby.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[lobby] abstract class AbstractScreenControllerLobby(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+
   @FXML protected var root: BorderPane = _
   @FXML protected var mainBorderPane: BorderPane = _
   @FXML protected var buttonKick: Button = _
@@ -33,16 +40,11 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     initSplitMenus()
   }
   private def initSplitMenus(): Unit = {
-    this.listPlayer.getSelectionModel.selectedItemProperty().addListener((_, _, newVal) => {
-      if (newVal != null) {
-        if (this.listPlayer.getItems.get(0) != newVal) {
-          this.buttonKick.setDisable(false)
-        } else {
-          this.buttonKick.setDisable(true)
-        }
-      } else {
-        this.buttonKick.setDisable(true)
-      }
+    listPlayer.getSelectionModel.selectedItemProperty().addListener((_, _, newVal) => {
+      if (newVal != null && listPlayer.getItems.get(0) != newVal)
+        buttonKick.setDisable(false)
+      else
+        buttonKick.setDisable(true)
     })
   }
   private def initButtons(): Unit = {
@@ -51,32 +53,19 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
       controller.lobbyInfoChanged(isStatusChanged = true)
     })
     buttonKick.setOnAction(_ => {
-      controller.kickSomeone(this.listPlayer.getSelectionModel.getSelectedItem.getText)
+      controller.kickSomeone(listPlayer.getSelectionModel.getSelectedItem.getText)
     })
     buttonStart.setOnAction(_ => {
       controller.startMultiplayer()
       viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
     })
-    this.buttonReady.setDisable(false)
+    buttonReady.setDisable(false)
   }
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
-      this.controller.leaveLobby()
+      controller.leaveLobby()
       cleanAll()
     })
-  }
-  private def cleanAll(): Unit = {
-    this.buttonKick.setDisable(true)
-    this.buttonStart.setDisable(true)
-    this.buttonKick.setVisible(false)
-    this.buttonStart.setVisible(false)
-    this.ipLabel.setVisible(false)
-    this.portLabel.setVisible(false)
-    this.dropMenuDifficult.setDisable(true)
-    this.dropMenuLevel.setDisable(true)
-    this.listPlayer.getItems.clear()
-    this.ipLabel.setText("Ip:")
-    this.portLabel.setText("Port:")
   }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Lobby.fxml'.")
@@ -91,6 +80,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
   }
+  override def whenDisplayed(): Unit = {}
   protected def leaveLobby(): Unit = {
     Platform.runLater(() => {
       viewFacade.changeScreen(ChangeScreenEvent.GoBack)
@@ -99,19 +89,19 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   protected def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
 
-      lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText(diff.toString))
-      lobbyData.level.foreach(lvl => this.dropMenuLevel.setText(lvl.toString))
+      lobbyData.difficulty.foreach(diff => dropMenuDifficult.setText(diff.toString))
+      lobbyData.level.foreach(lvl => dropMenuLevel.setText(lvl.toString))
 
 
       val rpValues = lobbyData.readyPlayers.values
 
       if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1) {
-        this.buttonStart.setDisable(false)
+        buttonStart.setDisable(false)
       } else {
-        this.buttonStart.setDisable(true)
+        buttonStart.setDisable(true)
       }
 
-      val lisPlayerStatus = this.listPlayer.getItems
+      val lisPlayerStatus = listPlayer.getItems
       lisPlayerStatus.clear()
       lobbyData.readyPlayers.values.foreach(player => {
         val label = new Label(player.name)
@@ -125,51 +115,68 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
     })
   }
   protected def startMulti(): Unit = {
-    this.viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
+    viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
-
   protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
                              difficulties: List[Int]): Unit = {
     import scala.jdk.CollectionConverters._
     reset()
 
+
     dropMenuLevel.getItems.addAll(levels.map(lvl => new MenuItem(lvl.toString)).asJava)
     dropMenuDifficult.getItems.addAll(difficulties.map(diff => new MenuItem(diff.toString)).asJava)
-    dropMenuLevel.getItems.forEach(item => item.setOnAction(el => {
-      val lvl = el.getSource.asInstanceOf[MenuItem].getText
-      dropMenuLevel.setText(lvl)
-      controller.lobbyInfoChanged(level = Some(lvl.toInt))
-    }))
-    dropMenuDifficult.getItems.forEach(item => item.setOnAction(el => {
-      val diff = el.getSource.asInstanceOf[MenuItem].getText
-      dropMenuDifficult.setText(diff)
-      controller.lobbyInfoChanged(difficult = Some(diff.toInt))
-    }))
+
+    def initSplitMenuButton(butt: SplitMenuButton)(controllerStrategy: (ObservableUI, Option[Int]) => Unit): Unit = {
+      butt.getItems.forEach(_.setOnAction(el => {
+        val lvl = el.getSource.asInstanceOf[MenuItem].getText
+        dropMenuLevel.setText(lvl)
+        controllerStrategy(controller, Some(lvl.toInt))
+      }))
+    }
+    initSplitMenuButton(dropMenuLevel)((controller, lvl) => {
+      controller.lobbyInfoChanged(level = lvl)
+    })
+    initSplitMenuButton(dropMenuDifficult)((controller, diff) => {
+      controller.lobbyInfoChanged(difficult = diff)
+    })
+
     controller.lobbyInfoChanged(level = Some(1), difficult = Some(1))
 
 
     dropMenuLevel.setText(levels.head.toString)
     dropMenuDifficult.setText(difficulties.head.toString)
 
-    this.ipLabel.setText(s"${this.ipLabel.getText}$ip")
-    this.portLabel.setText(s"${this.portLabel.getText} $port")
+    ipLabel.setText(s"${ipLabel.getText}$ip")
+    portLabel.setText(s"${portLabel.getText} $port")
     val label = new Label(name)
     label.setTextFill(Color.Red)
-    this.listPlayer.getItems.add(label)
+    listPlayer.getItems.add(label)
   }
-
   private def reset(): Unit = {
 
     cleanAll()
     dropMenuDifficult.getItems.clear()
     dropMenuLevel.getItems.clear()
-    this.listPlayer.getItems.clear()
-    this.buttonStart.setVisible(true)
-    this.buttonKick.setVisible(true)
-    this.ipLabel.setVisible(true)
-    this.portLabel.setVisible(true)
-    this.dropMenuDifficult.setDisable(false)
-    this.dropMenuLevel.setDisable(false)
+    listPlayer.getItems.clear()
+    buttonStart.setVisible(true)
+    buttonKick.setVisible(true)
+    ipLabel.setVisible(true)
+    portLabel.setVisible(true)
+    dropMenuDifficult.setDisable(false)
+    dropMenuLevel.setDisable(false)
+  }
+  private def cleanAll(): Unit = {
+    buttonKick.setDisable(true)
+    buttonStart.setDisable(true)
+    buttonKick.setVisible(false)
+    buttonStart.setVisible(false)
+    ipLabel.setVisible(false)
+    portLabel.setVisible(false)
+    dropMenuDifficult.setDisable(true)
+    dropMenuLevel.setDisable(true)
+    listPlayer.getItems.clear()
+    ipLabel.setText("Ip:")
+    portLabel.setText("Port:")
   }
 
 }

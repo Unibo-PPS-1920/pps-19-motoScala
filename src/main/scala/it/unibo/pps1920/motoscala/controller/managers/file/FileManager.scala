@@ -15,36 +15,36 @@ object FileManager {
    * @param path the path representing the file
    * @return false if the operation fails, true otherwise
    * */
-  final def createLocalDirectoryTree(path: Path): Boolean = tryAndBoolResult(path.getParentFile.mkdirs())(this.logger)
+  final def createLocalDirectoryTree(path: Path): Boolean = tryAndBoolResult(path.getParentFile.mkdirs())(logger)
   /** Creates the directory named by this abstract pathname,
    * including any necessary but nonexistent parent directories.
    *
    * @param path the path representing the file
    * @return false if the operation fails, true otherwise
    * */
-  final def createLocalDirectoryTreeFromFile(path: Path): Boolean = tryAndBoolResult(path.mkdirs())(this.logger)
+  final def createLocalDirectoryTreeFromFile(path: Path): Boolean = tryAndBoolResult(path.mkdirs())(logger)
   /** Create one local directory from path.
    *
    * @param path the path representing the directory file
    * @return false if the operation fails, true otherwise
    * */
-  final def createLocalDirectory(path: Path): Boolean = tryAndBoolResult(path.mkdir)(this.logger)
+  final def createLocalDirectory(path: Path): Boolean = tryAndBoolResult(path.mkdir)(logger)
   /** Create one Black file.
    *
    * @param path the path representing the file
    * @return false if the operation fails, true otherwise
    * */
-  final def createLocalFile(path: Path): Boolean = tryAndBoolResult(path.createNewFile())(this.logger)
+  final def createLocalFile(path: Path): Boolean = tryAndBoolResult(path.createNewFile())(logger)
   /** Delete one file.
    *
    * @param path the path representing the file
    * @return false if the operation fails, true otherwise
    * */
-  final def deleteLocalFile(path: Path): Boolean = tryAndBoolResult(path.delete())(this.logger)
+  final def deleteLocalFile(path: Path): Boolean = tryAndBoolResult(path.delete())(logger)
   /** Return the list of file present in one folder.
    *
    * @param path the path representing the directory file
-   * @return return one List[String] each String represent one file path.
+   * @return return one List[String] each String represent one file path
    * */
   final def getListFiles(path: Path): List[String] = path.list((file, _) => file.isFile).toList
   /** Search one resource inside jar, if the jar is present otherwise inside the FS.
@@ -58,7 +58,7 @@ object FileManager {
    * @param position the path representing the file
    * @return return the file position URL
    * */
-  final def loadFromJarToURL(position: String): URL = this.getClass.getResource(position)
+  final def loadFromJarToURL(position: String): URL = getClass.getResource(position)
 }
 
 
