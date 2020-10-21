@@ -5,7 +5,6 @@ import enumeratum._
 sealed abstract class Clips(override val entryName: String) extends EnumEntry
 object Clips extends Enum[Clips] {
   override def values: IndexedSeq[Clips] = findValues
-  case object Hit extends Clips("/clips/Hit.wav")
   case object ButtonClick extends Clips("/clips/buttonClick.wav")
   case object ButtonHover extends Clips("/clips/buttonHover.wav")
   case object Collision extends Clips("/clips/collisionShort.wav")

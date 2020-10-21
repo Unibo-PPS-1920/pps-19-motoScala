@@ -31,7 +31,7 @@ object ViewConstants {
     /** Textures constants */
     object Textures {
       val TextureFolder: String = "/textures/"
-      val EntitiesFolder: String = TextureFolder + "/entities/"
+      val EntitiesFolder: String = TextureFolder + "entities/"
       val BackgroundTexture: String = TextureFolder + "background.png"
       val ParticleTexture: String = TextureFolder + "particle.png"
       val BumperCar: String = EntitiesFolder + "entity_22.png"

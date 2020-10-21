@@ -15,7 +15,7 @@ trait SoundAgent extends Thread with SoundAgentLogic {
 }
 
 private final class ConcreteSoundAgent extends SoundAgent {
-  final val QueueSize = 100
+  final val QueueSize = 1000
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)
   private var clips: Map[Clips, AudioClip] = Map()
@@ -38,13 +38,11 @@ private final class ConcreteSoundAgent extends SoundAgent {
     if (!this.medias.contains(media)) {
       this.medias += (media -> new MediaPlayer(new Media(loadFromJarToString(media.entryName))))
     }
-    Platform.runLater(() => {
-      this.actualMusicPlayer = this.medias.get(media)
-      this.actualMusicPlayer.foreach(_.setVolume(volumeMusic))
-      this.actualMusicPlayer.foreach(_.play())
-      this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
-      this.medias.filterNot(p => p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())
-    })
+    this.actualMusicPlayer = this.medias.get(media)
+    this.actualMusicPlayer.foreach(_.setVolume(volumeMusic))
+    this.actualMusicPlayer.foreach(_.play())
+    this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
+    this.medias.filterNot(p => p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())
   }
   override def stopMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.stop()))
   override def pauseMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.pause()))
@@ -53,27 +51,23 @@ private final class ConcreteSoundAgent extends SoundAgent {
     if (!this.clips.contains(clip)) {
       this.clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
     }
-    Platform.runLater(() => {
-      this.actualClipPlayer = Some(this.clips(clip))
-      this.actualClipPlayer.get.play(volumeEffect)
-    })
+    this.actualClipPlayer = Some(this.clips(clip))
+    this.actualClipPlayer.get.play(volumeEffect)
   }
   override def setVolumeMusic(value: Double): Unit = {
     this.volumeMusic = if (value < 0.05) 0.0 else value
-    Platform.runLater(() => {this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic)) })
+    this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic))
   }
   override def setVolumeEffect(value: Double): Unit = {
     this.volumeEffect = if (value < 0.05) 0.0 else value
-    Platform.runLater(() => {this.actualClipPlayer.foreach(_.setVolume(this.volumeEffect)) })
+    this.actualClipPlayer.foreach(_.setVolume(this.volumeEffect))
   }
   override def restartMusic(): Unit = {
-    Platform.runLater(() => {
-      this.actualMusicPlayer.foreach(_.stop())
-      this.actualMusicPlayer.foreach(_.seek(Duration.ZERO))
-      this.actualMusicPlayer.foreach(_.play())
-    })
+    this.actualMusicPlayer.foreach(_.stop())
+    this.actualMusicPlayer.foreach(_.seek(Duration.ZERO))
+    this.actualMusicPlayer.foreach(_.play())
   }
-  override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() => {this.blockingQueue.add(ev) })
+  override def enqueueEvent(ev: MediaEvent): Unit = this.blockingQueue.add(ev)
 
   private def cacheSounds(): Unit = {
     //Increase loading speed with cache
