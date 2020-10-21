@@ -229,16 +229,15 @@ object Controller {
     }
     override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
       score += value.getOrElse(0)
-      if (gameIsEnded) {
-        if (serverActor.isEmpty && clientActor.isEmpty) {
-          var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
-          if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
-            loadedStats = loadedStats.updated(actualSettings.name, score)
-          }
-          this.saveStats(ScoresData(loadedStats))
-        } else {
-          shutdownMultiplayer()
+      if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
+        var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+        if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
+          loadedStats = loadedStats.updated(actualSettings.name, score)
         }
+        this.saveStats(ScoresData(loadedStats))
+      }
+      if (gameIsEnded) {
+        shutdownMultiplayer()
       }
       score
     }
