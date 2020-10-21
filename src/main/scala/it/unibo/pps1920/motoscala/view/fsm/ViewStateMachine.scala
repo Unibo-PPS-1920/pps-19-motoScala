@@ -5,6 +5,7 @@ import it.unibo.pps1920.motoscala.view.screens.FXMLScreens
 import it.unibo.pps1920.motoscala.view.screens.FXMLScreens._
 import org.driangle.sm.StateMachine
 
+/** A simple state machine that manages the change of screens */
 private[view] object ViewStateMachine {
   def buildStateMachine(): StateMachine[FXMLScreens, ChangeScreenEvent] = StateMachine
     .WithFunctionTransitions[FXMLScreens, ChangeScreenEvent]()
@@ -25,6 +26,5 @@ private[view] object ViewStateMachine {
       case (LOBBY, GotoGame) => GAME
       case (STATS, GoBack) => HOME
       case (SETTINGS, GoBack) => HOME
-
     }).build()
 }

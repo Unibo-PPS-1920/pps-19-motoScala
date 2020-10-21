@@ -1,15 +1,14 @@
 package it.unibo.pps1920.motoscala.view.events
 
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
 
+/** The event used by the observer pattern. This method are called by the controller */
 sealed trait ViewEvent
 object ViewEvent {
-  import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
-
-
   sealed trait HomeEvent extends ViewEvent
   sealed trait LevelEvent extends ViewEvent
   sealed trait GameEvent extends ViewEvent
@@ -17,7 +16,6 @@ object ViewEvent {
   sealed trait SelectionEvent extends ViewEvent
   sealed trait SettingsEvent extends ViewEvent
   sealed trait StatsEvent extends ViewEvent
-
   final case class LevelSetupEvent(data: LevelSetupData) extends GameEvent
   final case class JoinResultEvent(result: Boolean) extends SelectionEvent
   final case class LobbyDataEvent(lobbyData: LobbyData) extends LobbyEvent
