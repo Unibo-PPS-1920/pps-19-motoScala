@@ -21,8 +21,7 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, SetupLobbyEvent, _}
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, ObserverUI, showNotificationPopup}
-import javafx.application.Platform
+import it.unibo.pps1920.motoscala.view.{ObserverUI, showSimplePopup}
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
@@ -160,8 +159,7 @@ object Controller {
     override def gotKicked(): Unit = {
       this.observers.foreach(obs => {
         obs.notify(LeaveLobbyEvent())
-        Platform.runLater(() => showNotificationPopup("Sorry, i hate you", "You have been kicked", JavafxEnums
-          .SHORT_DURATION, JavafxEnums.INFO_NOTIFICATION, () => _))
+        showSimplePopup("Sorry, i hate you", "You have been kicked")
         this.shutdownMultiplayer()
       })
     }

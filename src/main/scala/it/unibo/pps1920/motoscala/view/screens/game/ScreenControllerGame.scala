@@ -14,16 +14,17 @@ class ScreenControllerGame(protected override val viewFacade: ViewFacade,
   private val mediator: Mediator = controller.mediator
   logger info "Game Screen"
   mediator.subscribe(this)
-
+  //From Mediator
   override def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit =
-    Platform.runLater(() => drawEntities(players, entities))
-  override def notifyLevelEnd(data: EndData): Unit = Platform.runLater(() => handleTearDown(data))
+    Platform.runLater(() => handleDrawEntities(players, entities))
+  override def notifyLevelEnd(data: EndData): Unit = Platform.runLater(() => handleLevelEnd(data))
   override def notifyEntityLife(data: LifeData): Unit = Platform.runLater(() => handleEntityLife(data))
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
-
+  //From ViewFacade
   override def notify(ev: ViewEvent): Unit = ev match {
-    case LevelSetupEvent(data) => Platform.runLater(() => handleSetup(data))
+    case LevelSetupEvent(data) => Platform.runLater(() => handleLevelSetup(data))
     case _ => logger info "Unexpected message"
   }
+  //To Mediator
   override def sendCommandEvent(event: Event.CommandEvent): Unit = mediator.publishEvent(event)
 }
