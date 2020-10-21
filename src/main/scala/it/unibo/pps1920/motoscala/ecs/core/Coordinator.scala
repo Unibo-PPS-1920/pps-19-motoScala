@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 
 /** A coordinator coordinate managers.
  * <p>
- * It controls all logic and ensure safety in interactions between managers
+ * It Controls all logic and ensure safety in interactions between managers
  * */
 trait Coordinator {
   /** Add the entity to the manager.

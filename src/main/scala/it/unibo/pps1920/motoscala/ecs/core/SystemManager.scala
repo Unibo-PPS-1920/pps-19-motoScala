@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.core
 
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 
-/** A system manager manages [[it.unibo.pps1920.motoscala.ecs.System]].
+/** A System Manager manages [[it.unibo.pps1920.motoscala.ecs.System]].
  * <p>
  * It allows system registration.
  * <p>

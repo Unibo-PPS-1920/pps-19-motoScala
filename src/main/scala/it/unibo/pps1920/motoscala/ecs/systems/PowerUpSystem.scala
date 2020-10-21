@@ -13,7 +13,6 @@ import scala.language.postfixOps
 /**
  * System handling the application of powerup effects to the targeted entities
  */
-
 object PowerUpSystem {
   def apply(coordinator: Coordinator, mediator: Mediator,
             fps: Int): System = new PowerUpSystemImpl(coordinator, mediator, fps)
@@ -77,7 +76,5 @@ object PowerUpSystem {
           }
         })
     }
-
   }
-
 }

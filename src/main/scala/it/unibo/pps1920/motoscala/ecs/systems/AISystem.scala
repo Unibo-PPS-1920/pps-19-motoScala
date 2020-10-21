@@ -14,6 +14,7 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 import it.unibo.pps1920.motoscala.engine.CommandQueue
 
 import scala.language.postfixOps
+
 /**
  * System for generating movement of ai controlled entities
  */

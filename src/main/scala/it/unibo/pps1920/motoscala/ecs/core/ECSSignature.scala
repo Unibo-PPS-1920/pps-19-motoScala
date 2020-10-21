@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.ecs.core
 
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
 
-/** Represents an ECS signature. It is a collection of components */
+/** Represents an ECS Signature. It is a collection of components */
 trait ECSSignature {
   /** Add the component or components to the signature so sign the component/s.
    *

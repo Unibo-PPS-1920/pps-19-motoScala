@@ -5,7 +5,7 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
 
 import scala.reflect.ClassTag
 
-/** A component manager manages [[it.unibo.pps1920.motoscala.ecs.Component]].
+/** A Component Manager manages [[it.unibo.pps1920.motoscala.ecs.Component]].
  * <p>
  * It allows component registration, binding to entity, and retrieving.
  * <p>
