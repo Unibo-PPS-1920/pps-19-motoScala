@@ -97,24 +97,27 @@ object Coordinator {
       entityManager addEntity entity
       this
     }
+
     override def removeEntity(entity: Entity): Coordinator = {
       entityManager removeEntity entity
       systemManager entityDestroyed entity
       componentManager entityDestroyed entity
       this
     }
+
     override def isEntityAlive(entity: Entity): Boolean = entityManager.entities.contains(entity)
     override def registerComponentType(compType: ComponentType): Coordinator = {
       componentManager.registerComponentType(compType)
       this
     }
+
     override def addEntityComponent(entity: Entity, component: Component): Coordinator = {
       this.synchronized(systemManager.entitySignatureChanged(entity, componentManager
         .bindComponentToEntity(entity, component)))
       this
     }
-    override def addEntityComponents(entity: Entity,
-                                     components: Component*): Coordinator = {
+
+    override def addEntityComponents(entity: Entity, components: Component*): Coordinator = {
       components.foreach(this.addEntityComponent(entity, _))
       this
     }
@@ -124,14 +127,19 @@ object Coordinator {
         .unbindComponentFromEntity(entity, component)))
       this
     }
+
     override def getEntityComponent[T: ClassTag](entity: Entity): T =
       this.synchronized(componentManager.getEntityComponent[T](entity))
+
     override def registerSystem(system: System): Coordinator = {
       this.synchronized(systemManager.registerSystem(system))
       this
     }
+
     override def updateSystems(): Unit = this.synchronized(systemManager.updateAll())
   }
   type ComponentType = Class[_]
+
+  /** Factory for [[Coordinator]] instances */
   def apply(): Coordinator = new CoordinatorImpl()
 }
