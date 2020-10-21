@@ -36,8 +36,7 @@ object EndGameSystem {
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
-
-
+    
     private def checkOutside(entity: Entity): Boolean = {
       val p = coordinator.getEntityComponent[PositionComponent](entity).pos
       p.x <= 0 || p.y <= 0 || p.x >= canvasSize.x || p.y >= canvasSize.y
@@ -46,11 +45,6 @@ object EndGameSystem {
     private def checkLifePoints(entity: Entity): Boolean = {
       val c = coordinator.getEntityComponent[CollisionComponent](entity)
       c.life <= 0
-    }
-
-    implicit def ordering[BumperCarEntity]: Ordering[Entity] = (x: Entity, y: Entity) => {
-      coordinator.getEntityComponent[ScoreComponent](x).score
-        .compareTo(coordinator.getEntityComponent[ScoreComponent](y).score)
     }
   }
 }
