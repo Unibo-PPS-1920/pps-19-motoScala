@@ -8,8 +8,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
 import javafx.application.Platform
 
-/**
- * Screen controller for game FXML.
+/** Screen controller for game FXML.
  *
  * @param viewFacade the view facade
  * @param controller the controller

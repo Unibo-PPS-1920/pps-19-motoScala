@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.view.fsm
 
+/** Event used to change screen. This is processed by the Final State Machine */
 private[view] trait ChangeScreenEvent
 private[view] object ChangeScreenEvent {
   final case object GoBack extends ChangeScreenEvent

@@ -20,8 +20,7 @@ import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
-/**
- * ScreenController dedicated to drawing and command handling.
+/** ScreenController dedicated to drawing and command handling.
  *
  * @param viewFacade the view facade
  * @param controller the controller
@@ -100,8 +99,7 @@ protected[game] abstract class AbstractScreenControllerGame(
     controller.shutdownMultiplayer()
   }
 
-  /**
-   * Handle the setup message.
+  /** Handle the setup message.
    *
    * @param data the setup data
    */
@@ -124,8 +122,7 @@ protected[game] abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(true)
   }
 
-  /**
-   * Handle the end message.
+  /** Handle the end message.
    *
    * @param data the end data
    */
@@ -140,16 +137,14 @@ protected[game] abstract class AbstractScreenControllerGame(
     }
   }
 
-  /**
-   * Handle the life message.
+  /** Handle the life message.
    *
    * @param data the life data
    */
   protected def handleEntityLife(data: LifeData): Unit =
     if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
 
-  /**
-   * Handle the draw message.
+  /** Handle the draw message.
    *
    * @param players the players present in the game
    * @param entities the other entities
