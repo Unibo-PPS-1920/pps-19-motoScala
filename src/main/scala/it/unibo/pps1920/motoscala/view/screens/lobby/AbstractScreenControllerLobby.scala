@@ -12,7 +12,6 @@ import javafx.scene.control._
 import javafx.scene.layout.BorderPane
 import scalafx.scene.paint.Color
 
-
 abstract class AbstractScreenControllerLobby(protected override val viewFacade: ViewFacade,
                                              protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
@@ -49,7 +48,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   private def initButtons(): Unit = {
 
     buttonReady.setOnAction(_ => {
-      controller.setSelfReady()
+      controller.lobbyInfoChanged(isStatusChanged = true)
     })
     buttonKick.setOnAction(_ => {
       controller.kickSomeone(this.listPlayer.getSelectionModel.getSelectedItem.getText)
@@ -100,8 +99,8 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   protected def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
 
-      lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
-      lobbyData.mode.foreach(diff => this.dropMenuLevel.setText("1"))
+      lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText(diff.toString))
+      lobbyData.level.foreach(lvl => this.dropMenuLevel.setText(lvl.toString))
 
 
       val rpValues = lobbyData.readyPlayers.values
@@ -132,7 +131,25 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
   protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
                              difficulties: List[Int]): Unit = {
+    import scala.jdk.CollectionConverters._
     reset()
+
+    dropMenuLevel.getItems.addAll(levels.map(lvl => new MenuItem(lvl.toString)).asJava)
+    dropMenuDifficult.getItems.addAll(difficulties.map(diff => new MenuItem(diff.toString)).asJava)
+    dropMenuLevel.getItems.forEach(item => item.setOnAction(el => {
+      val lvl = el.getSource.asInstanceOf[MenuItem].getText
+      dropMenuLevel.setText(lvl)
+      controller.lobbyInfoChanged(level = Some(lvl.toInt))
+    }))
+
+    dropMenuDifficult.getItems.forEach(item => item.setOnAction(el => {
+      val diff = el.getSource.asInstanceOf[MenuItem].getText
+      dropMenuDifficult.setText(diff)
+      controller.lobbyInfoChanged(difficult = Some(diff.toInt))
+    }))
+    dropMenuLevel.setText(levels.head.toString)
+    dropMenuDifficult.setText(difficulties.head.toString)
+
     this.ipLabel.setText(s"${this.ipLabel.getText}$ip")
     this.portLabel.setText(s"${this.portLabel.getText} $port")
     val label = new Label(name)
@@ -141,9 +158,10 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
   }
 
   private def reset(): Unit = {
-    //   lobbyData.difficulty.foreach(diff => this.dropMenuDifficult.setText("1"))
 
     cleanAll()
+    dropMenuDifficult.getItems.clear()
+    dropMenuLevel.getItems.clear()
     this.listPlayer.getItems.clear()
     this.buttonStart.setVisible(true)
     this.buttonKick.setVisible(true)
