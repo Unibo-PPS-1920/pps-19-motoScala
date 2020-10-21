@@ -51,6 +51,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
 
   private def initButtons(): Unit = {
 
+
     buttonReady.setOnAction(_ => controller.lobbyInfoChanged(isStatusChanged = true))
     buttonKick.setOnAction(_ => controller.kickSomeone(listPlayer.getSelectionModel.getSelectedItem.getText))
     buttonStart.setOnAction(_ => {

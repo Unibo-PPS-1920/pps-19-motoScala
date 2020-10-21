@@ -76,11 +76,10 @@ abstract class AbstractScreenControllerSettings(
   private def initTextField(): Unit = {
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
-      if (text.length <= NameMaxLength || text.isEmpty) {
+      if (text.length <= NameMaxLength || text.isEmpty)
         formatter
-      } else {
+      else
         null
-      }
     }
     textPlayerName.setTextFormatter(new TextFormatter(portFormatter))
   }

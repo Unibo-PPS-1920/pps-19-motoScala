@@ -58,43 +58,48 @@ abstract class AbstractScreenControllerModeSelection(
       button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
 
     buttonHovered(buttonHost, buttonJoin)
+
     buttonHost.setOnAction(_ => {
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       controller.becomeHost()
       viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     })
+
     buttonJoin.setOnAction(_ => {
+      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       toggleButtons()
       controller.tryJoinLobby(ipTextField.getText, portTextField.getText())
     })
   }
+
+  private def toggleButtons(): Unit = {
+    buttonJoin.setDisable(!buttonJoin.isDisabled)
+    buttonBack.setDisable(!buttonBack.isDisabled)
+    buttonHost.setDisable(!buttonHost.isDisabled)
+  }
+
   private def initTextFields(): Unit = {
-    val partialBlock: String = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
-    val subsequentPartialBlock: String = "(\\." + partialBlock + ")"
-    val ipAddressRegex: String = "^" + (partialBlock + "?" + subsequentPartialBlock + "{0,3}")
+    import javafx.scene.control.TextFormatter.Change
 
-    val ipAddressFilter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
+    def getFormatter(strategy: String => Boolean): UnaryOperator[Change] = formatter => {
       val value: String = formatter.getControlNewText
-      if (value.matches(ipAddressRegex)) {
+      if (strategy(value))
         formatter
-      } else {
+      else
         null
-      }
     }
 
-    ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
+    def getIpFormatter: UnaryOperator[Change] = getFormatter(_.matches(RegexIpAddress))
 
-    val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
-      val text: String = formatter.getControlNewText
+    def getPortFormatter: UnaryOperator[Change] =
+      getFormatter(text => (text.length <= PortMaxLength && Try(NetworkAddr.validatePort(text.toInt))
+        .getOrElse(false)) || text
+        .isEmpty)
 
-      if ((text.length <= PortMaxLength && Try(NetworkAddr.validatePort(text.toInt)).getOrElse(false)) || text
-        .isEmpty) {
-        formatter
-      } else {
-        null
-      }
-    }
 
-    portTextField.setTextFormatter(new TextFormatter(portFormatter))
+    ipTextField.setTextFormatter(new TextFormatter(getIpFormatter))
+
+    portTextField.setTextFormatter(new TextFormatter(getPortFormatter))
 
     ipTextField.textProperty().addListener((_, _, newValue) => {
       if (NetworkAddr.validateIPV4Address(newValue)) {
@@ -119,11 +124,10 @@ abstract class AbstractScreenControllerModeSelection(
     })
 
     def checkIpAndPort(): Unit = {
-      if (ipReady && portReady) {
+      if (ipReady && portReady)
         buttonJoin.setDisable(false)
-      } else {
+      else
         buttonJoin.setDisable(true)
-      }
     }
 
     def inError(field: TextField): Unit = field.setStyle(InErrorStyle)
@@ -135,12 +139,10 @@ abstract class AbstractScreenControllerModeSelection(
     toggleButtons()
     if (res) viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
   }
-  private def toggleButtons(): Unit = {
-    buttonJoin.setDisable(!buttonJoin.isDisabled)
-    buttonBack.setDisable(!buttonBack.isDisabled)
-    buttonHost.setDisable(!buttonHost.isDisabled)
-  }
   private[this] final object MagicValues {
+    final val RegexIpPartialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
+    final val RegexIpSubsequentPartialBlock: String = "(\\." + RegexIpPartialBlock + ")"
+    final val RegexIpAddress: String = "^" + (RegexIpPartialBlock + "?" + RegexIpSubsequentPartialBlock + "{0,3}")
     final val PortMaxLength = 5
     final val InErrorStyle = "-fx-border-color: red ; -fx-border-width: 5 ;"
     final val NotInErrorStyle = ""
