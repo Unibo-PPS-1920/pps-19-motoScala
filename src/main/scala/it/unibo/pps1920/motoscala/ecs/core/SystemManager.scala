@@ -2,14 +2,14 @@ package it.unibo.pps1920.motoscala.ecs.core
 
 import it.unibo.pps1920.motoscala.ecs.{Entity, System}
 
-private[core] trait SystemManager {
+protected[core] trait SystemManager {
   def registerSystem(sys: System): Unit
   def entitySignatureChanged(entity: Entity, enSignature: ECSSignature): Set[System]
   def entityDestroyed(entity: Entity): Unit
   def updateAll(): Unit
 }
 
-private[core] object SystemManager {
+protected[core] object SystemManager {
   private class SystemManagerImpl() extends SystemManager {
     private var systemSignature: Map[System, ECSSignature] = Map()
     private var systemList: List[System] = List()

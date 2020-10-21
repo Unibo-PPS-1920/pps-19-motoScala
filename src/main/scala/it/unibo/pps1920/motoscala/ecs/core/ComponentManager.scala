@@ -5,9 +5,24 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
 
 import scala.reflect.ClassTag
 
-private[core] trait ComponentManager {
+/** A component manager manages [[it.unibo.pps1920.motoscala.ecs.Component]].
+ * <p>
+ * It allows component registration, binding to entity, and retrieving.
+ * <p>
+ * The set of component connected to an entity define an ECSSignature.
+ * */
+protected[core] trait ComponentManager {
+  /** Register a component to the manager so that it can be bound to entities.
+   * <p>
+   * An unregistered component, if used, will produce an IllegalArgumentException
+   *
+   * @param compType the component type
+   */
   def registerComponentType(compType: ComponentType): Unit
-  def checkRegisteredComponent(compType: ComponentType): Boolean
+  /** Check if
+   *
+   * @return
+   */
   def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
   def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
   def getEntitySignature(entity: Entity): ECSSignature
@@ -15,14 +30,14 @@ private[core] trait ComponentManager {
   def entityDestroyed(entity: Entity): Unit
 }
 
-private[core] object ComponentManager {
+protected[core] object ComponentManager {
   private class ComponentManagerImpl extends ComponentManager {
     private var registered: Set[ComponentType] = Set()
     private var entityComponent: Map[Entity, Map[ComponentType, Component]] = Map()
 
     import ImplicitConversions._
+    private def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
     override def registerComponentType(compType: ComponentType): Unit = registered = registered + compType
-    override def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
     override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
       require(checkRegisteredComponent(component), "Cannot use an unregistered component")
       entityComponent = entityComponent.updatedWith(entity)({
