@@ -95,20 +95,6 @@ abstract class AbstractScreenControllerGame(
       controller.pause()
     })
   }
-
-  protected def handleTearDown(data: EndData): Unit = data match {
-    case EndData(true, BumperCarEntity(_), _) =>
-      showDialog(this.canvasStack, "You Win!",
-                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
-    case EndData(false, BumperCarEntity(_), _) =>
-      showDialog(this.canvasStack, "Game Over!",
-                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
-    case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(Some(score))}")
-  }
-
-  protected def handleEntityLife(data: LifeData): Unit =
-    if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
-
   private def dismiss(): Unit = {
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     clearScreen()
@@ -118,10 +104,20 @@ abstract class AbstractScreenControllerGame(
     viewFacade.getStage.setFullScreen(false)
     controller.redirectSoundEvent(StopMusic())
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
+    controller.shutdownMultiplayer()
   }
-
   private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
-
+  protected def handleTearDown(data: EndData): Unit = data match {
+    case EndData(true, BumperCarEntity(_), _) =>
+      showDialog(this.canvasStack, "You Win!",
+                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
+    case EndData(false, BumperCarEntity(_), _) =>
+      showDialog(this.canvasStack, "Game Over!",
+                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BIG_DIALOG, _ => dismiss())
+    case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(Some(score))}")
+  }
+  protected def handleEntityLife(data: LifeData): Unit =
+    if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
   protected def drawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     clearScreen()
     entities.foreach(e => e.entity match {
