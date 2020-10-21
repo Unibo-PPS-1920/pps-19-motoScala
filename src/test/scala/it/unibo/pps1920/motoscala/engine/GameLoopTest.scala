@@ -24,7 +24,7 @@ class GameLoopTest extends AnyWordSpec with Matchers with BeforeAndAfter with Ev
 
   }
   val controller: EngineController = new EngineControllerMock(Mediator())
-  val engine: Engine = GameEngine(controller, List(BumperCarEntity(UUID.randomUUID())))
+  val engine: Engine = GameEngine(controller, List(BumperCarEntity(UUID.randomUUID())), 1)
   var loop: GameLoop = _
 
   before {

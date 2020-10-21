@@ -21,13 +21,13 @@ import org.scalatestplus.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
+  val pid: UUID = UUID.randomUUID()
+  val entity: BumperCarEntity = BumperCarEntity(pid)
   var coordinator: Coordinator = _
   var endsys: System = _
   var mediator: Mediator = _
   var controller: EngineController = _
   var display: DisplayMock = _
-  val pid: UUID = UUID.randomUUID()
-  val entity: BumperCarEntity = BumperCarEntity(pid)
   override def beforeAll(): Unit = {
     coordinator = Coordinator()
     controller = new EngineControllerMock(Mediator())
@@ -35,7 +35,7 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     mediator = controller.mediator
     controller.mediator.subscribe(display)
     endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(controller, List(BumperCarEntity(UUID
-                                                                                                                 .randomUUID()))))
+                                                                                                                 .randomUUID())), 1))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val v = VelocityComponent(Vector2(0, -10))
