@@ -19,7 +19,6 @@ object EndGameSystem {
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[ScoreComponent], classOf[CollisionComponent])) {
     override def update(): Unit = {
       entitiesRef().filter(e => checkOutside(e) || checkLifePoints(e)).foreach(e => {
-        logger info "out"
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
           mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.GameOver)))
@@ -30,12 +29,14 @@ object EndGameSystem {
           .getEntityComponent[ScoreComponent](e).score)))
         this.coordinator.removeEntity(e)
       })
-      if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
+      if (entitiesRef().nonEmpty && entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
         mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
+        logger info s"$entitiesRef()"
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
+
 
     private def checkOutside(entity: Entity): Boolean = {
       val p = coordinator.getEntityComponent[PositionComponent](entity).pos
@@ -45,6 +46,11 @@ object EndGameSystem {
     private def checkLifePoints(entity: Entity): Boolean = {
       val c = coordinator.getEntityComponent[CollisionComponent](entity)
       c.life <= 0
+    }
+
+    implicit def ordering[BumperCarEntity]: Ordering[Entity] = (x: Entity, y: Entity) => {
+      coordinator.getEntityComponent[ScoreComponent](x).score
+        .compareTo(coordinator.getEntityComponent[ScoreComponent](y).score)
     }
   }
 }
