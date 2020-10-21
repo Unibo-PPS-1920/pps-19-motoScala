@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
-import it.unibo.pps1920.motoscala.engine.Life.{BaseEnemyLife, BeeconLife, NabiconLife, PowerUpLife}
+import it.unibo.pps1920.motoscala.engine.Life._
 import it.unibo.pps1920.motoscala.engine.Masses._
 import it.unibo.pps1920.motoscala.engine.Scores._
 import it.unibo.pps1920.motoscala.model.Level._
@@ -19,7 +19,7 @@ import scala.util.Random
 object EngineUtils {
 
   def addEntities(coordinator: Coordinator, level: LevelData, iterablePlayers: Iterator[BumperCarEntity],
-                 ): Unit = {
+                  difficult: Int): Unit = {
     val playerStack = mutable.Stack[BumperCarEntity]()
     level.entities.foreach {
       case Player(position, shape, velocity) =>
@@ -39,36 +39,36 @@ object EngineUtils {
           .addEntityComponents(black, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
-                               AIComponent(10, Random.shuffle(playerStack)),
-                               ScoreComponent(BaseEnemyScore))
+                               CollisionComponent(BlackPupaLife * difficult, mass = BaseEnemyMass),
+                               AIComponent(Foolishness.BlackPupa / difficult, Random.shuffle(playerStack)),
+                               ScoreComponent(BlackPupaLife * difficult))
       case RedPupa(position, shape, velocity) =>
         val red = RedPupaEntity(UUID.randomUUID())
         coordinator.addEntity(red)
           .addEntityComponents(red, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
-                               AIComponent(20, Random.shuffle(playerStack)),
-                               ScoreComponent(BaseEnemyScore))
+                               CollisionComponent(RedPupaLife * difficult, mass = BaseEnemyMass),
+                               AIComponent(Foolishness.RedPupa / difficult, Random.shuffle(playerStack)),
+                               ScoreComponent(RedPupaScore * difficult))
       case BluePupa(position, shape, velocity) =>
         val blue = BluePupaEntity(UUID.randomUUID())
         coordinator.addEntity(blue)
           .addEntityComponents(blue, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
-                               AIComponent(25, Random.shuffle(playerStack)),
-                               ScoreComponent(BaseEnemyScore))
+                               CollisionComponent(BluePupaLife * difficult, mass = BaseEnemyMass),
+                               AIComponent(Foolishness.BluePupa / difficult, Random.shuffle(playerStack)),
+                               ScoreComponent(BluePupaLife * difficult))
       case Polar(position, shape, velocity) =>
         val polar = PolarEntity(UUID.randomUUID())
         coordinator.addEntity(polar)
           .addEntityComponents(polar, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BaseEnemyLife, mass = BaseEnemyMass),
-                               AIComponent(5, mutable.Stack(playerStack.head)),
-                               ScoreComponent(BaseEnemyScore))
+                               CollisionComponent(PolaLifer * difficult, mass = BaseEnemyMass),
+                               AIComponent(Foolishness.Polar / difficult, mutable.Stack(playerStack.head)),
+                               ScoreComponent(PolaScore * difficult))
       case Nabicon(position, shape, velocity) =>
         val nabi = NabiconEntity(UUID.randomUUID())
         coordinator.addEntity(nabi)
@@ -125,6 +125,11 @@ private object Scores {
   val NabiconScore: Int = 50000
   val BeeconScore: Int = 1000
   val BaseEnemyScore: Int = 300
+  val PolaScore: Int = 100
+  val BlackPupaScore: Int = 400
+  val RedPupaScore: Int = 200
+  val BluePupaScore: Int = 500
+
 }
 private object Masses {
   val PowerUpMass: Int = 0
@@ -135,8 +140,18 @@ private object Masses {
 }
 
 private object Life {
-  val NabiconLife: Int = 20
-  val BeeconLife: Int = 20
-  val BaseEnemyLife: Int = 20
-  val PowerUpLife: Int = 20
+  val NabiconLife: Int = 10
+  val BeeconLife: Int = 10
+  val PolaLifer: Int = 5
+  val BlackPupaLife: Int = 12
+  val RedPupaLife: Int = 10
+  val BluePupaLife: Int = 15
+  val PowerUpLife: Int = 10
+}
+
+private object Foolishness {
+  val Polar: Int = 100
+  val BlackPupa: Int = 50
+  val RedPupa: Int = 75
+  val BluePupa: Int = 25
 }

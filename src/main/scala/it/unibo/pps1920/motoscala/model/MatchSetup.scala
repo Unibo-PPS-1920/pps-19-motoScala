@@ -8,11 +8,15 @@ trait MatchSetup {
 }
 
 
-case class MultiPlayerSetup(var difficulty: Int = 0, var mode: Boolean = false,
+case class MultiPlayerSetup(var difficulty: Int = 1, var level: Int = 1, var mode: Boolean = false,
                             var numPlayers: Int = 4) extends MatchSetup {
-  var readyPlayers: mutable.Map[ActorRef, PlayerData] = mutable.LinkedHashMap()
+  private var readyPlayers: mutable.Map[ActorRef, PlayerData] = mutable.LinkedHashMap()
+
   def setPlayerStatus(playerRef: ActorRef, isReady: Boolean): Unit = if (readyPlayers.contains(playerRef))
     readyPlayers.update(playerRef, PlayerData(readyPlayers(playerRef).name, status = isReady))
+  def getPlayerStatus: mutable.Map[ActorRef, PlayerData] = {
+    this.readyPlayers.clone()
+  }
   def numReadyPlayers(): Int = readyPlayers.count(rp => rp._2.status)
   def tryAddPlayer(playerRef: ActorRef, name: String): Option[ErrorReason] = {
     if (readyPlayers.values.exists(playerData => playerData.name == name)) {

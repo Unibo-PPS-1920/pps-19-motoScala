@@ -30,7 +30,7 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
     case LeaveEvent(ref) => {
 
       this.actorController.sendToLobbyStrategy(lobby => {
-        lobby.removePlayer(lobby.readyPlayers(ref).name)
+        lobby.removePlayer(lobby.getPlayerStatus(ref).name)
       })
       val readyPlayersData = this.actorController.getLobbyData.readyPlayers
 
@@ -44,7 +44,7 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
       this.tellToClients(ev)
       this.actorController.shutdownMultiplayer()
     }
-    case  ev: GameStartActorMessage => {
+    case ev: GameStartActorMessage => {
       this.levelMediator.subscribe(this)
       this.context.become(inGameBehaviour)
       this.tellToClients(ev)
@@ -55,7 +55,7 @@ class ServerActor(protected val actorController: ActorController) extends Actor 
     case CommandableActorMessage(event) => actorController.getMediator.publishEvent(event)
     case SetupsForClientsMessage(setups) => {
       val setupsIterator = setups.iterator
-      this.clients.foreach({c=> c ! LevelSetupMessage(setupsIterator.next())})
+      this.clients.foreach({ c => c ! LevelSetupMessage(setupsIterator.next()) })
     }
     case msg => logger warn s"Received unexpected message $msg"
       println(akka.serialization.Serialization

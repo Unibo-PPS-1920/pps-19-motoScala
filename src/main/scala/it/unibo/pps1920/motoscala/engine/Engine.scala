@@ -24,8 +24,10 @@ trait Engine extends UpdatableEngine with Commandable {
 
 object GameEngine {
   def apply(controller: EngineController,
-            players: List[BumperCarEntity]): Engine = new GameEngineImpl(controller, players)
-  private class GameEngineImpl(controller: EngineController, players: List[BumperCarEntity]) extends Engine {
+            players: List[BumperCarEntity],
+            difficult: Int): Engine = new GameEngineImpl(controller, players, difficult)
+  private class GameEngineImpl(controller: EngineController, players: List[BumperCarEntity],
+                               difficult: Int) extends Engine {
     private val mediator = controller.mediator
     private val Fps = 60
     private val logger = LoggerFactory getLogger classOf[Engine]
@@ -57,7 +59,7 @@ object GameEngine {
 
       logger info "" + level.entities
       val iterablePlayers = players.iterator
-      addEntities(coordinator, level, iterablePlayers)
+      addEntities(coordinator, level, iterablePlayers, difficult)
 
       logger info "engine init done"
     }

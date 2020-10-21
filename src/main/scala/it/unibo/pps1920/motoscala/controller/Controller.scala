@@ -11,6 +11,7 @@ import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.engine.Engine
+import it.unibo.pps1920.motoscala.model.Difficulties.difficultiesList
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
@@ -52,7 +53,7 @@ object Controller {
     private var clientActor: Option[ActorRef] = None
     private var serverActor: Option[ActorRef] = None
     private var matchSetupMp: Option[MultiPlayerSetup] = None
-    private var status: Boolean = false
+    private var multiplayerStatus: Boolean = false
     this.soundAgent.start()
 
     this.setAudioVolume(this.actualSettings.musicVolume, actualSettings.effectVolume)
@@ -76,26 +77,35 @@ object Controller {
     override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)
     override def loadSetting(): Unit = observers
       .foreach(observer => observer.notify(SettingsDataEvent(this.actualSettings)))
-    override def setSelfReady(): Unit = {
-      this.status = !this.status
-      if (serverActor.isDefined) {
-        this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.status)
+    override def lobbyInfoChanged(level: Option[Int] = None, difficult: Option[Int] = None,
+                                  isStatusChanged: Boolean = false): Unit = {
+      if (isStatusChanged) this.multiplayerStatus = !this.multiplayerStatus
+
+      if (serverActor.isDefined && matchSetupMp.isDefined) {
+        difficult.foreach(diff => matchSetupMp.get.difficulty = diff)
+        level.foreach(lvl => matchSetupMp.get.level = lvl)
+
+        this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.multiplayerStatus)
         this.serverActor.get
-          .tell(LobbyDataActorMessage(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers)), this.serverActor
-            .get)
+          .tell(LobbyDataActorMessage(LobbyData(difficulty = Some(matchSetupMp.get
+                                                                    .difficulty), level = Some(matchSetupMp.get
+                                                                                                 .level), readyPlayers = this
+            .matchSetupMp.get.getPlayerStatus)), this.serverActor
+                  .get)
         observers
           .foreach(observer => observer
-            .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
+            .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.getPlayerStatus))))
       } else {
-        this.clientActor.get ! ReadyActorMessage(this.status)
+        this.clientActor.get ! ReadyActorMessage(this.multiplayerStatus)
       }
     }
+
     override def kickSomeone(name: String): Unit = {
 
       this.serverActor.get ! KickActorMessage(this.matchSetupMp.get.removePlayer(name))
       observers
         .foreach(observer => observer
-          .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.readyPlayers))))
+          .notify(LobbyDataEvent(LobbyData(readyPlayers = this.matchSetupMp.get.getPlayerStatus))))
     }
     /*Used by Client Actor*/
     override def gameStart(): Unit = {
@@ -108,8 +118,8 @@ object Controller {
 
     }
     override def getLobbyData: DataType.LobbyData = LobbyData(Some(
-      matchSetupMp.get.difficulty), Some(1), Some(matchSetupMp.get.mode), matchSetupMp.get
-                                                                .readyPlayers)
+      matchSetupMp.get.difficulty), Some(matchSetupMp.get.level), Some(matchSetupMp.get.mode), matchSetupMp.get
+                                                                .getPlayerStatus)
 
     override def tryJoinLobby(ip: String, port: String): Unit = {
       shutdownMultiplayer()
@@ -118,25 +128,39 @@ object Controller {
     }
     override def becomeHost(): Unit = {
       shutdownMultiplayer()
+      loadAllLevels()
       serverActor = Some(system.actorOf(ServerActor.props(this), "Server"))
-      matchSetupMp = Some(MultiPlayerSetup(1, mode = true, maxPlayers))
+      matchSetupMp = Some(MultiPlayerSetup(mode = true, numPlayers = maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, this.actualSettings.name)
       observers
         .foreach(observer => observer
           .notify(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
-            .getDefaultAddress.port.get.toString, this.actualSettings.name, levels.map(_.index), List(1, 2, 3))))
+            .getDefaultAddress.port.get.toString, this.actualSettings.name, levels.map(_.index), difficultiesList
+                                    .map(_.number))))
     }
-    override def shutdownMultiplayer(): Unit = {
-      status = false
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      }
-      if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      if (matchSetupMp.isDefined) matchSetupMp = None
-      this.serverActor = None
-      this.clientActor = None
+    override def loadAllLevels(): Unit = {
+
+      /*this.dataManager
+        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
+                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
+                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
+                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
+                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                )))*/
+      levels = dataManager.loadLvl()
+
+
+      observers.foreach(o => o.notify(LevelDataEvent(levels)))
     }
     override def joinResult(result: Boolean): Unit = {
       if (!result) {
@@ -172,9 +196,8 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     override def startMultiplayer(): Unit = {
-      loadAllLevels()
       serverActor.get ! GameStartActorMessage()
-      setupGame(1)
+      setupGame(matchSetupMp.get.level)
     }
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
@@ -189,7 +212,9 @@ object Controller {
       }
       val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
       lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
-      engine = Option(motoscala.engine.GameEngine(this, players))
+
+      engine = Option(motoscala.engine.GameEngine(this, players, if (matchSetupMp.isDefined) matchSetupMp.get
+        .difficulty else actualSettings.diff))
       engine.get.init(lvl)
 
       var setups: List[LevelSetupData] = List()
@@ -202,38 +227,31 @@ object Controller {
 
       if (serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
     }
-    override def loadAllLevels(): Unit = {
-
-      /*this.dataManager
-        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
-                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
-                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
-                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
-                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
-                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
-                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
-                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
-                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                                )))*/
-      levels = dataManager.loadLvl()
-
-
-      observers.foreach(o => o.notify(LevelDataEvent(levels)))
-    }
     override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
       score += value.getOrElse(0)
       if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
-        val loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
-        this.saveStats(ScoresData(loadedStats.updated(this.actualSettings.name, loadedStats
-          .getOrElse(this.actualSettings.name, 0) + score)))
+        var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+        if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
+          loadedStats = loadedStats.updated(actualSettings.name, score)
+        }
+        this.saveStats(ScoresData(loadedStats))
+      }
+      if (gameIsEnded) {
+        shutdownMultiplayer()
       }
       score
+    }
+    override def shutdownMultiplayer(): Unit = {
+      multiplayerStatus = false
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      }
+      if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      if (matchSetupMp.isDefined) matchSetupMp = None
+      this.serverActor = None
+      this.clientActor = None
     }
     override def saveStats(newScore: ScoresData): Unit = {
       this.dataManager.saveScore(newScore)
