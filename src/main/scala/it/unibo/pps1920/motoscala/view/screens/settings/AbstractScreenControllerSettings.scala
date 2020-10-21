@@ -22,14 +22,16 @@ import javafx.util.StringConverter
 abstract class AbstractScreenControllerSettings(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  private val NameMazLength: Int = 6
-  private val DefaultName: String = "Player"
+
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var effectSlider: Slider = _
   @FXML protected var diffSlider: Slider = _
   @FXML protected var musicSlider: Slider = _
   @FXML protected var textPlayerName: TextField = _
+
+  import MagicValues._
+
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
     extendButtonBackBehaviour()
@@ -52,14 +54,14 @@ abstract class AbstractScreenControllerSettings(
 
     diffSlider.setLabelFormatter(new StringConverter[lang.Double]() {
       override def toString(`object`: lang.Double): String = `object` match {
-        case n if n <= 1.0d => EASY.name
-        case n if n <= 2.0d => MEDIUM.name
-        case n if n <= 3.0d => HARD.name
+        case n if n <= EASY.number => EASY.name
+        case n if n <= MEDIUM.number => MEDIUM.name
+        case n if n <= HARD.number => HARD.name
       }
       override def fromString(string: String): lang.Double = string match {
-        case str if str == EASY.name => 1.0d
-        case str if str == MEDIUM.name => 2.0d
-        case str if str == HARD.name => 3.0d
+        case str if str == EASY.name => EASY.number
+        case str if str == MEDIUM.name => MEDIUM.number
+        case str if str == HARD.name => HARD.number
       }
     })
   }
@@ -72,7 +74,7 @@ abstract class AbstractScreenControllerSettings(
   private def initTextField(): Unit = {
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
-      if (text.length <= NameMazLength || text.isEmpty) {
+      if (text.length <= NameMaxLength || text.isEmpty) {
         formatter
       } else {
         null
@@ -92,5 +94,22 @@ abstract class AbstractScreenControllerSettings(
     this.textPlayerName.setText(settings.name)
   }
 
+  private[this] final object MagicValues {
+    final val NameMaxLength = 6
+    final val DefaultName = "Player"
 
+    sealed trait LineNumber {
+      def leftBound: Int
+      def rightBound: Int
+    }
+    case object LineNumberX extends LineNumber {
+      val leftBound: Int = -2
+      val rightBound: Int = 10
+    }
+
+    case object LineNumberY extends LineNumber {
+      val leftBound: Int = 1
+      val rightBound: Int = 10
+    }
+  }
 }

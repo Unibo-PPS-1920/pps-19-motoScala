@@ -50,6 +50,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
   }
 
   private def initButtons(): Unit = {
+
     buttonReady.setOnAction(_ => {
       controller.lobbyInfoChanged(isStatusChanged = true)
     })

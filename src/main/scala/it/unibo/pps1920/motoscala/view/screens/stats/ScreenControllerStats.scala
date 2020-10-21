@@ -5,10 +5,14 @@ import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.ScoreDataEvent
 
-
-final class ScreenControllerStats(protected override val viewFacade: ViewFacade,
-                                  protected override val controller: ObservableUI) extends AbstractScreenControllerStats(viewFacade, controller) {
-  logger info "Stats Screen"
+/** Screen controller for stats FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+final class ScreenControllerStats(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends AbstractScreenControllerStats(viewFacade, controller) {
 
   override def whenDisplayed(): Unit = controller.loadStats()
 

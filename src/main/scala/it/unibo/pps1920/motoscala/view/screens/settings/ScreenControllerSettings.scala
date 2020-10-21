@@ -5,10 +5,14 @@ import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.SettingsDataEvent
 
-
-final class ScreenControllerSettings(protected override val viewFacade: ViewFacade,
-                                     protected override val controller: ObservableUI) extends AbstractScreenControllerSettings(viewFacade, controller) {
-  logger info "Settings Screen"
+/** Screen controller for setting FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+final class ScreenControllerSettings(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends AbstractScreenControllerSettings(viewFacade, controller) {
 
   override def whenDisplayed(): Unit = controller.loadSetting()
 

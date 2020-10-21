@@ -32,10 +32,9 @@ abstract class AbstractScreenControllerStats(
     assert(listView != null, "fx:id=\"listView\" was not injected: check your FXML file 'Stats.fxml'.")
   }
 
-
   protected def populateScoreBoard(score: ScoresData): Unit = {
     listView.getItems.clear()
-    score.scoreTable.toList.map(userScore => s"$userScore._1 \t $userScore._2").foreach(listView.getItems.add(_))
+    score.scoreTable.toList.map(userScore => s"${userScore._1} \t ${userScore._2}").foreach(listView.getItems.add(_))
   }
-
 }
+

@@ -8,11 +8,11 @@ import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import javafx.fxml.FXML
-import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane, Pane}
 import javafx.scene.shape.Line
+import javafx.scene.{CacheHint, Node}
 import scalafx.animation.{Timeline, TranslateTransition}
 import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
@@ -55,10 +55,12 @@ protected[home] abstract class AbstractScreenControllerHome(
   }
 
   private def initializeButtons(): Unit = {
+
     def buttonClicked(screenEvent: ChangeScreenEvent): Unit = {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       viewFacade.changeScreen(screenEvent)
     }
+
     def buttonHovered(button: Button*): Unit =
       button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
 
@@ -69,22 +71,23 @@ protected[home] abstract class AbstractScreenControllerHome(
     textStats.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoStats))
     textExit.setOnAction(_ => System.exit(0))
   }
+
   private def initializeBackground(pane: Pane): Unit = {
     //Background setup
     val background: Rectangle = new Rectangle()
     background.width = ViewConstants.Window.ScreenWidth
     background.height = ViewConstants.Window.ScreenHeight
-    background.setCache(true)
-    background.setCacheHint(CacheHint.SPEED)
+    setCache(background)
     background.setId(MagicValues.CSSBackgroundID)
     pane.getChildren.add(0, background)
   }
+
+  def setCache(node: Node): Unit = {
+    node.setCache(true)
+    node.setCacheHint(CacheHint.SPEED)
+  }
+
   private def initializeGrid(pane: Pane): Unit = {
-    def setCache(node: Line): Unit = {
-      node.setCache(true)
-      node.setCacheHint(CacheHint.SPEED)
-      node.setId(MagicValues.CSSLineID)
-    }
 
     def addAnimation(node: Line, mul: Int): Unit = {
       val translate: TranslateTransition = new TranslateTransition
@@ -99,6 +102,7 @@ protected[home] abstract class AbstractScreenControllerHome(
     MagicValues.LineNumberX.leftBound to MagicValues.LineNumberX.rightBound foreach (multiplier => {
       val xLine = new Line(0, MagicValues.XlinePortion * multiplier, MagicValues.PixelLineLength, MagicValues
         .XlinePortion * multiplier)
+      xLine.setId(MagicValues.CSSLineID)
       setCache(xLine)
       addAnimation(xLine, multiplier)
       root.getChildren.add(0, xLine)
@@ -108,6 +112,7 @@ protected[home] abstract class AbstractScreenControllerHome(
     MagicValues.LineNumberY.leftBound to MagicValues.LineNumberY.rightBound foreach (multiplier => {
       val yLine = new Line(MagicValues.YLinePortion * multiplier, -MagicValues.PixelLineLength, MagicValues
         .YLinePortion * multiplier, MagicValues.PixelLineLength)
+      yLine.setId(MagicValues.CSSLineID)
       setCache(yLine)
       pane.getChildren.add(0, yLine)
     })
