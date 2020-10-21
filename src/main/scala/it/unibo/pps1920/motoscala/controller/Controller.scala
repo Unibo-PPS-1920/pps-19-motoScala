@@ -83,13 +83,13 @@ object Controller {
 
       if (serverActor.isDefined && matchSetupMp.isDefined) {
         difficult.foreach(diff => matchSetupMp.get.difficulty = diff)
-        level.foreach(lvl => matchSetupMp.get.levels = lvl)
+        level.foreach(lvl => matchSetupMp.get.level = lvl)
 
         this.matchSetupMp.get.setPlayerStatus(serverActor.get, this.multiplayerStatus)
         this.serverActor.get
           .tell(LobbyDataActorMessage(LobbyData(difficulty = Some(matchSetupMp.get
                                                                     .difficulty), level = Some(matchSetupMp.get
-                                                                                                 .levels), readyPlayers = this
+                                                                                                 .level), readyPlayers = this
             .matchSetupMp.get.getPlayerStatus)), this.serverActor
                   .get)
         observers
@@ -150,6 +150,30 @@ object Controller {
             .getDefaultAddress.port.get.toString, this.actualSettings.name, levels.map(_.index), difficultiesList
                                     .map(_.number))))
     }
+    override def loadAllLevels(): Unit = {
+
+      /*this.dataManager
+        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
+                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
+                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
+                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
+                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
+                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
+                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
+                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
+                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
+                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
+                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
+                                )))*/
+      levels = dataManager.loadLvl()
+
+
+      observers.foreach(o => o.notify(LevelDataEvent(levels)))
+    }
     override def joinResult(result: Boolean): Unit = {
       if (!result) {
         this.shutdownMultiplayer()
@@ -184,33 +208,8 @@ object Controller {
     }
     override def getMediator: Mediator = this.mediator
     override def startMultiplayer(): Unit = {
-      loadAllLevels()
       serverActor.get ! GameStartActorMessage()
-      setupGame(1)
-    }
-    override def loadAllLevels(): Unit = {
-
-      /*this.dataManager
-        .saveLvl(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),
-                           List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(200, 100), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(100, 500), Circle(25), Coordinate(15, 15)),
-                                Level.Player(Coordinate(250, 100), Circle(25), Coordinate(15, 15)),
-                                Level.RedPupa(Coordinate(600, 500), Circle(25), Coordinate(3, 3)),
-                                Level.BlackPupa(Coordinate(600, 100), Circle(25), Coordinate(3, 3)),
-                                Level.Polar(Coordinate(600, 300), Circle(25), Coordinate(3, 3)),
-                                Level.RedPupa(Coordinate(300, 100), Circle(25), Coordinate(3, 3)),
-                                Level.RedPupa(Coordinate(600, 200), Circle(25), Coordinate(3, 3)),
-                                Level.BlackPupa(Coordinate(700, 700), Circle(25), Coordinate(3, 3)),
-                                Level.Nabicon(Coordinate(300, 300), Circle(50), Coordinate(0, 0)),
-                                Level.JumpPowerUp(Coordinate(100, 100), Circle(20)),
-                                Level.SpeedBoostPowerUp(Coordinate(200, 200), Circle(20)),
-                                Level.WeightBoostPowerUp(Coordinate(300, 300), Circle(20))
-                                )))*/
-      levels = dataManager.loadLvl()
-
-
-      observers.foreach(o => o.notify(LevelDataEvent(levels)))
+      setupGame(matchSetupMp.get.level)
     }
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
@@ -225,7 +224,9 @@ object Controller {
       }
       val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
       lvl.entities = lvl.entities.filterNot(l => entitiesToRemove.contains(l))
-      engine = Option(motoscala.engine.GameEngine(this, players))
+
+      engine = Option(motoscala.engine.GameEngine(this, players, if (matchSetupMp.isDefined) matchSetupMp.get
+        .difficulty else actualSettings.diff))
       engine.get.init(lvl)
 
       var setups: List[LevelSetupData] = List()

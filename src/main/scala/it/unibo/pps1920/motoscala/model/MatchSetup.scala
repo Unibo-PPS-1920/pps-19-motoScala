@@ -8,7 +8,7 @@ trait MatchSetup {
 }
 
 
-case class MultiPlayerSetup(var difficulty: Int = 1, var levels: Int = 1, var mode: Boolean = false,
+case class MultiPlayerSetup(var difficulty: Int = 1, var level: Int = 1, var mode: Boolean = false,
                             var numPlayers: Int = 4) extends MatchSetup {
   private var readyPlayers: mutable.Map[ActorRef, PlayerData] = mutable.LinkedHashMap()
 

@@ -105,8 +105,7 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
 
       val rpValues = lobbyData.readyPlayers.values
 
-      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0)) {
-
+      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1) {
         this.buttonStart.setDisable(false)
       } else {
         this.buttonStart.setDisable(true)
@@ -141,12 +140,14 @@ abstract class AbstractScreenControllerLobby(protected override val viewFacade: 
       dropMenuLevel.setText(lvl)
       controller.lobbyInfoChanged(level = Some(lvl.toInt))
     }))
-
     dropMenuDifficult.getItems.forEach(item => item.setOnAction(el => {
       val diff = el.getSource.asInstanceOf[MenuItem].getText
       dropMenuDifficult.setText(diff)
       controller.lobbyInfoChanged(difficult = Some(diff.toInt))
     }))
+    controller.lobbyInfoChanged(level = Some(1), difficult = Some(1))
+
+
     dropMenuLevel.setText(levels.head.toString)
     dropMenuDifficult.setText(difficulties.head.toString)
 
