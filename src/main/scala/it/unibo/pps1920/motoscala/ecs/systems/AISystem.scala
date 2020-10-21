@@ -18,31 +18,35 @@ import scala.language.postfixOps
 object AISystem {
   def apply(coordinator: Coordinator, queue: CommandQueue,
             skipFrames: scala.Int): System = new AISystemImpl(coordinator, queue, skipFrames)
-  private class AISystemImpl(coordinator: Coordinator, queue: CommandQueue, skipframes: scala.Int)
+  private class AISystemImpl(coordinator: Coordinator, queue: CommandQueue, skipFrames: scala.Int)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[AIComponent])) {
 
-    val position = "/prolog/movement.pl"
-
-    val engine = new Prolog()
+    private val position = "/prolog/movement.pl"
+    private val engine = new Prolog()
     engine.setTheory(new Theory(new URL(loadFromJarToString(position)).openStream()))
 
-    var frames = 0
+    private var frames = 0
+    private val X = 4
+    private val Y = 5
+    private val idlePosition = (0, 0)
 
     def update(): Unit = {
       frames = frames + 1
-      if (frames % skipframes == 0) {
+      if (frames % skipFrames == 0) {
         entitiesRef().foreach(f = e => {
           val positions = entitiesRef().filter(_.uuid != e.uuid).map(e2 => {
             val p = coordinator.getEntityComponent[PositionComponent](e2).pos
             (p.x, p.y)
-          }).toSeq
+          })
           val pos = coordinator.getEntityComponent[PositionComponent](e).pos
           val ai = coordinator.getEntityComponent[AIComponent](e)
+
           ai.targets.popWhile(!coordinator.isEntityAlive(_))
+
           val tPos: Vector2 = if (ai.targets.nonEmpty) {
             coordinator.getEntityComponent[PositionComponent](ai.targets.head).pos
           } else {
-            (0, 0)
+            idlePosition
           }
           val query = new Struct("move_avoiding", ai.foolishness,
                                  (pos.x, pos.y),
@@ -51,7 +55,8 @@ object AISystem {
                                  new Var(),
                                  new Var())
           val s = engine.solve(query).getSolution
-          val v = Vector2(x = extractTerm(s, 4), y = extractTerm(s, 5))
+
+          val v = Vector2(x = extractTerm(s, X), y = extractTerm(s, Y))
           queue
             .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))
         })

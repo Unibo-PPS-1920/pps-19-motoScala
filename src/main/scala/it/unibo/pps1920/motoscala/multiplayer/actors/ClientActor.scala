@@ -101,7 +101,7 @@ private class ClientActor(protected val actorController: ActorController) extend
   }
   private def sendViewMessage(title: String, text: String): Unit = {
     Platform.runLater(() => showNotificationPopup(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
-      .INFO_NOTIFICATION, _))
+      .ERROR_NOTIFICATION, () => _))
   }
   /**
    * Notify the observer with the event.

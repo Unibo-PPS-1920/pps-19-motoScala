@@ -158,12 +158,10 @@ object Controller {
       observers.foreach(o => strategy.apply(o))
     }
     override def gotKicked(): Unit = {
-
       this.observers.foreach(obs => {
-
         obs.notify(LeaveLobbyEvent())
         Platform.runLater(() => showNotificationPopup("Sorry, i hate you", "You have been kicked", JavafxEnums
-          .SHORT_DURATION, JavafxEnums.ERROR_NOTIFICATION, _))
+          .SHORT_DURATION, JavafxEnums.INFO_NOTIFICATION, () => _))
         this.shutdownMultiplayer()
       })
     }
