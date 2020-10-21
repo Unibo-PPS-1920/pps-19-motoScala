@@ -118,7 +118,7 @@ object Controller {
 
     }
     override def getLobbyData: DataType.LobbyData = LobbyData(Some(
-      matchSetupMp.get.difficulty), Some(1), Some(matchSetupMp.get.mode), matchSetupMp.get
+      matchSetupMp.get.difficulty), Some(matchSetupMp.get.level), Some(matchSetupMp.get.mode), matchSetupMp.get
                                                                 .getPlayerStatus)
 
     override def tryJoinLobby(ip: String, port: String): Unit = {
@@ -242,9 +242,11 @@ object Controller {
     override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
       score += value.getOrElse(0)
       if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
-        val loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
-        this.saveStats(ScoresData(loadedStats.updated(this.actualSettings.name, loadedStats
-          .getOrElse(this.actualSettings.name, 0) + score)))
+        var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+        if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
+          loadedStats = loadedStats.updated(actualSettings.name, score)
+        }
+        this.saveStats(ScoresData(loadedStats))
       }
       score
     }
