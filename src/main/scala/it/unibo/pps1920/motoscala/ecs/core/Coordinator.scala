@@ -5,16 +5,85 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity, System}
 
 import scala.reflect.ClassTag
 
+/** A coordinator coordinate managers.
+ * <p>
+ * It controls all logic and ensure safety in interactions between managers
+ * */
 trait Coordinator {
+  /** Add the entity to the manager.
+   *
+   * @param entity the entity
+   */
   def addEntity(entity: Entity): Coordinator
+
+  /** Remove the entity to the manager.
+   *
+   * @param entity the entity
+   */
   def removeEntity(entity: Entity): Coordinator
+
+  /** Check if an entity is present a.k.a alive in ECS.
+   *
+   * @param entity the entity
+   */
   def isEntityAlive(entity: Entity): Boolean
+
+  /** Register a component to the manager so that it can be bound to entities.
+   * <p>
+   * An unregistered component, if used, will produce an IllegalArgumentException.
+   *
+   * @param compType the component type
+   */
   def registerComponentType(compType: ComponentType): Coordinator
+
+  /** Bind the component to the entity.
+   * <p>
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param component the component to bind
+   * @return the signature
+   */
   def addEntityComponent(entity: Entity, component: Component): Coordinator
+
+  /** Bind the components to the entity.
+   * <p>
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param components the components to bind
+   * @return the signature
+   */
   def addEntityComponents(entity: Entity, components: Component*): Coordinator
+
+  /** Unbind the component from the entity.
+   * <p>
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param component the component to unbind
+   * @return the signature
+   */
   def removeEntityComponent(entity: Entity, component: Component): Coordinator
+
+  /** Get the component that is bound to the given entity.
+   * <p>
+   *
+   * @tparam T the component type
+   * @param entity the entity bound to component
+   * @return the casted component
+   */
   def getEntityComponent[T: ClassTag](entity: Entity): T
-  def registerSystem(sys: System): Coordinator
+
+  /** Register the system to the manager
+   *
+   * @param system the system
+   */
+  def registerSystem(system: System): Coordinator
+
+  /**
+   * Update all systems
+   */
   def updateSystems(): Unit
 }
 
@@ -57,8 +126,8 @@ object Coordinator {
     }
     override def getEntityComponent[T: ClassTag](entity: Entity): T =
       this.synchronized(componentManager.getEntityComponent[T](entity))
-    override def registerSystem(sys: System): Coordinator = {
-      this.synchronized(systemManager.registerSystem(sys))
+    override def registerSystem(system: System): Coordinator = {
+      this.synchronized(systemManager.registerSystem(system))
       this
     }
     override def updateSystems(): Unit = this.synchronized(systemManager.updateAll())

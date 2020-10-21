@@ -19,7 +19,8 @@ protected[core] trait ComponentManager {
    * @param compType the component type
    */
   def registerComponentType(compType: ComponentType): Unit
-  /** Bind the component the entity.
+
+  /** Bind the component to the entity.
    * <p>
    * This will update che effective Signature of the component removing it.
    *
@@ -28,7 +29,8 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
-  /** Unbind the component the entity.
+
+  /** Unbind the component from the entity.
    * <p>
    * This will update che effective Signature of the component removing it.
    *
@@ -37,6 +39,7 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
+
   /** Get the entity signature.
    * <p>
    * It is indeed the set of component bound to the entity.
@@ -45,7 +48,8 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def getEntitySignature(entity: Entity): ECSSignature
-  /** Get the component bound to the given entity.
+
+  /** Get the component that is bound to the given entity.
    * <p>
    *
    * @tparam T the component type
@@ -53,6 +57,7 @@ protected[core] trait ComponentManager {
    * @return the casted component
    */
   def getEntityComponent[T: ClassTag](entity: Entity): T
+
   /** Destroys the entity.
    * <p>
    * It is called from other modules

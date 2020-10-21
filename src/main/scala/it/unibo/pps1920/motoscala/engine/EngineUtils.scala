@@ -135,8 +135,8 @@ private object Duration {
  */
 private object Scores {
   val PlayerScore: Int = 0
-  val NabiconScore: Int = 50000
-  val BeeconScore: Int = 1000
+  val NabiconScore: Int = 700
+  val BeeconScore: Int = 500
   val BaseEnemyScore: Int = 300
   val PolaScore: Int = 100
   val BlackPupaScore: Int = 400
