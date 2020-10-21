@@ -1,5 +1,6 @@
 package it.unibo.pps1920.motoscala.view.screens
 
+/** FXML screens constants */
 private[view] sealed abstract class FXMLScreens(val resourcePath: String, val cssPath: String)
 private[view] object FXMLScreens {
   final case object HOME extends FXMLScreens("/screens/Home.fxml", "/sheets/Home.css")

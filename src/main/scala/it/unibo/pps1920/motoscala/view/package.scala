@@ -18,14 +18,19 @@ import org.kordamp.ikonli.javafx.FontIcon
 package object view {
   def initializeJavaFXThread(): Unit = Platform.startup(() => {})
 
+  /** Load the fxml and create the render node
+   *
+   * @param fxml the fxml
+   * @param controller the screen controller
+   * @return the loaded node
+   */
   def loadFxml(fxml: FXMLScreens, controller: ScreenController): Node = {
     val loader = new FXMLLoader(View.getClass.getResource(fxml.resourcePath))
     loader.setController(controller)
     loader.load()
   }
 
-  /**
-   * Charge css into the main scene
+  /** Charge css into the main scene
    *
    * @param scene the Scene
    * @param screen the FXMLScreen
@@ -33,8 +38,7 @@ package object view {
   def chargeSceneSheets(scene: Scene, screen: FXMLScreens): Unit = scene.getStylesheets
     .add(View.getClass.getResource(screen.cssPath).toString)
 
-  /**
-   * A simple method for charging icon in node.
+  /** A simple method for charging icon in node.
    *
    * @param icon the icon
    * @param fontSize the font size
@@ -46,18 +50,19 @@ package object view {
     tempIcon
   }
 
-  /**
-   * Show a simple dialog
+  /** Show a simple dialog
    *
    * @param title the string title of the notification
    * @param message the String text of the notification
    * @param ev the event to call on close
    */
-  def showSimpleDialog(mainPane: StackPane, title: String, message: String, ev: EventHandler[MouseEvent]): Unit =
+  def showSimpleDialog(mainPane: StackPane,
+                       title: String,
+                       message: String,
+                       ev: EventHandler[MouseEvent]): Unit =
     Platform.runLater(() => showDialog(mainPane, title, message, BigDialog, ev))
 
-  /**
-   * Show a dialog into the main pane.
+  /** Show a dialog into the main pane.
    *
    * @param mainPane the main [[StackPane]]
    * @param title the String title dialog
@@ -65,7 +70,10 @@ package object view {
    * @param size the  size
    * @param ev the [[MouseEvent]]
    */
-  private[view] def showDialog(mainPane: StackPane, title: String, description: String, size: JavafxEnums.DimDialog,
+  private[view] def showDialog(mainPane: StackPane,
+                               title: String,
+                               description: String,
+                               size: JavafxEnums.DimDialog,
                                ev: EventHandler[MouseEvent]): Unit = {
     var css = ""
     val content = new JFXDialogLayout
@@ -93,8 +101,7 @@ package object view {
     dialog.setOnMouseClicked(ev)
   }
 
-  /**
-   * Show a simple popup
+  /** Show a simple popup
    *
    * @param title the string title of the notification
    * @param message the String text of the notification
@@ -102,8 +109,7 @@ package object view {
   def showSimplePopup(title: String, message: String): Unit =
     Platform.runLater(() => showNotificationPopup(title, message, MediumDuration, InfoNotification, () => _))
 
-  /**
-   * Show a notification popup into the main windows of the operating system.
+  /** Show a notification popup into the main windows of the operating system.
    *
    * @param title the String title of the notification
    * @param message the String text of the notification
@@ -111,10 +117,11 @@ package object view {
    * @param notificationType the type of the notification
    * @param ev the [[EventHandler]] ev, lambda
    */
-  private[view] def showNotificationPopup(title: String, message: String,
-                                          secondsDuration: JavafxEnums.Notification_Duration,
-                                          notificationType: JavafxEnums.NotificationType,
-                                          ev: EventHandler[NotificationEvent]): Unit = {
+  private[view] def showNotificationPopup(
+    title: String, message: String,
+    secondsDuration: JavafxEnums.Notification_Duration,
+    notificationType: JavafxEnums.NotificationType,
+    ev: EventHandler[NotificationEvent]): Unit = {
     val no = Notification.Notifier.INSTANCE
     val notification = new Notification(title, message)
     no.setPopupLifetime(Duration.seconds(secondsDuration.time))
@@ -128,8 +135,7 @@ package object view {
     no.setOnNotificationPressed(ev)
   }
 
-  /**
-   * Constants for notification, popups, dialogs.
+  /** Constants for notification, popups, dialogs.
    */
   object JavafxEnums {
     sealed abstract class DimDialog(val dim: Int) {}

@@ -52,8 +52,9 @@ protected[levels] abstract class AbstractScreenControllerLevels(
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"$LevelText $i", _ => selectLevel(i), _ => controller
-        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
+      val button = ViewUtils.buttonFactory(bText = s"$LevelText $i",
+                                           _ => selectLevel(i),
+                                           _ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })
     grid.addRow(levels.size + 1, buttonBack)
