@@ -2,13 +2,43 @@ package it.unibo.pps1920.motoscala.ecs.core
 
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
 
+/** Represents an ECS signature. It is a collection of components */
 trait ECSSignature {
+  /** Add the component or components to the signature so sign the component/s.
+   *
+   * @param componentType the component type
+   * @return the signature
+   */
   def signComponent(componentType: ComponentType*): ECSSignature
+
+  /** Add the collection of components to the signature so sign the components.
+   *
+   * @param componentTypes the collection of components
+   * @return the signature
+   */
   def signComponent(componentTypes: Iterable[ComponentType]): ECSSignature
+
+  /** Remove the component or components to the signature so repudiate the component/s.
+   *
+   * @param componentType the component type
+   * @return the signature
+   */
   def repudiateComponent(componentType: ComponentType*): ECSSignature
+
+  /** Remove the collection of components to the signature so repudiate the components.
+   *
+   * @param componentTypes the collection of components
+   * @return the signature
+   */
   def repudiateComponent(componentTypes: Iterable[ComponentType]): ECSSignature
+
+  /** Get the set of component that compose the signature.
+   *
+   * @return
+   */
   def signatureSet: Set[ComponentType]
 }
+
 object ECSSignature {
   private case class ECSSignatureImpl() extends ECSSignature {
     private var signature: Set[ComponentType] = Set()
@@ -31,10 +61,13 @@ object ECSSignature {
       this
     }
   }
+
+  /** Factory for [[ECSSignature]] instances */
   def apply(types: Iterable[ComponentType]): ECSSignature = {
-    val instance = ECSSignatureImpl()
-    instance.signComponent(types)
+    ECSSignatureImpl().signComponent(types)
   }
+
+  /** Factory for [[ECSSignature]] instances */
   def apply(componentType: ComponentType*): ECSSignature = {
     apply(componentType)
   }
