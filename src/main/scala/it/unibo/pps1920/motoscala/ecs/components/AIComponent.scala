@@ -10,4 +10,5 @@ import scala.collection.mutable
  * @param foolishness the more foolish an entity is the more randomly he will move
  * @param targets possible available targets
  */
+
 case class AIComponent(foolishness: Int, targets: mutable.Stack[BumperCarEntity]) extends Component

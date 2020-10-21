@@ -16,7 +16,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 
-object EngineUtils {
+protected[engine] object EngineUtils {
   /**
    * Sets up the game
    *
