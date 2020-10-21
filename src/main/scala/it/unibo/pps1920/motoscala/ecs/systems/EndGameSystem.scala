@@ -29,9 +29,10 @@ object EndGameSystem {
           .getEntityComponent[ScoreComponent](e).score)))
         this.coordinator.removeEntity(e)
       })
-      if (entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
+      if (entitiesRef().nonEmpty && entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
         mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
+        logger info s"$entitiesRef()"
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
