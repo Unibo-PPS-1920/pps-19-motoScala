@@ -11,11 +11,23 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
 
-abstract class AbstractScreenControllerLevels(protected override val viewFacade: ViewFacade,
-                                              protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+/** ScreenController dedicated to Levels Screen.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[levels] abstract class AbstractScreenControllerLevels(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var grid: GridPane = _
+
+  import MagicValues._
+  private object MagicValues {
+    val LevelText = "Level"
+  }
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
@@ -33,10 +45,14 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
     viewFacade.changeScreen(ChangeScreenEvent.GoNext)
   }
 
+  /** Create the level buttons.
+   *
+   * @param levels the level data
+   */
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i), _ => controller
+      val button = ViewUtils.buttonFactory(bText = s"$LevelText $i", _ => selectLevel(i), _ => controller
         .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })

@@ -13,11 +13,11 @@ import javafx.application.Platform
  * @param viewFacade the view facade
  * @param controller the controller
  */
-protected[view] class ScreenControllerGame(protected override val viewFacade: ViewFacade,
-                                           protected override val controller: ObservableUI)
+protected[view] final class ScreenControllerGame(protected override val viewFacade: ViewFacade,
+                                                 protected override val controller: ObservableUI)
   extends AbstractScreenControllerGame(viewFacade, controller) with Displayable {
+
   private val mediator: Mediator = controller.mediator
-  logger info "Game Screen"
   mediator.subscribe(this)
   //######################## From Mediator
   override def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit =

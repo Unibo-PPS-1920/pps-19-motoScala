@@ -20,7 +20,7 @@ import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
-/** ScreenController dedicated to drawing and command handling.
+/** Abstract ScreenController dedicated to drawing and command handling.
  *
  * @param viewFacade the view facade
  * @param controller the controller
@@ -28,6 +28,7 @@ import org.kordamp.ikonli.material.Material
 protected[game] abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MediumIcon)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MediumIcon)
   @FXML protected var root: BorderPane = _
