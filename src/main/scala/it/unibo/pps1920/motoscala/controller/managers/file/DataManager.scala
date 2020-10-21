@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.controller.managers.file
 
 import it.unibo.pps1920.motoscala.controller.managers.file.FileConstants._
+import it.unibo.pps1920.motoscala.controller.managers.file.FileExtension.Yaml
+import it.unibo.pps1920.motoscala.controller.managers.file.FileName.LevelFile
 import it.unibo.pps1920.motoscala.controller.managers.file.ResourcesJarPaths.Levels
 import it.unibo.pps1920.motoscala.controller.managers.file.ResourcesPaths.{ScoreFile, SettingsFile}
 import it.unibo.pps1920.motoscala.model.Level.LevelData
@@ -16,21 +18,21 @@ final class DataManager {
   private val yamlManager: YamlManager = new YamlManager
   /** Deserialize and load then return the settings file.
    *
-   * @return one [[SettingsData]] object.
+   * @return one SettingsData object.
    * */
   def loadSettings(): Option[SettingsData] = yamlManager.loadYamlFromPath(SettingsFile)(classOf[SettingsData])
-  /** Serialize the [[SettingsData]] passed to standard settings folder.
+  /** Serialize the SettingsData passed to standard settings folder.
    *
-   * @param sett The [[SettingsData]] that is serialized
+   * @param sett The SettingsData that is serialized
    * @return True if the serialization returns no error.
    */
   def saveSettings(sett: SettingsData): Boolean = yamlManager.saveYaml(SettingsFile)(sett)
   /** Deserialize and load then return the stats file.
    *
-   * @return one [[ScoresData]] object.
+   * @return one ScoresData object.
    */
   def loadScore(): Option[ScoresData] = yamlManager.loadYamlFromPath(ScoreFile)(classOf[ScoresData])
-  /** Serialize the [[ScoresData]] passed to standard stats folder.
+  /** Serialize the ScoresData passed to standard stats folder.
    *
    * @param scores The scores table.
    * @return True if the serialization returns no error.
@@ -48,7 +50,7 @@ final class DataManager {
   }
   /** Deserialize and return one list custom user level, located inside the user level folder.
    *
-   * @return the [[List[LevelData]]].
+   * @return the List[LevelData.
    */
   def loadUserLvl(): List[LevelData] = {
     FileManager.getListFiles(AppUserLevelFolder)
@@ -57,17 +59,17 @@ final class DataManager {
   }
   /** Serialize one custom user level. */
   def saveLvl(data: LevelData): Unit = {
-    this.yamlManager.saveYaml(AppMainFolder + SystemSeparator + "CustomLevel.yaml")(data)
+    this.yamlManager.saveYaml(s"${AppMainFolder}${SystemSeparator}${LevelFile}${Yaml}")(data)
   }
 
   /** Deserialize internal application levels.
    *
-   * @return the [[List[LevelData]]].
+   * @return the List[LevelData.
    */
   def loadLvl(): List[LevelData] = {
     (1 to LevelNumber).map(i => {
       yamlManager
-        .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}lvl${i}.yaml"))(classOf[LevelData]).get
+        .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}${LevelFile}${i}${Yaml}"))(classOf[LevelData]).get
     }).toList
   }
 }

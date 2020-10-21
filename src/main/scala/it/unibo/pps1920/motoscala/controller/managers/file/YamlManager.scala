@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory
 import scala.util.Try
 
 /** A class that perform serialization and deserialization on Yaml file. */
-private[file] final class YamlManager {
+protected[file] final class YamlManager {
   private final val logger = LoggerFactory getLogger classOf[YamlManager]
   private final val mapper = new ObjectMapper(new YAMLFactory())
   /** Deserialize one yaml file into one Option of T.
    *
    * @param location the path of the file
-   * @return one [[Option]] filled whit T instance.
+   * @return one Option filled whit T instance.
    * */
   def loadYamlFromPath[T](location: Path)(cl: Class[T]): Option[T] = {
     loadResourceFromJar(location.toString.toUri.toURL)(cl)
@@ -29,15 +29,15 @@ private[file] final class YamlManager {
   }
   /** Deserialize one yaml file into one Option of T.
    *
-   * @param location the [[URL]] of the file
-   * @return one [[Option]] filled whit T instance.
+   * @param location the URL of the file
+   * @return one Option filled whit T instance.
    * */
   def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
     loadResourceFromJar(location)(cl)
   }
   /** Serialize one T instance to one yaml file.
    *
-   * @param location the [[Path]] of the file where the instance is serialized.
+   * @param location the Path of the file where the instance is serialized.
    * @return True if the serialization returns no error.
    * */
   def saveYaml[T](location: Path)(data: T): Boolean = {

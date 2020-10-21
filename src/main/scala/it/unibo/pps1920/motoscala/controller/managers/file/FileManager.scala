@@ -44,7 +44,7 @@ object FileManager {
   /** Return the list of file present in one folder.
    *
    * @param path the path representing the directory file
-   * @return return one [[List[String]]] each [[String]] represent one file path.
+   * @return return one List[String] each String represent one file path.
    * */
   final def getListFiles(path: Path): List[String] = path.list((file, _) => file.isFile).toList
   /** Search one resource inside jar, if the jar is present otherwise inside the FS.
