@@ -9,9 +9,19 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction._
 
 
 sealed case class Direction(value: Vector2) {
+  /**
+   * Sums two directions
+   *
+   * @param dir direction to be summed
+   * @return resulting direction
+   */
   def +(dir: Direction): Direction = Direction((dir.value add value).clip())
 
-
+  /**
+   * Converts direction to angle
+   *
+   * @return angle in degrees
+   */
   def angle(): Int = this match {
     case Direction.Center => 0
     case Direction.North => 0
@@ -25,7 +35,11 @@ sealed case class Direction(value: Vector2) {
     case _ => -1
   }
 
-
+  /**
+   * Inverts a direction
+   *
+   * @return opposite direction
+   */
   def opposite(): Direction = this match {
     case Center => Center
     case North => South
@@ -40,7 +54,6 @@ sealed case class Direction(value: Vector2) {
   }
 }
 object Direction {
-  import scala.util.Try
   object Center extends Direction(Vector2(0, 0))
   object North extends Direction(Vector2(0, -1))
   object NorthWest extends Direction(Vector2(-1, -1))
@@ -50,6 +63,6 @@ object Direction {
   object SouthEast extends Direction(Vector2(1, 1))
   object West extends Direction(Vector2(-1, 0))
   object East extends Direction(Vector2(1, 0))
-  def vecToDir(vec : Vector2): Direction = Direction(vec.clip())
+  def vecToDir(vec: Vector2): Direction = Direction(vec.clip())
 }
 

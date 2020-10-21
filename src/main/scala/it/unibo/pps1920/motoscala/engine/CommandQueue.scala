@@ -3,7 +3,9 @@ package it.unibo.pps1920.motoscala.engine
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 
 import scala.collection.mutable
-
+/**
+ * thread-safe queue of commands
+ */
 case class CommandQueue() {
   private val eventQueue: mutable.Queue[CommandEvent] = mutable.Queue()
   def enqueue(event: CommandEvent): Unit = this.synchronized(eventQueue.enqueue(event))

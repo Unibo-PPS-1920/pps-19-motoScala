@@ -14,6 +14,9 @@ import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 import it.unibo.pps1920.motoscala.engine.CommandQueue
 
 import scala.language.postfixOps
+/**
+ * System for generating movement of ai controlled entities
+ */
 
 object AISystem {
   def apply(coordinator: Coordinator, queue: CommandQueue,
@@ -33,16 +36,16 @@ object AISystem {
     def update(): Unit = {
       frames = frames + 1
       if (frames % skipFrames == 0) {
-        entitiesRef().foreach(f = e => {
-          val positions = entitiesRef().filter(_.uuid != e.uuid).map(e2 => {
+        entitiesRef().foreach(e => {
+          //other entities to avoid
+          val toAvoid = entitiesRef().filter(_.uuid != e.uuid).map(e2 => {
             val p = coordinator.getEntityComponent[PositionComponent](e2).pos
             (p.x, p.y)
           })
           val pos = coordinator.getEntityComponent[PositionComponent](e).pos
           val ai = coordinator.getEntityComponent[AIComponent](e)
-
+          //remove eliminated players
           ai.targets.popWhile(!coordinator.isEntityAlive(_))
-
           val tPos: Vector2 = if (ai.targets.nonEmpty) {
             coordinator.getEntityComponent[PositionComponent](ai.targets.head).pos
           } else {
@@ -51,7 +54,7 @@ object AISystem {
           val query = new Struct("move_avoiding", ai.foolishness,
                                  (pos.x, pos.y),
                                  (tPos.x, tPos.y),
-                                 positions,
+                                 toAvoid,
                                  new Var(),
                                  new Var())
           val s = engine.solve(query).getSolution
