@@ -9,7 +9,9 @@ import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeCompon
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
-
+/**
+ * System for generating display data to be drawn on the canvas
+ */
 object DrawSystem {
   def apply(mediator: Mediator, coordinator: Coordinator,
             UUIDs: List[UUID]): System = new DrawSystemImpl(mediator, coordinator, UUIDs)

@@ -8,15 +8,21 @@ import javafx.util.Duration
 import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success, Try}
-
-trait SoundAgent extends Thread with SoundAgentLogic {
+/** A specific sound agent, that extends [[Thread]], this Thread, should be used for play all [[Clips]] and [[Music]]
+ * the agent should use one safe Queue, for handle the external event.
+ * */
+sealed trait SoundAgent extends Thread with SoundAgentLogic {
+  private final val QueueSize = 1000
+  protected val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)
+  /** Enqueue the event to be handled from the agent.
+   *
+   * @param ev the event.
+   * */
   def enqueueEvent(ev: MediaEvent): Unit
 }
 
 private final class ConcreteSoundAgent extends SoundAgent {
-  final val QueueSize = 1000
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
-  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
   private var actualMusicPlayer: Option[MediaPlayer] = None
@@ -78,7 +84,8 @@ private final class ConcreteSoundAgent extends SoundAgent {
     this.medias(Music.Game).stop()
   }
 }
-
+/** Factory for [[SoundAgent]] instances. */
 object SoundAgent {
+  /** Creates a new [[SoundAgent]] */
   def apply(): SoundAgent = new ConcreteSoundAgent
 }
