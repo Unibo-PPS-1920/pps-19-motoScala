@@ -126,18 +126,6 @@ object Controller {
       this.clientActor = Some(system.actorOf(ClientActor.props(this), "Client"))
       this.clientActor.get ! TryJoin(s"akka://MotoSystem@$ip:$port/user/Server*", this.actualSettings.name)
     }
-    override def shutdownMultiplayer(): Unit = {
-      multiplayerStatus = false
-      if (this.serverActor.isDefined) {
-        this.system.stop(this.serverActor.get)
-      }
-      if (this.clientActor.isDefined) {
-        this.system.stop(this.clientActor.get)
-      }
-      if (matchSetupMp.isDefined) matchSetupMp = None
-      this.serverActor = None
-      this.clientActor = None
-    }
     override def becomeHost(): Unit = {
       shutdownMultiplayer()
       loadAllLevels()
@@ -241,14 +229,30 @@ object Controller {
     }
     override def updateScore(value: Option[Int] = None, gameIsEnded: Boolean = false): Int = {
       score += value.getOrElse(0)
-      if (gameIsEnded && serverActor.isEmpty && clientActor.isEmpty) {
-        var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
-        if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
-          loadedStats = loadedStats.updated(actualSettings.name, score)
+      if (gameIsEnded) {
+        if (serverActor.isEmpty && clientActor.isEmpty) {
+          var loadedStats = this.dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
+          if (loadedStats.getOrElse(actualSettings.name, 0) < score) {
+            loadedStats = loadedStats.updated(actualSettings.name, score)
+          }
+          this.saveStats(ScoresData(loadedStats))
+        } else {
+          shutdownMultiplayer()
         }
-        this.saveStats(ScoresData(loadedStats))
       }
       score
+    }
+    override def shutdownMultiplayer(): Unit = {
+      multiplayerStatus = false
+      if (this.serverActor.isDefined) {
+        this.system.stop(this.serverActor.get)
+      }
+      if (this.clientActor.isDefined) {
+        this.system.stop(this.clientActor.get)
+      }
+      if (matchSetupMp.isDefined) matchSetupMp = None
+      this.serverActor = None
+      this.clientActor = None
     }
     override def saveStats(newScore: ScoresData): Unit = {
       this.dataManager.saveScore(newScore)
