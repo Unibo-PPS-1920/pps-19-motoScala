@@ -6,8 +6,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
 import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LevelSetupEvent, LobbyDataEvent}
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, showNotificationPopup}
-import javafx.application.Platform
+import it.unibo.pps1920.motoscala.view.showSimplePopup
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -99,10 +98,7 @@ private class ClientActor(protected val actorController: ActorController) extend
       actorController.sendToViewStrategy(obsUI => obsUI.notify(LevelSetupEvent(levelSetupData)))
     case msg => logger warn s"Received unexpected message $msg"
   }
-  private def sendViewMessage(title: String, text: String): Unit = {
-    Platform.runLater(() => showNotificationPopup(text, title, JavafxEnums.SHORT_DURATION, JavafxEnums
-      .ERROR_NOTIFICATION, () => _))
-  }
+  private def sendViewMessage(title: String, text: String): Unit = showSimplePopup(text, title)
   /**
    * Notify the observer with the event.
    *
