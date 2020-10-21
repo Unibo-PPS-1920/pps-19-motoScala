@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller.mediation
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
 
 /**
- * This interfaced wraps an [[EventObserver]] for [[CommandableEvent]].
+ * This interfaced wraps an [[EventObserver]] for CommandableEvent.
  */
 trait Commandable extends EventObserver[CommandableEvent] {
   def notifyCommand(cmd: CommandData): Unit

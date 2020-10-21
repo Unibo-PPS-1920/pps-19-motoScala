@@ -5,7 +5,11 @@ import it.unibo.pps1920.motoscala.ecs.components.Shape
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 
-class EntityDrawable(override val image: Image) extends ImageDrawable {
+/** A class representing an entity that can be drawn on screen.
+ *
+ * @param image the image to draw
+ */
+protected[view] class EntityDrawable(override val image: Image) extends ImageDrawable {
   def getSize(data: EntityData): (Int, Int) = data.shape match {
     case Shape.Rectangle(dimX, dimY) => ((dimX / 2).toInt, (dimY / 2).toInt)
     case Shape.Circle(radius) => (radius.toInt, radius.toInt)

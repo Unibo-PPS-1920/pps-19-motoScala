@@ -3,7 +3,8 @@ package it.unibo.pps1920.motoscala.view.utilities
 import scalafx.scene.paint.Color
 import scalafx.stage.Screen
 
-object ViewConstants {
+/** Constants for the view */
+protected[view] object ViewConstants {
   object Window {
     val Window_title: String = "MotoScala"
     val ScreenWidth: Double = Screen.primary.visualBounds.width
@@ -24,7 +25,6 @@ object ViewConstants {
     object Colors {
       val DefaultPlayerColor: Color = Color.Green
     }
-
     object Textures {
       val TextureFolder: String = "/textures/"
       val EntitiesFolder: String = TextureFolder + "entities/"

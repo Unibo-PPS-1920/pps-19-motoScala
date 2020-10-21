@@ -6,10 +6,14 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
 import javafx.application.Platform
 
-
-final class ScreenControllerLevels(protected override val viewFacade: ViewFacade,
-                                   protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {
-  logger info "Level Screen"
+/** Screen controller for levels FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[view] final class ScreenControllerLevels(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {
 
   override def whenDisplayed(): Unit = controller.loadAllLevels()
 

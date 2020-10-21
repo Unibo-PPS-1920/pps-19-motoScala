@@ -11,10 +11,14 @@ import org.slf4j.{Logger, LoggerFactory}
 
 abstract class ScreenController(protected val viewFacade: ViewFacade,
                                 protected val controller: ObservableUI) extends ObserverUI {
+
   protected val logger: Logger = LoggerFactory getLogger this.getClass
   @FXML protected var buttonBack: Button = _
-  def whenDisplayed(): Unit
+
   @FXML def initialize(): Unit
+
+  def whenDisplayed(): Unit
+
   def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
