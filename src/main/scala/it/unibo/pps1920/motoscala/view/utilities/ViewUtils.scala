@@ -8,7 +8,7 @@ import javafx.scene.input.MouseEvent
 import javafx.stage.{Stage, StageStyle, WindowEvent}
 import scalafx.scene.control.Button
 
-private[view] object ViewUtils {
+protected[view] object ViewUtils {
   def createStage(
     scene: Scene,
     minDim: (Int, Int) = (ScreenMinWidth, ScreenMinHeight),
