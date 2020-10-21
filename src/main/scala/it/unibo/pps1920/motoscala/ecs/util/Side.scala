@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.ecs.util
 
-sealed case class Side()
+sealed trait Side
 
 object Side {
   object Left extends Side

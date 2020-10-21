@@ -10,6 +10,8 @@ import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import it.unibo.pps1920.motoscala.ecs.util.Side
+import it.unibo.pps1920.motoscala.ecs.util.Side.{Left,Right, Center, Top, Bottom}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 
 import scala.math.signum
@@ -78,6 +80,11 @@ object CollisionsSystem {
       })
     }
 
+    private def compareAndCheckEntities(e1: Entity, otherEntities: Set[Entity], colComp1: CollisionComponent,
+                                        velComp1: VelocityComponent): Unit ={
+
+
+    }
     private def areCirclesTouching(cPos1: Vector2, cPos2: Vector2, cRadius1: Float, cRadius2: Float): Boolean =
       (cPos1 dist cPos2) <= (cRadius1 + cRadius2)
 
@@ -127,7 +134,8 @@ object CollisionsSystem {
                         velComp1: VelocityComponent,
                         velComp2: VelocityComponent): Unit = {
       controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Collision)))
-      startCollision(colComp1, colComp2, CollisionDuration, CollisionDuration )
+      startCollision(colComp1, CollisionDuration )
+      startCollision(colComp2, CollisionDuration)
       /* COLLISION CORE */
       if (colComp1.mass != 0 && colComp2.mass != 0) {
         // Compute unit normal and unit tangent vectors
@@ -179,29 +187,30 @@ object CollisionsSystem {
 
     private def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
                                 rectanglePos: Vector2): Vector2 = {
+      val topLeft =  rectanglePos sub Vector2(rectangle.dimX / 2, rectangle.dimY / 2 )
+      val bottomRight = rectanglePos add Vector2(rectangle.dimX / 2, rectangle.dimY / 2 )
+
       val testEdge = Vector2(circlePos.x, circlePos.y)
-      val inversionVec = Vector2(1, 1)
-      //find closest edge
-      if (circlePos.x < (rectanglePos.x - rectangle.dimX / 2)) { //left edge
-        testEdge.x = rectanglePos.x - rectangle.dimX / 2
-        inversionVec.x = -1
+      val invVec = Vector2(1, 1)
+
+      val alignment = RectCollisionUtil.getSide(topLeft, bottomRight, circlePos)
+      alignment.horizontalSide match {
+        case Left =>     testEdge.x = topLeft.x; invVec.x = -1
+        case Right =>    testEdge.x = bottomRight.x; invVec.x = -1
+        case _=>
       }
-      else if (circlePos.x > (rectanglePos.x + rectangle.dimX / 2)) { //right edge
-        testEdge.x = rectanglePos.x + rectangle.dimX / 2
-        inversionVec.x = -1
+
+      alignment.verticalSide match {
+        case Top =>     testEdge.y = topLeft.y; invVec.y = -1
+        case Bottom => testEdge.y = bottomRight.y; invVec.y = -1
+        case _ =>
       }
-      if (circlePos.y < rectanglePos.y - rectangle.dimY / 2) { //top edge
-        testEdge.y = rectanglePos.y - rectangle.dimY / 2
-        inversionVec.y = -1
-      }
-      else if (circlePos.y > rectanglePos.y + rectangle.dimY / 2) { //bottom edge
-        testEdge.y = rectanglePos.y + rectangle.dimY / 2
-        inversionVec.y = -1
-      }
+
       //check distance from closest edge
       if ((circlePos dist testEdge) <= circle.radius) {
         controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.CollisionSoft)))
-        inversionVec
+        logger debug s"inv vec: $invVec"
+        invVec
       } //collide: direction inverted
       else Vector2(1, 1) //do not collide: same direction
     }
@@ -214,15 +223,6 @@ object CollisionsSystem {
       newVel
     }
 
-    private def startCollision(colComp1: CollisionComponent,
-                               colComp2: CollisionComponent,
-                               duration1: Int,
-                               duration2: Int): Unit = {
-      colComp1.isColliding = true
-      colComp2.isColliding = true
-      colComp1.duration = duration1
-      colComp2.duration = duration2
-    }
     private def startCollision(colComp: CollisionComponent, duration: Int): Unit = {
       colComp.isColliding = true
       colComp.duration = duration
@@ -236,3 +236,18 @@ object CollisionsSystem {
     }
   }
 }
+
+object RectCollisionUtil {
+  def getSide(refTopLeft: Vector2, refBottomRight: Vector2, point: Vector2): Alignment ={
+
+    val alignment = Alignment(Center, Center)
+    if (point.x < refTopLeft.x) alignment.horizontalSide = Side.Left
+    else if (point.x > refBottomRight.x) alignment.horizontalSide = Side.Right
+
+    if (point.y < refTopLeft.y) alignment.verticalSide = Side.Top
+    else if (point.y > refBottomRight.y) alignment.verticalSide = Side.Bottom
+    alignment
+  }
+}
+
+sealed case class Alignment(var horizontalSide: Side, var verticalSide: Side)
