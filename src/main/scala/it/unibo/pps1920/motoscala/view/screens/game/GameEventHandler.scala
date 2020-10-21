@@ -13,7 +13,14 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable
 
-case class GameEventHandler(
+/**
+ * Manager for keyboard command event. It generates [[CommandEvent]].
+ *
+ * @param pane the pane that produce events
+ * @param handleCommand the producer of [[CommandEvent]]
+ * @param entity the game entity that is connected to actual user
+ */
+private[game] case class GameEventHandler(
   private var pane: Pane,
   private var handleCommand: CommandEvent => Unit,
   private var entity: Entity
@@ -22,10 +29,13 @@ case class GameEventHandler(
   private val activeKeys: mutable.HashSet[Direction] = mutable.HashSet()
   private val keyPressedHandler: EventHandler[KeyEvent] = createKeyPressHandler()
   private val keyReleasedHandler: EventHandler[KeyEvent] = createKeyReleasedHandler()
-
+  //Add the event handler to the pane
   pane.addEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
   pane.addEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
 
+  /**
+   * Remove the handlers from the pane using their reference.
+   */
   def dismiss(): Unit = {
     pane.removeEventHandler(KeyEvent.KEY_PRESSED, keyPressedHandler)
     pane.removeEventHandler(KeyEvent.KEY_RELEASED, keyReleasedHandler)
@@ -53,7 +63,7 @@ case class GameEventHandler(
     handleCommand(CommandEvent(CommandData(entity, dir)))
   }
 
-  object ImplicitConversions {
+  private object ImplicitConversions {
     implicit def keyToDir(key: KeyCode): Direction = key match {
       case W => North
       case S => South

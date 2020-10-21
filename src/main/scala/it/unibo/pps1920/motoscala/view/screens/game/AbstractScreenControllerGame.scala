@@ -108,8 +108,6 @@ abstract class AbstractScreenControllerGame(
     controller.shutdownMultiplayer()
   }
 
-  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
-
   protected def handleLevelEnd(data: EndData): Unit = {
     def updateScore(score: Option[Int]): String = controller.updateScore(score, gameIsEnded = true).toString
     data match {
@@ -142,6 +140,8 @@ abstract class AbstractScreenControllerGame(
     playerPart._1.foreach(_ foreach (Drawables.PlayerDrawable.draw(_, context)))
     playerPart._2.foreach(_ foreach (Drawables.PlayerMPDrawable.draw(_, context)))
   }
+
+  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
 }
 
 
