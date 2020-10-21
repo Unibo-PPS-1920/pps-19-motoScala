@@ -3,7 +3,6 @@ package it.unibo.pps1920.motoscala.controller.managers.audio
 import java.util.concurrent.ArrayBlockingQueue
 
 import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJarToString
-import javafx.application.Platform
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
 import org.slf4j.LoggerFactory
@@ -44,9 +43,9 @@ private final class ConcreteSoundAgent extends SoundAgent {
     this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
     this.medias.filterNot(p => p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())
   }
-  override def stopMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.stop()))
-  override def pauseMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.pause()))
-  override def resumeMusic(): Unit = Platform.runLater(() => this.actualMusicPlayer.foreach(_.play()))
+  override def stopMusic(): Unit = this.actualMusicPlayer.foreach(_.stop())
+  override def pauseMusic(): Unit = this.actualMusicPlayer.foreach(_.pause())
+  override def resumeMusic(): Unit = this.actualMusicPlayer.foreach(_.play())
   override def playClip(clip: Clips): Unit = {
     if (!this.clips.contains(clip)) {
       this.clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
