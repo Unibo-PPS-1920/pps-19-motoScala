@@ -21,6 +21,7 @@ import scalafx.scene.layout.StackPane
 
 /** Facade class that exposes method to screens */
 protected[view] trait ViewFacade {
+
   /** Get the primary stage */
   def getStage: Stage
 
@@ -33,6 +34,7 @@ protected[view] trait ViewFacade {
 
 /** Represents the view part in the mvc pattern */
 trait View extends ObserverUI {
+
   /** Start the view and show the primary stage */
   def start(): Unit
 }

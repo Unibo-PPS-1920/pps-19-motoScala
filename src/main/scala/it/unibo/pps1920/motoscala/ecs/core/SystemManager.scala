@@ -9,6 +9,7 @@ import it.unibo.pps1920.motoscala.ecs.{Entity, System}
  * It allows system redistribution of entities according to their signature.
  * */
 protected[core] trait SystemManager {
+
   /** Register the system to the manager
    *
    * @param system the system
@@ -53,7 +54,6 @@ protected[core] object SystemManager {
     }
 
     override def entityDestroyed(entity: Entity): Unit = systemSignature.keys.foreach(_.removeEntityRef(entity))
-
     override def updateAll(): Unit = systemList.foreach(_.update())
   }
 

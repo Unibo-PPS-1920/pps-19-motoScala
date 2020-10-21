@@ -9,16 +9,19 @@ import it.unibo.pps1920.motoscala.ecs.Entity
  * It allows entity removal: like deletion in ECS framework.
  * */
 protected[core] trait EntityManager {
+
   /** Add the entity to the manager.
    *
    * @param entity the entity
    */
   def addEntity(entity: Entity): Unit
+
   /** Remove the entity to the manager.
    *
    * @param entity the entity
    */
   def removeEntity(entity: Entity): Unit
+
   /** Get all entities managed.
    */
   def entities: Set[Entity]

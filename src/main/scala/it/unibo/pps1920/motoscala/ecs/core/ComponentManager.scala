@@ -12,6 +12,7 @@ import scala.reflect.ClassTag
  * The set of component connected to an entity define an [[it.unibo.pps1920.motoscala.ecs.core.ECSSignature]]
  * */
 protected[core] trait ComponentManager {
+
   /** Register a component to the manager so that it can be bound to entities.
    * <p>
    * An unregistered component, if used, will produce an IllegalArgumentException.
@@ -76,7 +77,6 @@ protected[core] object ComponentManager {
     import MagicValues._
 
     private def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
-
     override def registerComponentType(compType: ComponentType): Unit = registered = registered + compType
 
     override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
@@ -101,9 +101,7 @@ protected[core] object ComponentManager {
       entityComponent.get(entity).flatMap(_.get(implicitly[ClassTag[T]].runtimeClass)).get.asInstanceOf[T]
 
     override def entityDestroyed(entity: Entity): Unit = entityComponent -= entity
-
     override def getEntitySignature(entity: Entity): ECSSignature = ECSSignature(entityComponent(entity).keySet)
-
 
     private object ImplicitConversions {
       implicit def componentToComponentType(component: Component): ComponentType = component.getClass
