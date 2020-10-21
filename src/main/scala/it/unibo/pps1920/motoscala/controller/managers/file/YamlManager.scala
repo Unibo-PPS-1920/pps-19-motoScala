@@ -17,9 +17,12 @@ final class YamlManager {
     loadResourceFromJar(location.toString.toUri.toURL)(cl)
 
   }
+  def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
+    loadResourceFromJar(location)(cl)
+  }
   private def loadResourceFromJar[T](location: URL)(cl: Class[T]): Option[T] = {
     this.initializeMapper()
-    //  mapper.readValue(location, cl)
+    // mapper.readValue(location, cl)
     Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
   private def initializeMapper(): Unit = {
@@ -28,9 +31,6 @@ final class YamlManager {
     mapper.registerModule(DefaultScalaModule)
     val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[Any]).build
     mapper.activateDefaultTyping(ptv)
-  }
-  def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
-    loadResourceFromJar(location)(cl)
   }
   def saveYaml[T](location: Path)(data: T): Boolean = {
     this.initializeMapper()

@@ -15,7 +15,7 @@ package object file {
     .fold(error => {logger.warn(error.getMessage); false }, _ => true)
 
   object FileConstants {
-    final val LevelNumber = 1
+    final val LevelNumber = 3
     final val SystemSeparator: String = File.separator
     final val UserHome: String = System.getProperty("user.home")
     final val AppMainFolder: String = UserHome + SystemSeparator + "MotoScala"

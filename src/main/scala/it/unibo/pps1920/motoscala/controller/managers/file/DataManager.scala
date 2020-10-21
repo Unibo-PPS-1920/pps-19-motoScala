@@ -33,8 +33,10 @@ final class DataManager {
   }
   def loadLvl(): List[LevelData] = {
 
-    (1 to LevelNumber).map(i => yamlManager
-      .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}lvl${i}.yaml"))(classOf[LevelData]).get).toList
+    (1 to LevelNumber).map(i => {
+      yamlManager
+        .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}lvl${i}.yaml"))(classOf[LevelData]).get
+    }).toList
   }
 
 }
