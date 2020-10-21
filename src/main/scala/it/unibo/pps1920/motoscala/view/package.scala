@@ -38,7 +38,7 @@ package object view {
    *
    * @param icon the icon
    * @param fontSize the font size
-   * @return [[FontIcon]]
+   * @return the icon
    */
   def iconSetter(icon: Ikon, fontSize: JavafxEnums.IconDimension): FontIcon = {
     val tempIcon = new FontIcon(icon)

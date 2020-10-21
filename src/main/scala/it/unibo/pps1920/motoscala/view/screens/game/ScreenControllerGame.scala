@@ -8,23 +8,29 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupEvent
 import javafx.application.Platform
 
-class ScreenControllerGame(protected override val viewFacade: ViewFacade,
-                           protected override val controller: ObservableUI)
+/**
+ * Screen controller for game FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[view] class ScreenControllerGame(protected override val viewFacade: ViewFacade,
+                                           protected override val controller: ObservableUI)
   extends AbstractScreenControllerGame(viewFacade, controller) with Displayable {
   private val mediator: Mediator = controller.mediator
   logger info "Game Screen"
   mediator.subscribe(this)
-  //From Mediator
+  //######################## From Mediator
   override def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit =
     Platform.runLater(() => handleDrawEntities(players, entities))
   override def notifyLevelEnd(data: EndData): Unit = Platform.runLater(() => handleLevelEnd(data))
   override def notifyEntityLife(data: LifeData): Unit = Platform.runLater(() => handleEntityLife(data))
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
-  //From ViewFacade
+  //######################## From ViewFacade
   override def notify(ev: ViewEvent): Unit = ev match {
     case LevelSetupEvent(data) => Platform.runLater(() => handleLevelSetup(data))
     case _ => logger info "Unexpected message"
   }
-  //To Mediator
+  //######################## To Mediator
   override def sendCommandEvent(event: Event.CommandEvent): Unit = mediator.publishEvent(event)
 }

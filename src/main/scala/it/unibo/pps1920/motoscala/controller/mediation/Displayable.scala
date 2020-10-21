@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller.mediation
 import it.unibo.pps1920.motoscala.controller.mediation.Event._
 
 /**
- * This interfaced wraps an [[EventObserver]] for [[DisplayableEvent]].
+ * This interfaced wraps an [[EventObserver]] for DisplayableEvent.
  */
 trait Displayable extends EventObserver[DisplayableEvent] {
   def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit

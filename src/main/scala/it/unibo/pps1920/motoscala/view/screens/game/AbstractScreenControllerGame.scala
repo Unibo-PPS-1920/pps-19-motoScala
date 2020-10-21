@@ -20,7 +20,13 @@ import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
-abstract class AbstractScreenControllerGame(
+/**
+ * ScreenController dedicated to drawing and command handling.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[game] abstract class AbstractScreenControllerGame(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MediumIcon)
@@ -38,6 +44,20 @@ abstract class AbstractScreenControllerGame(
   private var playerEntity: Option[Entity] = None
   private var mapSize: Option[Coordinate] = None
   private var isPlaying: Boolean = false
+
+  import MagicValues._
+  private object MagicValues {
+    val WinMessage = "You Win!"
+    val LoseMessage = "Game Over!"
+    val ScoreText = "Score"
+  }
+
+  def sendCommandEvent(event: CommandEvent): Unit
+
+  override def whenDisplayed(): Unit = {
+    root.requestFocus()
+    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
+  }
 
   def initialize(): Unit = {
     assertNodeInjected()
@@ -68,34 +88,6 @@ abstract class AbstractScreenControllerGame(
     })
   }
 
-  override def whenDisplayed(): Unit = {
-    root.requestFocus()
-    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
-  }
-
-  def sendCommandEvent(event: CommandEvent): Unit
-
-  protected def handleLevelSetup(data: LevelSetupData): Unit = {
-    playerEntity = data.player.some
-    mapSize = data.level.mapSize.some
-    canvasStack.setMaxWidth(mapSize.get.x)
-    canvasStack.setMaxHeight(mapSize.get.y)
-    canvasStack.setMinWidth(mapSize.get.x)
-    canvasStack.setMinHeight(mapSize.get.y)
-    canvas.heightProperty().bind(canvasStack.maxHeightProperty())
-    canvas.widthProperty().bind(canvasStack.maxWidthProperty())
-    lifeBar.setMinWidth(mapSize.get.x)
-    lifeBar.setProgress(1.0)
-    if (data.isSinglePlayer || data.isHosting) {
-      buttonStart setVisible true
-      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
-    } else {buttonStart setVisible false }
-    labelScore.setText(s"Score: ${0}")
-    initButtons()
-    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
-    viewFacade.getStage.setFullScreen(true)
-  }
-
   private def dismiss(): Unit = {
     controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     clearScreen()
@@ -108,20 +100,60 @@ abstract class AbstractScreenControllerGame(
     controller.shutdownMultiplayer()
   }
 
+  /**
+   * Handle the setup message.
+   *
+   * @param data the setup data
+   */
+  protected def handleLevelSetup(data: LevelSetupData): Unit = {
+    playerEntity = data.player.some
+    mapSize = data.level.mapSize.some
+    canvasStack.setMaxWidth(mapSize.get.x)
+    canvasStack.setMaxHeight(mapSize.get.y)
+    canvas.heightProperty().bind(canvasStack.maxHeightProperty())
+    canvas.widthProperty().bind(canvasStack.maxWidthProperty())
+    lifeBar.setMinWidth(mapSize.get.x)
+    lifeBar.setProgress(1.0)
+    if (data.isSinglePlayer || data.isHosting) {
+      buttonStart setVisible true
+      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
+    } else {buttonStart setVisible false }
+    labelScore.setText(s"$ScoreText: ${0}")
+    initButtons()
+    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
+    viewFacade.getStage.setFullScreen(true)
+  }
+
+  /**
+   * Handle the end message.
+   *
+   * @param data the end data
+   */
   protected def handleLevelEnd(data: EndData): Unit = {
     def updateScore(score: Option[Int]): String = controller.updateScore(score, gameIsEnded = true).toString
     data match {
       case EndData(true, BumperCarEntity(_), _) =>
-        showSimpleDialog(this.canvasStack, "You Win!", updateScore(None), _ => dismiss())
+        showSimpleDialog(this.canvasStack, WinMessage, updateScore(None), _ => dismiss())
       case EndData(false, BumperCarEntity(_), _) =>
-        showSimpleDialog(this.canvasStack, "Game Over!", updateScore(None), _ => dismiss())
-      case EndData(_, _, score) => labelScore.setText(s"Score: ${updateScore(Some(score))}")
+        showSimpleDialog(this.canvasStack, LoseMessage, updateScore(None), _ => dismiss())
+      case EndData(_, _, score) => labelScore.setText(s"$ScoreText: ${updateScore(Some(score))}")
     }
   }
 
+  /**
+   * Handle the life message.
+   *
+   * @param data the life data
+   */
   protected def handleEntityLife(data: LifeData): Unit =
     if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
 
+  /**
+   * Handle the draw message.
+   *
+   * @param players the players present in the game
+   * @param entities the other entities
+   */
   protected def handleDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
     clearScreen()
     entities.foreach(e => e.entity match {
