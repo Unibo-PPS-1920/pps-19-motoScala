@@ -16,7 +16,6 @@ final class ScreenControllerSettings(
 
   override def whenDisplayed(): Unit = controller.loadSetting()
 
-
   override def notify(ev: ViewEvent): Unit = ev match {
     case SettingsDataEvent(settings) => displaySettings(settings)
     case _ =>

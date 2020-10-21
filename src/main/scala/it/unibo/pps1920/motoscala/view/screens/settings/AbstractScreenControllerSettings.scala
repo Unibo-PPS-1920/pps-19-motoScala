@@ -48,6 +48,7 @@ abstract class AbstractScreenControllerSettings(
     assert(effectSlider != null, "fx:id=\"effectSlider\" was not injected: check your FXML file 'Settings.fxml'.")
     assert(textPlayerName != null, "fx:id=\"textPlayerName\" was not injected: check your FXML file 'Settings.fxml'.")
   }
+
   private def initSlider(): Unit = {
     musicSlider.setOnMouseReleased(_ => sendStats())
     effectSlider.setOnMouseReleased(_ => sendStats())
@@ -65,12 +66,13 @@ abstract class AbstractScreenControllerSettings(
       }
     })
   }
+
   private def sendStats(): Unit = {
     controller
-      .saveSettings(SettingsData(this.musicSlider.getValue.toFloat, this.effectSlider.getValue.toFloat, this.diffSlider
-        .getValue.toInt, if (this
-        .textPlayerName.getText.isBlank) DefaultName else this.textPlayerName.getText))
+      .saveSettings(SettingsData(musicSlider.getValue.toFloat, effectSlider.getValue.toFloat, diffSlider
+        .getValue.toInt, if (textPlayerName.getText.isBlank) DefaultName else textPlayerName.getText))
   }
+
   private def initTextField(): Unit = {
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
@@ -80,36 +82,22 @@ abstract class AbstractScreenControllerSettings(
         null
       }
     }
-    this.textPlayerName.setTextFormatter(new TextFormatter(portFormatter))
+    textPlayerName.setTextFormatter(new TextFormatter(portFormatter))
   }
-  private def extendButtonBackBehaviour(): Unit = {
-    buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
-      sendStats()
-    })
-  }
+
+  private def extendButtonBackBehaviour(): Unit =
+    buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => sendStats())
+
+
   def displaySettings(settings: SettingsData): Unit = {
-    this.effectSlider.setValue(settings.effectVolume)
-    this.musicSlider.setValue(settings.musicVolume)
-    this.diffSlider.setValue(settings.diff)
-    this.textPlayerName.setText(settings.name)
+    effectSlider.setValue(settings.effectVolume)
+    musicSlider.setValue(settings.musicVolume)
+    diffSlider.setValue(settings.diff)
+    textPlayerName.setText(settings.name)
   }
 
   private[this] final object MagicValues {
     final val NameMaxLength = 6
     final val DefaultName = "Player"
-
-    sealed trait LineNumber {
-      def leftBound: Int
-      def rightBound: Int
-    }
-    case object LineNumberX extends LineNumber {
-      val leftBound: Int = -2
-      val rightBound: Int = 10
-    }
-
-    case object LineNumberY extends LineNumber {
-      val leftBound: Int = 1
-      val rightBound: Int = 10
-    }
   }
 }

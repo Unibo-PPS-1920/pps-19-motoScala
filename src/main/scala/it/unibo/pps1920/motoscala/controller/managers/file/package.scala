@@ -41,8 +41,8 @@ package object file {
    * @param operation the operation
    * @return false if fails, true otherwise
    */
-  final def tryAndBoolResult[T](operation: => T)(logger: org.slf4j.Logger): Boolean = Try(operation)
-    .fold(error => {logger.warn(error.getMessage); false }, _ => true)
+  final def tryAndBoolResult[T](operation: => T)(logger: org.slf4j.Logger): Boolean =
+    Try(operation).fold(error => {logger.warn(error.getMessage); false }, _ => true)
 
   object FileConstants {
     final val LevelNumber = 3

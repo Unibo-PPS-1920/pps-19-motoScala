@@ -3,6 +3,8 @@ package it.unibo.pps1920.motoscala.view.screens.modeSelection
 import java.util.function.UnaryOperator
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.model.NetworkAddr
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
@@ -31,12 +33,13 @@ abstract class AbstractScreenControllerModeSelection(
   private var ipReady: Boolean = false
   private var portReady: Boolean = false
 
+  import MagicValues._
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
     initButtons()
     initBackButton()
-    initTextField()
+    initTextFields()
   }
 
   private def assertNodeInjected(): Unit = {
@@ -47,11 +50,14 @@ abstract class AbstractScreenControllerModeSelection(
     assert(buttonJoin != null, "fx:id=\"buttonJoin\" was not injected: check your FXML file 'ModeSelection.fxml'.")
     assert(ipTextField != null, "fx:id=\"ipTextField\" was not injected: check your FXML file 'ModeSelection.fxml'.")
     assert(portTextField != null, "fx:id=\"portTextField\" was not injected: check your FXML file 'ModeSelection.fxml'.")
-
   }
 
-
   private def initButtons(): Unit = {
+
+    def buttonHovered(button: Button*): Unit =
+      button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
+
+    buttonHovered(buttonHost, buttonJoin)
     buttonHost.setOnAction(_ => {
       controller.becomeHost()
       viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
@@ -61,14 +67,7 @@ abstract class AbstractScreenControllerModeSelection(
       controller.tryJoinLobby(ipTextField.getText, portTextField.getText())
     })
   }
-
-  private def toggleButtons(): Unit = {
-    buttonJoin.setDisable(!buttonJoin.isDisabled)
-    buttonBack.setDisable(!buttonBack.isDisabled)
-    buttonHost.setDisable(!buttonHost.isDisabled)
-  }
-
-  private def initTextField(): Unit = {
+  private def initTextFields(): Unit = {
     val partialBlock: String = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
     val subsequentPartialBlock: String = "(\\." + partialBlock + ")"
     val ipAddressRegex: String = "^" + (partialBlock + "?" + subsequentPartialBlock + "{0,3}")
@@ -81,19 +80,20 @@ abstract class AbstractScreenControllerModeSelection(
         null
       }
     }
-    ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
 
+    ipTextField.setTextFormatter(new TextFormatter(ipAddressFilter))
 
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
 
-      if ((text.length <= 5 && Try(NetworkAddr.validatePort(text.toInt)).getOrElse(false)) || text.isEmpty) {
+      if ((text.length <= PortMaxLength && Try(NetworkAddr.validatePort(text.toInt)).getOrElse(false)) || text
+        .isEmpty) {
         formatter
       } else {
         null
       }
-
     }
+
     portTextField.setTextFormatter(new TextFormatter(portFormatter))
 
     ipTextField.textProperty().addListener((_, _, newValue) => {
@@ -118,7 +118,6 @@ abstract class AbstractScreenControllerModeSelection(
       checkIpAndPort()
     })
 
-
     def checkIpAndPort(): Unit = {
       if (ipReady && portReady) {
         buttonJoin.setDisable(false)
@@ -127,24 +126,24 @@ abstract class AbstractScreenControllerModeSelection(
       }
     }
 
-    def inError(field: TextField): Unit = {
-      field
-        .setStyle("-fx-border-color: red ; -fx-border-width: 5 ;")
-    }
+    def inError(field: TextField): Unit = field.setStyle(InErrorStyle)
 
-    def notInError(field: TextField): Unit = {
-      field.setStyle("")
-    }
 
+    def notInError(field: TextField): Unit = field.setStyle(NotInErrorStyle)
   }
-
   protected def displayResult(res: Boolean): Unit = {
     toggleButtons()
-    if (res) {
-      viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
-    }
+    if (res) viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
   }
-
-
+  private def toggleButtons(): Unit = {
+    buttonJoin.setDisable(!buttonJoin.isDisabled)
+    buttonBack.setDisable(!buttonBack.isDisabled)
+    buttonHost.setDisable(!buttonHost.isDisabled)
+  }
+  private[this] final object MagicValues {
+    final val PortMaxLength = 5
+    final val InErrorStyle = "-fx-border-color: red ; -fx-border-width: 5 ;"
+    final val NotInErrorStyle = ""
+  }
 }
 

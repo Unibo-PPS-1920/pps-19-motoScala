@@ -15,7 +15,6 @@ final class ScreenControllerModeSelection(
 
   override def whenDisplayed(): Unit = {}
 
-
   override def notify(ev: ViewEvent): Unit = ev match {
     case ViewEvent.JoinResultEvent(res) => displayResult(res)
     case _ =>

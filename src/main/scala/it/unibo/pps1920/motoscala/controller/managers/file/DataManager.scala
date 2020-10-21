@@ -61,9 +61,9 @@ final class DataManager {
    *
    * @return the List of LevelData
    */
-  def saveLvl(data: LevelData): Unit = {
+  def saveLvl(data: LevelData): Unit =
     yamlManager.saveYaml(s"$AppMainFolder$SystemSeparator$LevelFile$Yaml")(data)
-  }
+
   /** Deserialize internal application levels.
    *
    * @return the List of LevelData

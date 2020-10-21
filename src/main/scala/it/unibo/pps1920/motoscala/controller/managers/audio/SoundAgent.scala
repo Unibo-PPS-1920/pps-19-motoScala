@@ -51,7 +51,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
     actualMusicPlayer.foreach(_.setVolume(volumeMusic))
     actualMusicPlayer.foreach(_.play())
     actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
-    medias.filterNot(p => p._2 == actualMusicPlayer.get).foreach(_._2.pause())
+    medias.filterNot(_._2 == actualMusicPlayer.get).foreach(_._2.pause())
   }
 
   override def stopMusic(): Unit = actualMusicPlayer.foreach(_.stop())
