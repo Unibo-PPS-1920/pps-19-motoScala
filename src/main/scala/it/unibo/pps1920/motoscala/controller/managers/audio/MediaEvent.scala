@@ -1,9 +1,11 @@
 package it.unibo.pps1920.motoscala.controller.managers.audio
 
+
+/** A MediaEvent represents one single action to be performed on the [[SoundAgentLogic]] provided. */
 sealed trait MediaEvent {
+  /** The action to be performed. */
   def handle(sl: SoundAgentLogic): Unit
 }
-
 object MediaEvent {
   final case class PlayMusicEvent(media: Music) extends MediaEvent {
     override def handle(sl: SoundAgentLogic): Unit = sl.playMusic(media)
