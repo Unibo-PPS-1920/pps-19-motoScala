@@ -7,7 +7,7 @@ object Clips extends Enum[Clips] {
   override def values: IndexedSeq[Clips] = findValues
   case object ButtonClick extends Clips("/clips/buttonClick.wav")
   case object ButtonHover extends Clips("/clips/buttonHover.wav")
-  case object Collision extends Clips("/clips/collisionShort.wav")
+  case object Collision extends Clips("/clips/collisionSoft.wav")
   case object CollisionSoft extends Clips("/clips/collisionSoft.wav")
   case object GameOver extends Clips("/clips/gameOver.wav")
   case object PowerUpInvisible extends Clips("/clips/PowerUpInvisible.wav")
