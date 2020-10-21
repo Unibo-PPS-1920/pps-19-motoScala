@@ -10,7 +10,7 @@ trait ObservableUI extends SoundController {
   def becomeHost(): Unit
   def tryJoinLobby(ip: String, port: String): Unit
   def kickSomeone(name: String): Unit
-  def setSelfReady(): Unit
+  def lobbyInfoChanged(level: Option[Int] = None, difficult: Option[Int] = None, isStatusChanged: Boolean = false): Unit
   def shutdownMultiplayer(): Unit
   def leaveLobby(): Unit
   def attachUI(obs: ObserverUI*): Unit
