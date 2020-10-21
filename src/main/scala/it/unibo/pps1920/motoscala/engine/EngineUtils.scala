@@ -17,7 +17,14 @@ import scala.util.Random
 
 
 object EngineUtils {
-
+  /**
+   * Sets up the game
+   *
+   * @param coordinator coordinator
+   * @param level level entities
+   * @param iterablePlayers user controlled players
+   * @param difficult level difficulty
+   */
   def addEntities(coordinator: Coordinator, level: LevelData, iterablePlayers: Iterator[BumperCarEntity],
                   difficult: Int): Unit = {
     val playerStack = mutable.Stack[BumperCarEntity]()
@@ -115,11 +122,17 @@ object EngineUtils {
     }
   }
 }
+/**
+ * Possible powerup durations
+ */
 private object Duration {
   val Short: Int = 5 * 60
   val Medium: Int = 10 * 60
   val Long: Int = 15 * 60
 }
+/**
+ * Possible entity bounties
+ */
 private object Scores {
   val PlayerScore: Int = 0
   val NabiconScore: Int = 50000
@@ -131,6 +144,9 @@ private object Scores {
   val BluePupaScore: Int = 500
 
 }
+/**
+ * Possible entity masses
+ */
 private object Masses {
   val PowerUpMass: Int = 0
   val PlayerMass: Int = 100
@@ -138,7 +154,9 @@ private object Masses {
   val BeeconMass: Int = 1000
   val NabiconMass: Int = Int.MaxValue
 }
-
+/**
+ * Possible entity life values
+ */
 private object Life {
   val NabiconLife: Int = 10
   val BeeconLife: Int = 10
@@ -148,7 +166,9 @@ private object Life {
   val BluePupaLife: Int = 15
   val PowerUpLife: Int = 10
 }
-
+/**
+ * Possible enemy foolishness
+ */
 private object Foolishness {
   val Polar: Int = 100
   val BlackPupa: Int = 50

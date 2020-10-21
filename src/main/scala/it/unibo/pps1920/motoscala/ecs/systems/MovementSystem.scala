@@ -4,7 +4,9 @@ import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, VelocityCom
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 import it.unibo.pps1920.motoscala.engine.Constants.MaxFps
-
+/**
+ * System handling the movement of entities based on their velocity
+ */
 object MovementSystem {
   def apply(coordinator: Coordinator, fps: Int): System = new MovementSystemImpl(coordinator, fps)
   private class MovementSystemImpl(coordinator: Coordinator, fps: Int)

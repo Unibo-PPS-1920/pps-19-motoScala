@@ -10,7 +10,9 @@ import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 import it.unibo.pps1920.motoscala.engine.Engine
-
+/**
+ * System for handling removal of killed entities and to determine the end of a game
+ */
 object EndGameSystem {
   def apply(coordinator: Coordinator, mediator: Mediator,
             canvasSize: Vector2,
@@ -32,11 +34,10 @@ object EndGameSystem {
       if (entitiesRef().nonEmpty && entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
         mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
-        logger info s"$entitiesRef()"
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
-    
+
     private def checkOutside(entity: Entity): Boolean = {
       val p = coordinator.getEntityComponent[PositionComponent](entity).pos
       p.x <= 0 || p.y <= 0 || p.x >= canvasSize.x || p.y >= canvasSize.y

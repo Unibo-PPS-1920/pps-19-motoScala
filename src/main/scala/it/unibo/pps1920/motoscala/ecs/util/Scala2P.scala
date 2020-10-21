@@ -2,6 +2,9 @@ package it.unibo.pps1920.motoscala.ecs.util
 
 import alice.tuprolog._
 
+/**
+ * Utilities for 2p usage in scala
+ */
 
 object Scala2P {
   def extractTerm(t: Term, i: scala.Int): Term = t.asInstanceOf[Struct].getArg(i).getTerm()

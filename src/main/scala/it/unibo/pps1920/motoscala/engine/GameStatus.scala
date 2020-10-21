@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.engine
 
-
+/**
+ * Possible gameloop statuses
+ */
 object GameStatus {
 
   sealed trait GameStatus
