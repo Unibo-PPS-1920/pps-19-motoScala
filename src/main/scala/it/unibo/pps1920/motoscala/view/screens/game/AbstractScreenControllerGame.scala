@@ -31,13 +31,13 @@ protected[game] abstract class AbstractScreenControllerGame(
 
   private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MediumIcon)
   private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MediumIcon)
-  @FXML protected var root: BorderPane = _
-  @FXML protected var canvas: Canvas = _
-  @FXML protected var canvasStack: StackPane = _
-  @FXML protected var buttonStart: Button = _
-  @FXML protected var labelTitle: Label = _
-  @FXML protected var labelScore: Label = _
-  @FXML protected var lifeBar: ProgressBar = _
+  @FXML protected final var root: BorderPane = _
+  @FXML protected final var canvas: Canvas = _
+  @FXML protected final var canvasStack: StackPane = _
+  @FXML protected final var buttonStart: Button = _
+  @FXML protected final var labelTitle: Label = _
+  @FXML protected final var labelScore: Label = _
+  @FXML protected final var lifeBar: ProgressBar = _
   private var context: GraphicsContext = _
 
   private var gameEventHandler: Option[GameEventHandler] = None

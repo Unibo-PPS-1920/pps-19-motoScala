@@ -20,9 +20,9 @@ protected[levels] abstract class AbstractScreenControllerLevels(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 
-  @FXML protected var root: BorderPane = _
-  @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var grid: GridPane = _
+  @FXML protected final var root: BorderPane = _
+  @FXML protected final var mainAnchorPane: AnchorPane = _
+  @FXML protected final var grid: GridPane = _
 
   import MagicValues._
   private object MagicValues {
