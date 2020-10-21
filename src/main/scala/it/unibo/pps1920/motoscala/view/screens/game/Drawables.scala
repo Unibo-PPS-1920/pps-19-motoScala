@@ -4,7 +4,10 @@ import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
 
-private object Drawables {
+/**
+ * Drawables game textures
+ */
+private[game] object Drawables {
   val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCar))
   val PlayerMPDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCarMP))
   val BlackPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BlackPupa))

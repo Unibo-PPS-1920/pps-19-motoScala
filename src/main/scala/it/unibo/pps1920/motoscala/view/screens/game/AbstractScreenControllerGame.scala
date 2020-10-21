@@ -10,10 +10,10 @@ import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
+import it.unibo.pps1920.motoscala.view._
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter, showDialog}
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
 import javafx.scene.control.{Button, Label, ProgressBar}
@@ -110,14 +110,15 @@ abstract class AbstractScreenControllerGame(
 
   private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
 
-  protected def handleLevelEnd(data: EndData): Unit = data match {
-    case EndData(true, BumperCarEntity(_), _) =>
-      showDialog(this.canvasStack, "You Win!",
-                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BigDialog, _ => dismiss())
-    case EndData(false, BumperCarEntity(_), _) =>
-      showDialog(this.canvasStack, "Game Over!",
-                 controller.updateScore(gameIsEnded = true).toString, JavafxEnums.BigDialog, _ => dismiss())
-    case EndData(_, _, score) => labelScore.setText(s"Score: ${controller.updateScore(Some(score))}")
+  protected def handleLevelEnd(data: EndData): Unit = {
+    def updateScore(score: Option[Int]): String = controller.updateScore(score, gameIsEnded = true).toString
+    data match {
+      case EndData(true, BumperCarEntity(_), _) =>
+        showSimpleDialog(this.canvasStack, "You Win!", updateScore(None), _ => dismiss())
+      case EndData(false, BumperCarEntity(_), _) =>
+        showSimpleDialog(this.canvasStack, "Game Over!", updateScore(None), _ => dismiss())
+      case EndData(_, _, score) => labelScore.setText(s"Score: ${updateScore(Some(score))}")
+    }
   }
 
   protected def handleEntityLife(data: LifeData): Unit =

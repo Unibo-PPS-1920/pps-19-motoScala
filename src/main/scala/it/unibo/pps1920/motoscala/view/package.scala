@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala
 
 import com.jfoenix.controls.{JFXDialog, JFXDialogLayout}
 import eu.hansolo.enzo.notification.{Notification, NotificationEvent}
-import it.unibo.pps1920.motoscala.view.JavafxEnums.{InfoNotification, MediumDuration}
+import it.unibo.pps1920.motoscala.view.JavafxEnums.{BigDialog, InfoNotification, MediumDuration}
 import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController}
 import javafx.application.Platform
 import javafx.event.EventHandler
@@ -24,6 +24,12 @@ package object view {
     loader.load()
   }
 
+  /**
+   * Charge css into the main scene
+   *
+   * @param scene the Scene
+   * @param screen the FXMLScreen
+   */
   def chargeSceneSheets(scene: Scene, screen: FXMLScreens): Unit = scene.getStylesheets
     .add(View.getClass.getResource(screen.cssPath).toString)
 
@@ -41,6 +47,16 @@ package object view {
   }
 
   /**
+   * Show a simple dialog
+   *
+   * @param title the string title of the notification
+   * @param message the String text of the notification
+   * @param ev the event to call on close
+   */
+  def showSimpleDialog(mainPane: StackPane, title: String, message: String, ev: EventHandler[MouseEvent]): Unit =
+    Platform.runLater(() => showDialog(mainPane, title, message, BigDialog, ev))
+
+  /**
    * Show a dialog into the main pane.
    *
    * @param mainPane the main [[StackPane]]
@@ -49,8 +65,8 @@ package object view {
    * @param size the  size
    * @param ev the [[MouseEvent]]
    */
-  def showDialog(mainPane: StackPane, title: String, description: String, size: JavafxEnums.DimDialog,
-                 ev: EventHandler[MouseEvent]): Unit = {
+  private[view] def showDialog(mainPane: StackPane, title: String, description: String, size: JavafxEnums.DimDialog,
+                               ev: EventHandler[MouseEvent]): Unit = {
     var css = ""
     val content = new JFXDialogLayout
     val _title = new Text(title)
