@@ -60,6 +60,7 @@ object GameEngine {
       logger info "" + level.entities
       val iterablePlayers = players.iterator
       addEntities(coordinator, level, iterablePlayers, difficult)
+
       logger info "engine init done"
     }
     override def start(): Unit = {
