@@ -13,9 +13,15 @@ import javafx.scene.layout.{AnchorPane, BorderPane}
 
 import scala.util.Try
 
+/** Abstract ScreenController dedicated to show the menu for selecting, client or server.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+abstract class AbstractScreenControllerModeSelection(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 
-abstract class AbstractScreenControllerModeSelection(protected override val viewFacade: ViewFacade,
-                                                     protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
   @FXML protected var buttonHost: Button = _
@@ -46,22 +52,22 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
 
 
   private def initButtons(): Unit = {
-
     buttonHost.setOnAction(_ => {
-      this.controller.becomeHost()
+      controller.becomeHost()
       viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     })
     buttonJoin.setOnAction(_ => {
-      this.toggleButtons()
-      this.controller.tryJoinLobby(this.ipTextField.getText, this.portTextField.getText())
+      toggleButtons()
+      controller.tryJoinLobby(ipTextField.getText, portTextField.getText())
     })
   }
-  private def toggleButtons(): Unit = {
-    this.buttonJoin.setDisable(!this.buttonJoin.isDisabled)
-    this.buttonBack.setDisable(!this.buttonBack.isDisabled)
-    this.buttonHost.setDisable(!this.buttonHost.isDisabled)
 
+  private def toggleButtons(): Unit = {
+    buttonJoin.setDisable(!buttonJoin.isDisabled)
+    buttonBack.setDisable(!buttonBack.isDisabled)
+    buttonHost.setDisable(!buttonHost.isDisabled)
   }
+
   private def initTextField(): Unit = {
     val partialBlock: String = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
     val subsequentPartialBlock: String = "(\\." + partialBlock + ")"
@@ -90,35 +96,34 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
     }
     portTextField.setTextFormatter(new TextFormatter(portFormatter))
 
-
-    this.ipTextField.textProperty().addListener((_, _, newValue) => {
+    ipTextField.textProperty().addListener((_, _, newValue) => {
       if (NetworkAddr.validateIPV4Address(newValue)) {
-        notInError(this.ipTextField)
-        this.ipReady = true
+        notInError(ipTextField)
+        ipReady = true
       } else {
-        inError(this.ipTextField)
-        this.ipReady = false
+        inError(ipTextField)
+        ipReady = false
       }
       checkIpAndPort()
     })
 
-    this.portTextField.textProperty().addListener((_, _, newValue) => {
+    portTextField.textProperty().addListener((_, _, newValue) => {
       if (Try(NetworkAddr.validatePort(newValue.toInt)).getOrElse(false)) {
-        this.portReady = true
-        notInError(this.portTextField)
+        portReady = true
+        notInError(portTextField)
       } else {
-        inError(this.portTextField)
-        this.portReady = false
+        inError(portTextField)
+        portReady = false
       }
       checkIpAndPort()
     })
 
 
     def checkIpAndPort(): Unit = {
-      if (this.ipReady && this.portReady) {
-        this.buttonJoin.setDisable(false)
+      if (ipReady && portReady) {
+        buttonJoin.setDisable(false)
       } else {
-        this.buttonJoin.setDisable(true)
+        buttonJoin.setDisable(true)
       }
     }
 
@@ -131,10 +136,10 @@ abstract class AbstractScreenControllerModeSelection(protected override val view
       field.setStyle("")
     }
 
-
   }
+
   protected def displayResult(res: Boolean): Unit = {
-    this.toggleButtons()
+    toggleButtons()
     if (res) {
       viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     }

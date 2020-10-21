@@ -76,28 +76,28 @@ protected[home] abstract class AbstractScreenControllerHome(
     background.height = ViewConstants.Window.ScreenHeight
     background.setCache(true)
     background.setCacheHint(CacheHint.SPEED)
-    background.setId(Constant.CSSBackgroundID)
+    background.setId(MagicValues.CSSBackgroundID)
     pane.getChildren.add(0, background)
   }
   private def initializeGrid(pane: Pane): Unit = {
     def setCache(node: Line): Unit = {
       node.setCache(true)
       node.setCacheHint(CacheHint.SPEED)
-      node.setId(Constant.CSSLineID)
+      node.setId(MagicValues.CSSLineID)
     }
 
     def addAnimation(node: Line, mul: Int): Unit = {
       val translate: TranslateTransition = new TranslateTransition
-      translate.setDuration(Duration.apply(Constant.AnimationDuration * 2))
-      translate.setToY((ViewConstants.Window.ScreenHeight + Constant.YLinePortion * mul) / 2)
+      translate.setDuration(Duration.apply(MagicValues.AnimationDuration * 2))
+      translate.setToY((ViewConstants.Window.ScreenHeight + MagicValues.YLinePortion * mul) / 2)
       translate.setCycleCount(Timeline.Indefinite)
       translate.setNode(node)
       translate.setAutoReverse(true)
       translate.play()
     }
     //Vertical line setup
-    Constant.LineNumberX.leftBound to Constant.LineNumberX.rightBound foreach (multiplier => {
-      val xLine = new Line(0, Constant.XlinePortion * multiplier, Constant.PixelLineLength, Constant
+    MagicValues.LineNumberX.leftBound to MagicValues.LineNumberX.rightBound foreach (multiplier => {
+      val xLine = new Line(0, MagicValues.XlinePortion * multiplier, MagicValues.PixelLineLength, MagicValues
         .XlinePortion * multiplier)
       setCache(xLine)
       addAnimation(xLine, multiplier)
@@ -105,15 +105,15 @@ protected[home] abstract class AbstractScreenControllerHome(
     })
 
     //Horizontal line setup
-    Constant.LineNumberY.leftBound to Constant.LineNumberY.rightBound foreach (multiplier => {
-      val yLine = new Line(Constant.YLinePortion * multiplier, -Constant.PixelLineLength, Constant
-        .YLinePortion * multiplier, Constant.PixelLineLength)
+    MagicValues.LineNumberY.leftBound to MagicValues.LineNumberY.rightBound foreach (multiplier => {
+      val yLine = new Line(MagicValues.YLinePortion * multiplier, -MagicValues.PixelLineLength, MagicValues
+        .YLinePortion * multiplier, MagicValues.PixelLineLength)
       setCache(yLine)
       pane.getChildren.add(0, yLine)
     })
   }
   override def whenDisplayed(): Unit = {}
-  private[this] final object Constant {
+  private[this] final object MagicValues {
     final val AnimationDuration = 5000
     final val PixelLineLength = 5000
     final val ScreenLineDivider = 10
@@ -122,17 +122,17 @@ protected[home] abstract class AbstractScreenControllerHome(
     final val CSSLineID = "Line"
     final val CSSBackgroundID = "Background"
     sealed trait LineNumber {
-      def leftBound: Int;
+      def leftBound: Int
       def rightBound: Int
     }
     case object LineNumberX extends LineNumber {
-      val leftBound = -2
-      val rightBound = 10
+      val leftBound: Int = -2
+      val rightBound: Int = 10
     }
 
     case object LineNumberY extends LineNumber {
-      val leftBound = 1
-      val rightBound = 10
+      val leftBound: Int = 1
+      val rightBound: Int = 10
     }
 
   }

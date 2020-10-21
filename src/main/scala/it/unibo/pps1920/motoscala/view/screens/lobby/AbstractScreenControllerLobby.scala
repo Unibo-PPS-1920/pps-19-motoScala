@@ -39,6 +39,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     initButtons()
     initSplitMenus()
   }
+
   private def initSplitMenus(): Unit = {
     listPlayer.getSelectionModel.selectedItemProperty().addListener((_, _, newVal) => {
       if (newVal != null && listPlayer.getItems.get(0) != newVal)
@@ -47,8 +48,8 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
         buttonKick.setDisable(true)
     })
   }
-  private def initButtons(): Unit = {
 
+  private def initButtons(): Unit = {
     buttonReady.setOnAction(_ => {
       controller.lobbyInfoChanged(isStatusChanged = true)
     })
@@ -61,12 +62,14 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     })
     buttonReady.setDisable(false)
   }
+
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       controller.leaveLobby()
       cleanAll()
     })
   }
+
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(mainBorderPane != null, "fx:id=\"mainBorderPane\" was not injected: check your FXML file 'Lobby.fxml'.")
@@ -80,12 +83,14 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
   }
-  override def whenDisplayed(): Unit = {}
+
+
   protected def leaveLobby(): Unit = {
     Platform.runLater(() => {
       viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     })
   }
+
   protected def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
 
@@ -114,9 +119,11 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
       })
     })
   }
+
   protected def startMulti(): Unit = {
     viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
+
   protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
                              difficulties: List[Int]): Unit = {
     import scala.jdk.CollectionConverters._
@@ -152,6 +159,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     label.setTextFill(Color.Red)
     listPlayer.getItems.add(label)
   }
+
   private def reset(): Unit = {
 
     cleanAll()
@@ -165,6 +173,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     dropMenuDifficult.setDisable(false)
     dropMenuLevel.setDisable(false)
   }
+
   private def cleanAll(): Unit = {
     buttonKick.setDisable(true)
     buttonStart.setDisable(true)

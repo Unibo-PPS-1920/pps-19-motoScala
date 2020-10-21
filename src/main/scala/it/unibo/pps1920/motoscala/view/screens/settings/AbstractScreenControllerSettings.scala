@@ -14,8 +14,14 @@ import javafx.scene.control.{Slider, TextField, TextFormatter}
 import javafx.scene.layout.{AnchorPane, BorderPane}
 import javafx.util.StringConverter
 
-abstract class AbstractScreenControllerSettings(protected override val viewFacade: ViewFacade,
-                                                protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+/** Abstract ScreenController dedicated to show settings menu.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+abstract class AbstractScreenControllerSettings(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   private val NameMazLength: Int = 6
   private val DefaultName: String = "Player"
   @FXML protected var root: BorderPane = _
@@ -57,6 +63,12 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
       }
     })
   }
+  private def sendStats(): Unit = {
+    controller
+      .saveSettings(SettingsData(this.musicSlider.getValue.toFloat, this.effectSlider.getValue.toFloat, this.diffSlider
+        .getValue.toInt, if (this
+        .textPlayerName.getText.isBlank) DefaultName else this.textPlayerName.getText))
+  }
   private def initTextField(): Unit = {
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
@@ -72,12 +84,6 @@ abstract class AbstractScreenControllerSettings(protected override val viewFacad
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       sendStats()
     })
-  }
-  private def sendStats(): Unit = {
-    controller
-      .saveSettings(SettingsData(this.musicSlider.getValue.toFloat, this.effectSlider.getValue.toFloat, this.diffSlider
-        .getValue.toInt, if (this
-        .textPlayerName.getText.isBlank) DefaultName else this.textPlayerName.getText))
   }
   def displaySettings(settings: SettingsData): Unit = {
     this.effectSlider.setValue(settings.effectVolume)

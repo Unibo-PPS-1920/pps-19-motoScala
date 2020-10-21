@@ -5,9 +5,9 @@ import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 
 
-final class ScreenControllerModeSelection(protected override val viewFacade: ViewFacade,
-                                          protected override val controller: ObservableUI) extends AbstractScreenControllerModeSelection(viewFacade, controller) {
-  logger info "Lobby Screen"
+final class ScreenControllerModeSelection(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends AbstractScreenControllerModeSelection(viewFacade, controller) {
 
   override def whenDisplayed(): Unit = {}
 

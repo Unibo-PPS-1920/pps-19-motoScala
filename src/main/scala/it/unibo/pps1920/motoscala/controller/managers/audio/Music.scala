@@ -10,6 +10,7 @@ import it.unibo.pps1920.motoscala.controller.managers.file.ResourcesJarPaths
  * @param entryName the path
  */
 sealed abstract class Music(override val entryName: String) extends EnumEntry
+
 object Music extends Enum[Music] {
   final override def values: IndexedSeq[Music] = findValues
 

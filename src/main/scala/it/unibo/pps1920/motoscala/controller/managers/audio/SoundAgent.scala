@@ -24,6 +24,7 @@ sealed trait SoundAgent extends Thread with SoundAgentLogic {
 
 private final class ConcreteSoundAgent extends SoundAgent {
   import MagicValues._
+
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
@@ -32,6 +33,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
   private var volumeMusic: Double = DefaultVolumeMusic
   private var volumeEffect: Double = DefaultVolumeVolume
   cacheSounds()
+
   override def run(): Unit = {
     while (true) {
       Try(blockingQueue.take()) match {
@@ -40,6 +42,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
       }
     }
   }
+
   override def playMusic(media: Music): Unit = {
     if (!medias.contains(media)) {
       medias += (media -> new MediaPlayer(new Media(loadFromJarToString(media.entryName))))
@@ -50,9 +53,13 @@ private final class ConcreteSoundAgent extends SoundAgent {
     actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
     medias.filterNot(p => p._2 == actualMusicPlayer.get).foreach(_._2.pause())
   }
+
   override def stopMusic(): Unit = actualMusicPlayer.foreach(_.stop())
+
   override def pauseMusic(): Unit = actualMusicPlayer.foreach(_.pause())
+
   override def resumeMusic(): Unit = actualMusicPlayer.foreach(_.play())
+
   override def playClip(clip: Clips): Unit = {
     if (!clips.contains(clip)) {
       clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
@@ -60,20 +67,25 @@ private final class ConcreteSoundAgent extends SoundAgent {
     actualClipPlayer = Some(clips(clip))
     actualClipPlayer.get.play(volumeEffect)
   }
+
   override def setVolumeMusic(value: Double): Unit = {
     volumeMusic = if (value < SoundErrorThresholds) 0.0 else value
     actualMusicPlayer.foreach(_.setVolume(volumeMusic))
   }
+
   override def setVolumeEffect(value: Double): Unit = {
     volumeEffect = if (value < SoundErrorThresholds) 0.0 else value
     actualClipPlayer.foreach(_.setVolume(volumeEffect))
   }
+
   override def restartMusic(): Unit = {
     actualMusicPlayer.foreach(_.stop())
     actualMusicPlayer.foreach(_.seek(Duration.ZERO))
     actualMusicPlayer.foreach(_.play())
   }
+
   override def enqueueEvent(ev: MediaEvent): Unit = blockingQueue.add(ev)
+
   private def cacheSounds(): Unit = {
     //Increase loading speed with cache
     medias += (Music.Home -> new MediaPlayer(new Media(loadFromJarToString(Music.Home.entryName))))
@@ -89,7 +101,6 @@ private final class ConcreteSoundAgent extends SoundAgent {
     val DefaultVolumeVolume = 1.0
     val SoundErrorThresholds = 0.05
   }
-
 }
 
 /** Factory for [[SoundAgent]] instances. */

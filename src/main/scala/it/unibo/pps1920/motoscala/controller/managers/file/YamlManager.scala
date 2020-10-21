@@ -21,7 +21,10 @@ protected[file] final class YamlManager {
    * */
   def loadYamlFromPath[T](location: Path)(cl: Class[T]): Option[T] = {
     loadResourceFromJar(location.toString.toUri.toURL)(cl)
-
+  }
+  private def loadResourceFromJar[T](location: URL)(cl: Class[T]): Option[T] = {
+    initializeMapper()
+    Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
   /** Deserialize one yaml file into one Option of T.
    * * @param location the URL of the file
@@ -30,17 +33,6 @@ protected[file] final class YamlManager {
    * */
   def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
     loadResourceFromJar(location)(cl)
-  }
-  private def loadResourceFromJar[T](location: URL)(cl: Class[T]): Option[T] = {
-    initializeMapper()
-    Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
-  }
-  private def initializeMapper(): Unit = {
-    import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
-    mapper.findAndRegisterModules
-    mapper.registerModule(DefaultScalaModule)
-    val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[Any]).build
-    mapper.activateDefaultTyping(ptv)
   }
   /** Serialize one T instance to one yaml file.
    *
@@ -52,5 +44,11 @@ protected[file] final class YamlManager {
     Try(mapper.writeValue(location, data))
       .fold(err => {logger.warn(err.getMessage); false }, _ => true)
   }
-
+  private def initializeMapper(): Unit = {
+    import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
+    mapper.findAndRegisterModules
+    mapper.registerModule(DefaultScalaModule)
+    val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[Any]).build
+    mapper.activateDefaultTyping(ptv)
+  }
 }

@@ -13,7 +13,7 @@ final class ScreenControllerStats(protected override val viewFacade: ViewFacade,
   override def whenDisplayed(): Unit = controller.loadStats()
 
   override def notify(ev: ViewEvent): Unit = ev match {
-    case ScoreDataEvent(score) => this.populateScoreBoard(score)
+    case ScoreDataEvent(score) => populateScoreBoard(score)
     case _ =>
   }
 }
