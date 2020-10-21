@@ -34,10 +34,6 @@ class ComponentManagerTest extends AnyWordSpec with BeforeAndAfterAll with Match
       "register a component type" in {
         componentManager.registerComponentType(comp1.getClass)
       }
-      "check if component is registered" in {
-        componentManager.checkRegisteredComponent(comp1.getClass) shouldBe true
-        componentManager.checkRegisteredComponent(comp2.getClass) shouldBe false
-      }
       "register the same component" in {
         componentManager.registerComponentType(comp1.getClass)
       }

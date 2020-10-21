@@ -35,6 +35,7 @@ protected[view] object ScreenLoader {
     override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit =
       cache += (screen -> ((loadFxml(screen, controller), controller)))
   }
-  /** Factory for [[ScreenController]] instances */
+
+  /** Factory for [[ScreenLoader]] instances */
   def apply(): ScreenLoader = new ScreenLoaderImpl()
 }
