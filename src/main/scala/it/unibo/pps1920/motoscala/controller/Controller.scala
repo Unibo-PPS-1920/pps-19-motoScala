@@ -39,7 +39,6 @@ object Controller {
     override val mediator: Mediator = Mediator()) extends Controller {
 
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
-
     private val dataManager: DataManager = new DataManager()
     private val config = ConfigFactory.load(SystemConfiguration)
     private val system = ActorSystem(SystemName, config)
@@ -130,6 +129,15 @@ object Controller {
       levels = dataManager.loadLvl()
       observers.foreach(_.notify(LevelDataEvent(levels)))
     }
+    override def shutdownMultiplayer(): Unit = {
+
+      multiplayerStatus = false
+      if (serverActor.isDefined) system.stop(serverActor.get)
+      if (clientActor.isDefined) system.stop(clientActor.get)
+      matchSetupMp = None
+      serverActor = None
+      clientActor = None
+    }
     override def joinResult(result: Boolean): Unit = {
       if (!result) shutdownMultiplayer()
       observers.foreach(_.notify(JoinResultEvent(result)))
@@ -142,15 +150,6 @@ object Controller {
         showSimplePopup(KickedTitle, KickedText)
         shutdownMultiplayer()
       })
-    }
-    override def shutdownMultiplayer(): Unit = {
-
-      multiplayerStatus = false
-      if (serverActor.isDefined) system.stop(serverActor.get)
-      if (clientActor.isDefined) system.stop(clientActor.get)
-      matchSetupMp = None
-      serverActor = None
-      clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (serverActor.isDefined)
