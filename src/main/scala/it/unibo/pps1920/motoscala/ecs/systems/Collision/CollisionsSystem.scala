@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.ecs.systems
+package it.unibo.pps1920.motoscala.ecs.systems.Collision
 
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
@@ -9,12 +9,15 @@ import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities._
-import it.unibo.pps1920.motoscala.ecs.util.Vector2
-import it.unibo.pps1920.motoscala.ecs.util.Side
-import it.unibo.pps1920.motoscala.ecs.util.Side.{Left,Right, Center, Top, Bottom}
+import it.unibo.pps1920.motoscala.ecs.util.{Side, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
+import monix.eval.Task
+import it.unibo.pps1920.motoscala.ecs.systems.Collision
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.Observable
 
-import scala.math.signum
+
+
 object CollisionsSystem {
 
   def apply(coordinator: Coordinator, controller: EngineController,
@@ -32,12 +35,13 @@ object CollisionsSystem {
       entitiesRef().filterNot(e => e.getClass.equals(classOf[JumpPowerUpEntity]) || e.getClass
         .equals(classOf[SpeedPowerUpEntity]) || e.getClass.equals(classOf[WeightPowerUpEntity]) || e.getClass
         .equals(classOf[PowerUpEntity])).foreach(e1 => {
+
         entitiesToCheck -= e1
         val colComp1 = coordinator.getEntityComponent[CollisionComponent](e1)
         val velComp1 = coordinator.getEntityComponent[VelocityComponent](e1)
         if (colComp1.isColliding) collisionStep(colComp1)
         else velComp1.currentVel = velComp1.inputVel
-        entitiesToCheck.foreach(e2 => {
+        Observable.fromIterable(entitiesToCheck).mapParallelOrdered(4)(e => Task(e)).foreach(e2 => {
           if (!jumping(e1,e2)) {
             val colComp2 = coordinator.getEntityComponent[CollisionComponent](e2)
             val velComp2 = coordinator.getEntityComponent[VelocityComponent](e2)
@@ -48,18 +52,19 @@ object CollisionsSystem {
             if (!alreadyColliding(e1,e2, colComp1, colComp2)) {
               (e1, e2) match {
                 case (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =>
-                  if (RectCollisionUtil.areCirclesTouching(posComp1.pos,
-                                         posComp2.pos,
-                                         shapeComp1.shape.asInstanceOf[Circle].radius,
-                                         shapeComp2.shape.asInstanceOf[Circle].radius)) {
+
+                  if (Collision.areCirclesTouching(posComp1.pos,
+                                                       posComp2.pos,
+                                                       shapeComp1.shape.asInstanceOf[Circle].radius,
+                                                       shapeComp2.shape.asInstanceOf[Circle].radius)) {
                     entitiesToCheck -= powerUp
                     acquirePowerUp(bumperCar, powerUp, colComp2, shapeComp2, posComp2, velComp2)
                   }
                 case (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =>
-                  if (RectCollisionUtil.areCirclesTouching(posComp2.pos,
-                                         posComp1.pos,
-                                         shapeComp2.shape.asInstanceOf[Circle].radius,
-                                         shapeComp1.shape.asInstanceOf[Circle].radius)) {
+                  if (Collision.areCirclesTouching(posComp2.pos,
+                                                       posComp1.pos,
+                                                       shapeComp2.shape.asInstanceOf[Circle].radius,
+                                                       shapeComp1.shape.asInstanceOf[Circle].radius)) {
                     acquirePowerUp(bumperCar, powerUp, colComp1, shapeComp1, posComp1, velComp1)
                   }
                 case _ =>
@@ -96,9 +101,6 @@ object CollisionsSystem {
       && colComp2.isColliding
       && (colComp1.collEntity == e2 && colComp2.collEntity == e1))
 
-
-
-
     private def checkCollision(e1: Entity, e2: Entity, shape1: Shape, shape2: Shape,
                                colComp1: CollisionComponent,
                                colComp2: CollisionComponent,
@@ -107,7 +109,7 @@ object CollisionsSystem {
                                velComp1: VelocityComponent,
                                velComp2: VelocityComponent): Unit = {
       (shape1, shape2) match {
-        case (Circle(radius1), Circle(radius2)) => if (RectCollisionUtil.areCirclesTouching(posComp1.pos, posComp2.pos, radius1, radius2)) {
+        case (Circle(radius1), Circle(radius2)) => if (Collision.areCirclesTouching(posComp1.pos, posComp2.pos, radius1, radius2)) {
           if (!(velComp2.currentVel.isZero() && velComp1.currentVel.isZero())) {
             colComp1.collEntity = e2
             colComp2.collEntity = e1
@@ -118,7 +120,7 @@ object CollisionsSystem {
           }
         }
         case (circle: Circle, rectangle: Rectangle) =>
-          val inv = RectCollisionUtil.getDirInversion(circle, posComp1.pos, rectangle, posComp2.pos)
+          val inv = Collision.getDirInversion(circle, posComp1.pos, rectangle, posComp2.pos)
           if (inv != Vector2(1, 1)) {
             playSound(Clips.CollisionSoft)
             startCollision(colComp1, CollisionDuration / 2 )
@@ -127,7 +129,7 @@ object CollisionsSystem {
           velComp1.currentVel = velComp1.currentVel mul inv
 
         case (rectangle: Rectangle, circle: Circle) =>
-          val inv = RectCollisionUtil.getDirInversion(circle, posComp2.pos, rectangle, posComp1.pos)
+          val inv = Collision.getDirInversion(circle, posComp2.pos, rectangle, posComp1.pos)
           if (!(inv == Vector2(1, 1))) {
             startCollision(colComp2, CollisionDuration / 2 )
             checkLifePoint(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
@@ -162,9 +164,9 @@ object CollisionsSystem {
         val normProjection2 = unitNormalVector dot velComp2.currentVel
         val tangProjection2 = unitTangentVector dot velComp2.currentVel
         // Compute new normal velocities using one-dimensional elastic collision equations in the normal direction
-        val newNormProjection1 = RectCollisionUtil.elasticCollision1D(normProjection1, normProjection2, colComp1
+        val newNormProjection1 = Collision.elasticCollision1D(normProjection1, normProjection2, colComp1
           .mass + 1, colComp2.mass)
-        val newNormProjection2 = RectCollisionUtil.elasticCollision1D(normProjection2, normProjection1, colComp2
+        val newNormProjection2 = Collision.elasticCollision1D(normProjection2, normProjection1, colComp2
           .mass, colComp1.mass + 1)
         // Compute new normal and tangential velocity vectors
         val newNorVec1 = unitNormalVector.dot(newNormProjection1)
@@ -212,53 +214,4 @@ object CollisionsSystem {
   }
 }
 
-object RectCollisionUtil {
-  def elasticCollision1D(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double = {
-    var newVel = (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)
-    val newVelSign = signum(newVel)
-    if (newVel.toInt == 0) newVel = 1.0 * newVelSign
-    newVel
-  }
-  def areCirclesTouching(cPos1: Vector2, cPos2: Vector2, cRadius1: Float, cRadius2: Float): Boolean =
-    (cPos1 dist cPos2) <= (cRadius1 + cRadius2)
-  def getSide(refTopLeft: Vector2, refBottomRight: Vector2, point: Vector2): Alignment ={
 
-    val alignment = Alignment(Center, Center)
-    if (point.x < refTopLeft.x) alignment.horizontalSide = Side.Left
-    else if (point.x > refBottomRight.x) alignment.horizontalSide = Side.Right
-
-    if (point.y < refTopLeft.y) alignment.verticalSide = Side.Top
-    else if (point.y > refBottomRight.y) alignment.verticalSide = Side.Bottom
-    alignment
-  }
-  def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
-                              rectanglePos: Vector2): Vector2 = {
-    val topLeft =  rectanglePos sub Vector2(rectangle.dimX / 2, rectangle.dimY / 2 )
-    val bottomRight = rectanglePos add Vector2(rectangle.dimX / 2, rectangle.dimY / 2 )
-
-    val testEdge = Vector2(circlePos.x, circlePos.y)
-    val invVec = Vector2(1, 1)
-
-    val alignment = RectCollisionUtil.getSide(topLeft, bottomRight, circlePos)
-    alignment.horizontalSide match {
-      case Left =>     testEdge.x = topLeft.x; invVec.x = -1
-      case Right =>    testEdge.x = bottomRight.x; invVec.x = -1
-      case _=>
-    }
-
-    alignment.verticalSide match {
-      case Top =>     testEdge.y = topLeft.y; invVec.y = -1
-      case Bottom => testEdge.y = bottomRight.y; invVec.y = -1
-      case _ =>
-    }
-
-    //check distance from closest edge
-    if ((circlePos dist testEdge) <= circle.radius) {
-
-      invVec
-    } //collide: direction inverted
-    else Vector2(1, 1) //do not collide: same direction
-  }
-}
-
-sealed case class Alignment(var horizontalSide: Side, var verticalSide: Side)
