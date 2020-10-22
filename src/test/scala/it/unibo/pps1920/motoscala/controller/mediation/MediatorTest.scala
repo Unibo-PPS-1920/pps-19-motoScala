@@ -75,7 +75,7 @@ object MediatorTestClasses {
     override def notifyRedirectSound(event: SoundEvent): Unit = {}
   }
   final class CommandableImpl extends Commandable {
-    override def notifyCommand(cmd: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
+    override def notifyCommand(data: CommandData): Unit = ToggleFlags.cmdFlag = !ToggleFlags.cmdFlag
   }
 }
 object ToggleFlags {

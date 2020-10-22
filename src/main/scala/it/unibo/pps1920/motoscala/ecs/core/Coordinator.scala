@@ -10,6 +10,7 @@ import scala.reflect.ClassTag
  * It Controls all logic and ensure safety in interactions between managers
  * */
 trait Coordinator {
+
   /** Add the entity to the manager.
    *
    * @param entity the entity

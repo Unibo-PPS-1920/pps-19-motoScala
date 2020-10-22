@@ -4,6 +4,7 @@ import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
 
 /** Represents an ECS Signature. It is a collection of components */
 trait ECSSignature {
+
   /** Add the component or components to the signature so sign the component/s.
    *
    * @param componentType the component type
@@ -47,14 +48,17 @@ object ECSSignature {
       signature = signature ++ componentType
       this
     }
+
     override def signComponent(componentTypes: Iterable[ComponentType]): ECSSignature = {
       componentTypes.foreach(signComponent(_))
       this
     }
+
     override def repudiateComponent(componentType: ComponentType*): ECSSignature = {
       signature = signature -- componentType
       this
     }
+
     override def signatureSet: Set[ComponentType] = signature
     override def repudiateComponent(componentTypes: Iterable[ComponentType]): ECSSignature = {
       componentTypes.foreach(signComponent(_))
