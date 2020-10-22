@@ -19,7 +19,7 @@ import javafx.util.StringConverter
  * @param viewFacade the view facade
  * @param controller the controller
  */
-abstract class AbstractScreenControllerSettings(
+protected[settings] abstract class AbstractScreenControllerSettings(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 

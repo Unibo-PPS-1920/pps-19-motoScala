@@ -9,7 +9,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
  * @param viewFacade the view facade
  * @param controller the controller
  */
-final class ScreenControllerHome(
+protected[view] final class ScreenControllerHome(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends AbstractScreenControllerHome(viewFacade, controller) {
 

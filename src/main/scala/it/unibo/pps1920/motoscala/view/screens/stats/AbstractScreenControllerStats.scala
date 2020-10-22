@@ -13,7 +13,7 @@ import javafx.scene.layout.{AnchorPane, BorderPane}
  * @param viewFacade the view facade
  * @param controller the controller
  */
-abstract class AbstractScreenControllerStats(
+protected[stats] abstract class AbstractScreenControllerStats(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 

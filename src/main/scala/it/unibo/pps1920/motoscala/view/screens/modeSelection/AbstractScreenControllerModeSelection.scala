@@ -19,7 +19,7 @@ import scala.util.Try
  * @param viewFacade the view facade
  * @param controller the controller
  */
-abstract class AbstractScreenControllerModeSelection(
+protected[modeSelection] abstract class AbstractScreenControllerModeSelection(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 
@@ -40,7 +40,6 @@ abstract class AbstractScreenControllerModeSelection(
     initBackButton()
     initTextFields()
   }
-
   private def initButtons(): Unit = {
     addButtonMusic(buttonHost, buttonJoin)(controller)
     buttonHost.setOnAction(_ => {
@@ -52,13 +51,11 @@ abstract class AbstractScreenControllerModeSelection(
       controller.tryJoinLobby(ipTextField.getText, portTextField.getText())
     })
   }
-
   private def toggleButtons(): Unit = {
     buttonJoin.setDisable(!buttonJoin.isDisabled)
     buttonBack.setDisable(!buttonBack.isDisabled)
     buttonHost.setDisable(!buttonHost.isDisabled)
   }
-
   private def initTextFields(): Unit = {
     import javafx.scene.control.TextFormatter.Change
     def getFormatter(strategy: String => Boolean): UnaryOperator[Change] = formatter => {
@@ -90,7 +87,7 @@ abstract class AbstractScreenControllerModeSelection(
     def inError(field: TextField): Unit = field.setStyle(InErrorStyle)
     def notInError(field: TextField): Unit = field.setStyle(NotInErrorStyle)
   }
-
+  override def whenDisplayed(): Unit = {}
   protected def displayResult(res: Boolean): Unit = {
     toggleButtons()
     if (res) viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)

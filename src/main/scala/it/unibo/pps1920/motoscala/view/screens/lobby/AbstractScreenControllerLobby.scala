@@ -35,6 +35,8 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
   @FXML protected var ipLabel: Label = _
   @FXML protected var portLabel: Label = _
 
+  override def whenDisplayed(): Unit = {}
+
   @FXML override def initialize(): Unit = {
     assertNodeInjected(root, mainBorderPane, buttonKick, buttonReady, buttonStart)
     extendButtonBackBehaviour()
@@ -92,7 +94,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
 
       val x: java.util.List[Label] = lobbyData.readyPlayers.values.map(player => {
         val label = new Label(player.name)
-        if (player.status) label.setTextFill(Color.Green) else label.setTextFill(Color.Red);
+        if (player.status) label.setTextFill(Color.Green) else label.setTextFill(Color.Red)
         label
       }).toList.asJava
       lisPlayerStatus.addAll(x)
@@ -106,10 +108,11 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     dropMenuLevel.getItems.addAll(levels.map(lvl => new MenuItem(lvl.toString)).asJava)
     dropMenuDifficult.getItems.addAll(difficulties.map(diff => new MenuItem(diff.toString)).asJava)
 
-    def initSplitMenuButton(butt: SplitMenuButton)(controllerStrategy: (ObservableUI, Option[Int]) => Unit): Unit = {
-      butt.getItems.forEach(_.setOnAction(el => {
+    def initSplitMenuButton(dropMenu: SplitMenuButton)
+                           (controllerStrategy: (ObservableUI, Option[Int]) => Unit): Unit = {
+      dropMenu.getItems.forEach(_.setOnAction(el => {
         val lvl = el.getSource.asInstanceOf[MenuItem].getText
-        dropMenuLevel.setText(lvl)
+        dropMenu.setText(lvl)
         controllerStrategy(controller, Some(lvl.toInt))
       }))
     }
