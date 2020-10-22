@@ -11,6 +11,7 @@ import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view._
+import it.unibo.pps1920.motoscala.view.drawables.Drawables
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
@@ -137,11 +138,11 @@ protected[game] abstract class AbstractScreenControllerGame(
       case BlackPupaEntity(_) => Drawables.BlackPupaDrawable.draw(e, context)
       case BluePupaEntity(_) => Drawables.BluePupaDrawable.draw(e, context)
       case PolarEntity(_) => Drawables.PolarDrawable.draw(e, context)
-      case WeightPowerUpEntity(_) => Drawables.WeightDrawable.draw(e, context)
-      case JumpPowerUpEntity(_) => Drawables.JumpDrawable.draw(e, context)
-      case SpeedPowerUpEntity(_) => Drawables.SpeedDrawable.draw(e, context)
-      case NabiconEntity(_) => Drawables.Block2Drawable.draw(e, context)
-      case BeeconEntity(_) => Drawables.Block1Drawable.draw(e, context)
+      case WeightPowerUpEntity(_) => Drawables.PowerUpWeightDrawable.draw(e, context)
+      case JumpPowerUpEntity(_) => Drawables.PowerUpJumpDrawable.draw(e, context)
+      case SpeedPowerUpEntity(_) => Drawables.PowerUpSpeedDrawable.draw(e, context)
+      case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e, context)
+      case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e, context)
       case _ =>
     })
     val playerPart = players.partition(_.get.entity == playerEntity.get)
