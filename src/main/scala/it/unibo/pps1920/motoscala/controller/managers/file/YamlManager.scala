@@ -10,16 +10,25 @@ import org.slf4j.LoggerFactory
 
 import scala.util.Try
 
-final class YamlManager {
+/** A class that perform serialization and deserialization on Yaml file. */
+protected[file] final class YamlManager {
   private final val logger = LoggerFactory getLogger classOf[YamlManager]
   private final val mapper = new ObjectMapper(new YAMLFactory())
-  def loadYamlFromPath[T](location: Path)(cl: Class[T]): Option[T] = {
+  /** Deserialize one yaml file into one Option of T.
+   *
+   * @param location the path of the file
+   * @return one Option filled whit T instance
+   * */
+  def loadYamlFromPath[T](location: Path)(cl: Class[T]): Option[T] =
     loadResourceFromJar(location.toString.toUri.toURL)(cl)
-
-  }
+  /** Deserialize one yaml file into one Option of T.
+   * * @param location the URL of the file
+   *
+   * @return one Option filled whit T instance
+   * */
+  def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = loadResourceFromJar(location)(cl)
   private def loadResourceFromJar[T](location: URL)(cl: Class[T]): Option[T] = {
-    this.initializeMapper()
-    //  mapper.readValue(location, cl)
+    initializeMapper()
     Try(mapper.readValue(location, cl)).fold(err => {logger.warn(err.getMessage); None }, Some(_))
   }
   private def initializeMapper(): Unit = {
@@ -29,13 +38,14 @@ final class YamlManager {
     val ptv = BasicPolymorphicTypeValidator.builder.allowIfBaseType(classOf[Any]).build
     mapper.activateDefaultTyping(ptv)
   }
-  def loadYamlFromURL[T](location: URL)(cl: Class[T]): Option[T] = {
-    loadResourceFromJar(location)(cl)
-  }
+  /** Serialize one T instance to one yaml file.
+   *
+   * @param location the Path of the file where the instance is serialized.
+   * @return True if the serialization returns no error
+   * */
   def saveYaml[T](location: Path)(data: T): Boolean = {
-    this.initializeMapper()
+    initializeMapper()
     Try(mapper.writeValue(location, data))
       .fold(err => {logger.warn(err.getMessage); false }, _ => true)
   }
-
 }

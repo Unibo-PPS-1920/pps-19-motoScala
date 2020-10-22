@@ -11,21 +11,27 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
 
-abstract class AbstractScreenControllerLevels(protected override val viewFacade: ViewFacade,
-                                              protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  @FXML protected var root: BorderPane = _
-  @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var grid: GridPane = _
+/** ScreenController dedicated to Levels Screen.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[levels] abstract class AbstractScreenControllerLevels(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 
-  @FXML override def initialize(): Unit = {
-    assertNodeInjected()
-    initBackButton()
+  @FXML protected final var root: BorderPane = _
+  @FXML protected final var mainAnchorPane: AnchorPane = _
+  @FXML protected final var grid: GridPane = _
+
+  import MagicValues._
+  private object MagicValues {
+    val LevelText = "Level"
   }
 
-  private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Levels.fxml'.")
-    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Levels.fxml'.")
-    assert(grid != null, "fx:id=\"grid\" was not injected: check your FXML file 'Levels.fxml'.")
+  @FXML override def initialize(): Unit = {
+    assertNodeInjected(root, mainAnchorPane, grid)
+    initBackButton()
   }
 
   private def selectLevel(level: Int): Unit = {
@@ -33,11 +39,16 @@ abstract class AbstractScreenControllerLevels(protected override val viewFacade:
     viewFacade.changeScreen(ChangeScreenEvent.GoNext)
   }
 
+  /** Create the level buttons.
+   *
+   * @param levels the level data
+   */
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
     grid.getChildren.clear()
     levels.map(_.index).sorted.foreach(i => {
-      val button = ViewUtils.buttonFactory(bText = s"Level $i", _ => selectLevel(i), _ => controller
-        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
+      val button = ViewUtils.buttonFactory(bText = s"$LevelText $i",
+                                           _ => selectLevel(i),
+                                           _ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
       grid.addRow(i, button)
     })
     grid.addRow(levels.size + 1, buttonBack)

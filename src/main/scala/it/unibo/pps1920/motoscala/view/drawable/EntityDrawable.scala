@@ -2,31 +2,20 @@ package it.unibo.pps1920.motoscala.view.drawable
 
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
 import it.unibo.pps1920.motoscala.ecs.components.Shape
-import it.unibo.pps1920.motoscala.ecs.util.Direction
 import javafx.scene.canvas.GraphicsContext
 import javafx.scene.image.Image
 
-class EntityDrawable(override val image: Image,
-                     val graphicsContext: GraphicsContext) extends ImageDrawable {
-  private val RotationDegree: Int = 45
-  def rotation(direction: Direction): Int = RotationDegree * (direction match {
-    case Direction.North => 0
-    case Direction.NorthEast => 1
-    case Direction.East => 2
-    case Direction.SouthEast => 3
-    case Direction.South => 4
-    case Direction.SouthWest => 5
-    case Direction.West => 6
-    case Direction.NorthWest => 7
-    case Direction.Center => 0
-    case _ => 0
-  })
-  def size(data: EntityData): (Int, Int) = data.shape match {
-    case Shape.Rectangle(dimX, dimY) => ((dimX/2).toInt, (dimY/2).toInt)
-    case Shape.Circle(radius) => ((radius).toInt, (radius).toInt)
+/** A class representing an entity that can be drawn on screen.
+ *
+ * @param image the image to draw
+ */
+protected[view] class EntityDrawable(override val image: Image) extends ImageDrawable {
+  def getSize(data: EntityData): (Int, Int) = data.shape match {
+    case Shape.Rectangle(dimX, dimY) => ((dimX / 2).toInt, (dimY / 2).toInt)
+    case Shape.Circle(radius) => (radius.toInt, radius.toInt)
   }
-  def draw(data: EntityData): Unit = {
-    val s = size(data)
-    graphicsContext.drawImage(image, data.pos.x - s._1, data.pos.y - s._2, s._1 * 2, s._2 * 2)
+  def draw(data: EntityData, graphicsContext: GraphicsContext): Unit = {
+    val size = getSize(data)
+    graphicsContext.drawImage(image, data.pos.x - size._1, data.pos.y - size._2, size._1 * 2, size._2 * 2)
   }
 }

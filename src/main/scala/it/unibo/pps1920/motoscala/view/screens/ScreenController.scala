@@ -6,15 +6,23 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySound
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.{ObserverUI, ViewFacade}
 import javafx.fxml.FXML
+import javafx.scene.Node
 import javafx.scene.control.Button
 import org.slf4j.{Logger, LoggerFactory}
 
 abstract class ScreenController(protected val viewFacade: ViewFacade,
                                 protected val controller: ObservableUI) extends ObserverUI {
+
   protected val logger: Logger = LoggerFactory getLogger this.getClass
   @FXML protected var buttonBack: Button = _
-  def whenDisplayed(): Unit
+
   @FXML def initialize(): Unit
+
+  def whenDisplayed(): Unit
+
+  /**
+   * Initialize the back button
+   */
   def initBackButton(): Unit = {
     buttonBack.setOnAction(_ => {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
@@ -22,4 +30,12 @@ abstract class ScreenController(protected val viewFacade: ViewFacade,
     })
     buttonBack.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
   }
+
+  /**
+   * Assert if node is injected in the order user declared them.
+   *
+   * @param nodes the nodes
+   */
+  def assertNodeInjected(nodes: Node*): Unit =
+    nodes.zipWithIndex.foreach(t => assert(t._1 != null, s"#${t._2} id not injected in class ${this.getClass.getName}"))
 }

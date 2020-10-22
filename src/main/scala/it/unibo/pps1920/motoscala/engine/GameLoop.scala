@@ -2,13 +2,45 @@ package it.unibo.pps1920.motoscala.engine
 
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import org.slf4j.LoggerFactory
-
+/**
+ * Game Loop
+ */
 trait GameLoop extends Thread {
+  /**
+   * fps setter
+   *
+   * @param value new fps
+   */
   def fps_=(value: Int): Unit
+  /**
+   * fps getter
+   *
+   * @return actual fps
+   */
   def fps: Int
+  /**
+   * gets game status
+   *
+   * @return game status
+   */
   def status: GameStatus
+  /**
+   * pauses the game
+   *
+   * @return new status
+   */
   def pause(): GameStatus
+  /**
+   * resumes the game
+   *
+   * @return new status
+   */
   def unPause(): GameStatus
+  /**
+   * stops the game
+   *
+   * @return new status
+   */
   def halt(): GameStatus
 }
 

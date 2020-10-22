@@ -17,42 +17,52 @@ import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.stage.Stage
-import org.slf4j.LoggerFactory
 import scalafx.scene.layout.StackPane
 
-private[view] trait ViewFacade {
+/** Facade class that exposes method to screens */
+protected[view] trait ViewFacade {
+
+  /** Get the primary stage */
   def getStage: Stage
+
+  /** Display an other screen
+   *
+   * @param screen the Fxml screen
+   */
   def changeScreen(screen: ChangeScreenEvent): Unit
-  def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
 
+/** Represents the view part in the mvc pattern */
 trait View extends ObserverUI {
+
+  /** Start the view and show the primary stage */
   def start(): Unit
 }
 
 object View {
+  /** Factory for [[View]] instances */
   def apply(controller: ObservableUI): View = {
     require(controller != null)
     new ViewImpl(controller)
   }
 
   private class ViewImpl(controller: ObservableUI) extends View with ViewFacade {
-    private val logger = LoggerFactory getLogger classOf[View]
     private val stateMachine = ViewStateMachine.buildStateMachine()
     private val screenLoader = ScreenLoader()
     private val root = new StackPane()
     private val scene = new Scene(root)
     private var stage: Option[Stage] = None
 
-    controller attachUI this //Controller will observe me
-    loadScreens() //Loading all screens in cache
+    controller attachUI this
+    loadScreens()
+
+    override def getStage: Stage = stage.get
 
     override def start(): Unit = {
       Platform.runLater(() => {
         val stage = ViewUtils.createStage(scene)
         changeScreen(ChangeScreenEvent.GotoHome)
         this.stage = Some(stage)
-        logger info s"View started on ${Thread.currentThread()}"
         controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
       })
     }
@@ -63,8 +73,6 @@ object View {
         screenLoader.getScreenController(stateMachine.currentState).whenDisplayed()
       })
     }
-
-    override def getStage: Stage = stage.get
 
     override def notify(ev: ViewEvent): Unit = ev match {
       case event: ViewEvent.HomeEvent => screenLoader.getScreenController(FXMLScreens.HOME).notify(event)
@@ -87,7 +95,7 @@ object View {
       loadFXMLNode(FXMLScreens.SELECTION, new ScreenControllerModeSelection(this, controller))
     }
 
-    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
+    private def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = screenLoader
       .loadFXMLNode(screen, controller)
   }
 }

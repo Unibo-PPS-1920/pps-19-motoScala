@@ -13,12 +13,31 @@ import it.unibo.pps1920.motoscala.engine.EngineUtils.addEntities
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import it.unibo.pps1920.motoscala.model.Level._
 import org.slf4j.LoggerFactory
-
+/**
+ * Game Engine
+ */
 trait Engine extends UpdatableEngine with Commandable {
+  /**
+   * Sets up the game with the correct entities
+   *
+   * @param level entities in the level
+   */
   def init(level: LevelData): Unit
+  /**
+   * Starts the game
+   */
   def start(): Unit
+  /**
+   * Pauses the game
+   */
   def pause(): Unit
+  /**
+   * Resumes the game
+   */
   def resume(): Unit
+  /**
+   * Stops the game
+   */
   def stop(): Unit
 }
 
@@ -77,8 +96,8 @@ object GameEngine {
       mediator.unsubscribe(this)
     }
 
-    override def notifyCommand(cmd: CommandData): Unit = {
-      eventQueue.enqueue(CommandEvent(cmd))
+    override def notifyCommand(data: CommandData): Unit = {
+      eventQueue.enqueue(CommandEvent(data))
     }
   }
 }

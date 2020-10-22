@@ -11,6 +11,9 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 import it.unibo.pps1920.motoscala.engine.Engine
 
+/**
+ * System for handling removal of killed entities and to determine the end of a game
+ */
 object EndGameSystem {
   def apply(coordinator: Coordinator, mediator: Mediator,
             canvasSize: Vector2,
@@ -19,7 +22,6 @@ object EndGameSystem {
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[ScoreComponent], classOf[CollisionComponent])) {
     override def update(): Unit = {
       entitiesRef().filter(e => checkOutside(e) || checkLifePoints(e)).foreach(e => {
-        logger info "out"
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
           mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.GameOver)))
@@ -30,7 +32,7 @@ object EndGameSystem {
           .getEntityComponent[ScoreComponent](e).score)))
         this.coordinator.removeEntity(e)
       })
-      if (entitiesRef().size == 1 && entitiesRef().head.getClass == classOf[BumperCarEntity]) {
+      if (entitiesRef().nonEmpty && entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
         mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
         this.engine.stop()
         this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))

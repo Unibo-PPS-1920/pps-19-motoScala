@@ -110,7 +110,7 @@ object CollisionsSystem {
                                velComp2: VelocityComponent): Unit = {
       (shape1, shape2) match {
         case (Circle(radius1), Circle(radius2)) => if (Collision.areCirclesTouching(posComp1.pos, posComp2.pos, radius1, radius2)) {
-          if (!(velComp2.currentVel.isZero() && velComp1.currentVel.isZero())) {
+          if (!(velComp2.currentVel.isZero && velComp1.currentVel.isZero)) {
             colComp1.collEntity = e2
             colComp2.collEntity = e1
             collide(colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
