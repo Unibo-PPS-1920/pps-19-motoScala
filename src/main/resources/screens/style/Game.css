@@ -100,7 +100,32 @@
 
 }
 
+/*DIALOG*/
+.dialogContentBackground {
+    -fx-padding: 8 15 15 15;
+    -fx-background-insets: 0, 0, 0 0 10 0, 0 0 13 0;
+    -fx-background-color: linear-gradient(from 0% 93% to 0% 100%, #a34313 0%, #903b12 100%),
+    #9d4024,
+    #9d4024,
+    radial-gradient(center 50% 50%, radius 100%, #c54e2c, #c54e2c);
+}
 
+.dialogBackground {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+}
 
+.dialogTextSmall {
+    -fx-fill: black;
+    -fx-font-size: 20;
+}
 
+.dialogTextMedium {
+    -fx-fill: black;
+    -fx-font-size: 30;
+}
+
+.dialogTextBig {
+    -fx-fill: black;
+    -fx-font-size: 50;
+}
 
