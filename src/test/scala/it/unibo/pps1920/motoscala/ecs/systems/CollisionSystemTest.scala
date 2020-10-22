@@ -16,6 +16,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
+import it.unibo.pps1920.motoscala.ecs.systems.collision.CollisionsSystem
 
 @RunWith(classOf[JUnitRunner])
 class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
