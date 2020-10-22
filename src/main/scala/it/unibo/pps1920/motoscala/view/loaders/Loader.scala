@@ -6,6 +6,7 @@ package it.unibo.pps1920.motoscala.view.loaders
  * @tparam B the values type
  */
 protected[view] trait Loader[A, B] {
+
   /** The cache which holds the already requested values */
   val cache = new collection.mutable.HashMap[A, B]()
 
