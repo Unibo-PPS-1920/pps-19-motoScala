@@ -5,10 +5,11 @@ import enumeratum._
 
 /** A Clips represents the path container for the file needed in one [[javafx.scene.media.AudioClip]].
  *
- * @constructor create a new Clips.
+ * @constructor create a new Clips
  * @param entryName the path
  */
 sealed abstract class Clips(override val entryName: String) extends EnumEntry
+
 object Clips extends Enum[Clips] {
   final override def values: IndexedSeq[Clips] = findValues
 

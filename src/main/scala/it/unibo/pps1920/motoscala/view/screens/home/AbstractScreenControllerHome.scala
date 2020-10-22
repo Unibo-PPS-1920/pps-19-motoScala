@@ -8,33 +8,41 @@ import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
 import javafx.fxml.FXML
-import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane, Pane}
 import javafx.scene.shape.Line
-import scalafx.animation.TranslateTransition
+import javafx.scene.{CacheHint, Node}
+import scalafx.animation.{Timeline, TranslateTransition}
 import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
 
-abstract class AbstractScreenControllerHome(protected override val viewFacade: ViewFacade,
-                                            protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
-  @FXML protected var root: BorderPane = _
-  @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var mainGridPane: GridPane = _
-  @FXML protected var title: ImageView = _
-  @FXML protected var textPlay: Button = _
-  @FXML protected var textPlayMultiplayer: Button = _
-  @FXML protected var textSettings: Button = _
-  @FXML protected var textStats: Button = _
-  @FXML protected var textExit: Button = _
+/** Abstract ScreenController dedicated to show main menu.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+protected[home] abstract class AbstractScreenControllerHome(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
+
+  @FXML protected final var root: BorderPane = _
+  @FXML protected final var mainAnchorPane: AnchorPane = _
+  @FXML protected final var mainGridPane: GridPane = _
+  @FXML protected final var title: ImageView = _
+  @FXML protected final var textPlay: Button = _
+  @FXML protected final var textPlayMultiplayer: Button = _
+  @FXML protected final var textSettings: Button = _
+  @FXML protected final var textStats: Button = _
+  @FXML protected final var textExit: Button = _
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
-    this.initializeGrid(this.root)
-    this.initializeBackground(this.root)
-    this.initializeButtons()
+    initializeGrid(root)
+    initializeBackground(root)
+    initializeButtons()
   }
+
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Home.fxml'.")
     assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Home.fxml'.")
@@ -46,23 +54,22 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     assert(textExit != null, "fx:id=\"textExit\" was not injected: check your FXML file 'Home.fxml'.")
   }
 
-  override def whenDisplayed(): Unit = {}
-
   private def initializeButtons(): Unit = {
+
     def buttonClicked(screenEvent: ChangeScreenEvent): Unit = {
       controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       viewFacade.changeScreen(screenEvent)
     }
 
-    def buttonHovered(button: Button*): Unit = button
-      .foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
+    def buttonHovered(button: Button*): Unit =
+      button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
 
     buttonHovered(textPlay, textPlayMultiplayer, textSettings, textStats, textExit)
-    this.textPlay.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoLevels))
-    this.textPlayMultiplayer.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSelection))
-    this.textSettings.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSettings))
-    this.textStats.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoStats))
-    this.textExit.setOnAction(_ => System.exit(0))
+    textPlay.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoLevels))
+    textPlayMultiplayer.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSelection))
+    textSettings.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoSettings))
+    textStats.setOnAction(_ => buttonClicked(ChangeScreenEvent.GotoStats))
+    textExit.setOnAction(_ => System.exit(0))
   }
 
   private def initializeBackground(pane: Pane): Unit = {
@@ -70,51 +77,68 @@ abstract class AbstractScreenControllerHome(protected override val viewFacade: V
     val background: Rectangle = new Rectangle()
     background.width = ViewConstants.Window.ScreenWidth
     background.height = ViewConstants.Window.ScreenHeight
-    background.setCache(true)
-    background.setCacheHint(CacheHint.SPEED)
-    background.setId(Constant.CSS_BACKGROUND_ID)
+    setCache(background)
+    background.setId(MagicValues.CSSBackgroundID)
     pane.getChildren.add(0, background)
   }
+
+  def setCache(node: Node): Unit = {
+    node.setCache(true)
+    node.setCacheHint(CacheHint.SPEED)
+  }
+
   private def initializeGrid(pane: Pane): Unit = {
-    //Vertical line setup
-    Constant.X_LINE_NUMBER._1 to Constant.X_LINE_NUMBER._2 foreach (multiplayer => {
-      import scalafx.animation.Timeline
-      val xLine = new Line(0, Constant.X_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH, Constant
-        .X_LINE_PORTION * multiplayer)
-      xLine.setCache(true)
-      xLine.setCacheHint(CacheHint.SPEED)
-      xLine.setId(Constant.CSS_LINE_ID)
+
+    def addAnimation(node: Line, mul: Int): Unit = {
       val translate: TranslateTransition = new TranslateTransition
-      translate.setDuration(Duration.apply(Constant.ANIMATION_DURATION * 2))
-      translate.setToY((ViewConstants.Window.ScreenHeight + Constant.Y_LINE_PORTION * multiplayer) / 2)
+      translate.setDuration(Duration.apply(MagicValues.AnimationDuration * 2))
+      translate.setToY((ViewConstants.Window.ScreenHeight + MagicValues.YLinePortion * mul) / 2)
       translate.setCycleCount(Timeline.Indefinite)
-      translate.setNode(xLine)
+      translate.setNode(node)
       translate.setAutoReverse(true)
       translate.play()
-      this.root.getChildren.add(0, xLine)
+    }
+    //Vertical line setup
+    MagicValues.LineNumberX.leftBound to MagicValues.LineNumberX.rightBound foreach (multiplier => {
+      val xLine = new Line(0, MagicValues.XlinePortion * multiplier, MagicValues.PixelLineLength, MagicValues
+        .XlinePortion * multiplier)
+      xLine.setId(MagicValues.CSSLineID)
+      setCache(xLine)
+      addAnimation(xLine, multiplier)
+      root.getChildren.add(0, xLine)
     })
 
-
     //Horizontal line setup
-    Constant.Y_LINE_NUMBER._1 to Constant.Y_LINE_NUMBER._2 foreach (multiplayer => {
-      val yLine = new Line(Constant.Y_LINE_PORTION * multiplayer, -Constant.PIXEL_LINE_LENGTH, Constant
-        .Y_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH)
-      yLine.setCache(true)
-      yLine.setCacheHint(CacheHint.SPEED)
-      yLine.setId(Constant.CSS_LINE_ID)
+    MagicValues.LineNumberY.leftBound to MagicValues.LineNumberY.rightBound foreach (multiplier => {
+      val yLine = new Line(MagicValues.YLinePortion * multiplier, -MagicValues.PixelLineLength, MagicValues
+        .YLinePortion * multiplier, MagicValues.PixelLineLength)
+      yLine.setId(MagicValues.CSSLineID)
+      setCache(yLine)
       pane.getChildren.add(0, yLine)
     })
   }
+  override def whenDisplayed(): Unit = {}
+  private[this] final object MagicValues {
+    final val AnimationDuration = 5000
+    final val PixelLineLength = 5000
+    final val ScreenLineDivider = 10
+    final val XlinePortion = ViewConstants.Window.ScreenHeight / ScreenLineDivider
+    final val YLinePortion = ViewConstants.Window.ScreenWidth / ScreenLineDivider
+    final val CSSLineID = "Line"
+    final val CSSBackgroundID = "Background"
+    sealed trait LineNumber {
+      def leftBound: Int
+      def rightBound: Int
+    }
+    case object LineNumberX extends LineNumber {
+      val leftBound: Int = -2
+      val rightBound: Int = 10
+    }
 
-  private[this] final object Constant {
-    final val ANIMATION_DURATION = 5000
-    final val PIXEL_LINE_LENGTH = 5000
-    final val SCREEN_LINE_DIVIDER = 10
-    final val X_LINE_NUMBER = (-2, 10)
-    final val Y_LINE_NUMBER = (1, 10)
-    final val X_LINE_PORTION = ViewConstants.Window.ScreenHeight / SCREEN_LINE_DIVIDER
-    final val Y_LINE_PORTION = ViewConstants.Window.ScreenWidth / SCREEN_LINE_DIVIDER
-    final val CSS_LINE_ID = "Line"
-    final val CSS_BACKGROUND_ID = "Background"
+    case object LineNumberY extends LineNumber {
+      val leftBound: Int = 1
+      val rightBound: Int = 10
+    }
+
   }
 }
