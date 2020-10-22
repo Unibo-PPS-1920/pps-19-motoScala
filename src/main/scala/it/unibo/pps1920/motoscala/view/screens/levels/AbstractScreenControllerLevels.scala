@@ -35,6 +35,7 @@ protected[levels] abstract class AbstractScreenControllerLevels(
   }
 
   private def selectLevel(level: Int): Unit = {
+    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
     controller.setupGame(level)
     viewFacade.changeScreen(ChangeScreenEvent.GoNext)
   }
