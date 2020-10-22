@@ -16,9 +16,10 @@ import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.engine.Engine
 import it.unibo.pps1920.motoscala.model.Difficulties.difficultiesList
 import it.unibo.pps1920.motoscala.model.Level.LevelData
+import it.unibo.pps1920.motoscala.model.MatchSetup.MultiPlayerSetup
 import it.unibo.pps1920.motoscala.model.Scores.ScoresData
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
-import it.unibo.pps1920.motoscala.model.{Level, MultiPlayerSetup, NetworkAddr}
+import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
 import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
@@ -58,7 +59,6 @@ object Controller {
     dataManager.initAppDirectory()
 
     setAudioVolume(actualSettings.musicVolume, actualSettings.effectVolume)
-
 
     override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs
     override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs
@@ -108,7 +108,7 @@ object Controller {
 
     override def getLobbyData: DataType.LobbyData =
       LobbyData(Some(matchSetupMp.get.difficulty),
-                Some(matchSetupMp.get.level), Some(matchSetupMp.get.mode), matchSetupMp.get.getPlayerStatus)
+                Some(matchSetupMp.get.level), matchSetupMp.get.getPlayerStatus)
 
     override def tryJoinLobby(ip: String, port: String): Unit = {
       shutdownMultiplayer()
@@ -119,7 +119,7 @@ object Controller {
       shutdownMultiplayer()
       loadAllLevels()
       serverActor = Some(system.actorOf(ServerActor.props(this), ServerActorName))
-      matchSetupMp = Some(MultiPlayerSetup(mode = true, numPlayers = maxPlayers))
+      matchSetupMp = Some(MultiPlayerSetup(numPlayers = maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, actualSettings.name)
       observers.foreach(_.notify(
         SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
@@ -129,6 +129,15 @@ object Controller {
     override def loadAllLevels(): Unit = {
       levels = dataManager.loadLvl()
       observers.foreach(_.notify(LevelDataEvent(levels)))
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+      multiplayerStatus = false
+      if (serverActor.isDefined) system.stop(serverActor.get)
+      if (clientActor.isDefined) system.stop(clientActor.get)
+      matchSetupMp = None
+      serverActor = None
+      clientActor = None
     }
     override def joinResult(result: Boolean): Unit = {
       if (!result) shutdownMultiplayer()
@@ -142,15 +151,6 @@ object Controller {
         showSimplePopup(KickedTitle, KickedText)
         shutdownMultiplayer()
       })
-    }
-    override def shutdownMultiplayer(): Unit = {
-
-      multiplayerStatus = false
-      if (serverActor.isDefined) system.stop(serverActor.get)
-      if (clientActor.isDefined) system.stop(clientActor.get)
-      matchSetupMp = None
-      serverActor = None
-      clientActor = None
     }
     override def leaveLobby(): Unit = {
       if (serverActor.isDefined)

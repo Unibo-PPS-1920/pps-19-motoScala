@@ -59,15 +59,13 @@ object ActorMessage {
 }
 
 object MessageData {
-  final case class LobbyData(difficulty: Option[Int] = None, level: Option[Int] = None,
-                             mode: Option[Boolean] = None,
-                             readyPlayers: mutable.Map[ActorRef, PlayerData])
+  final case class LobbyData(
+    difficulty: Option[Int] = None, level: Option[Int] = None, readyPlayers: mutable.Map[ActorRef, PlayerData])
 }
 
 
 object ErrorMsg {
   case class ErrorReason(title: String, text: String)
-
 }
 
 

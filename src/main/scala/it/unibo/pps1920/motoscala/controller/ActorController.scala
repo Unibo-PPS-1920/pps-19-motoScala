@@ -1,6 +1,6 @@
 package it.unibo.pps1920.motoscala.controller
 
-import it.unibo.pps1920.motoscala.model.MultiPlayerSetup
+import it.unibo.pps1920.motoscala.model.MatchSetup.MultiPlayerSetup
 import it.unibo.pps1920.motoscala.view.ObserverUI
 
 trait ActorController {

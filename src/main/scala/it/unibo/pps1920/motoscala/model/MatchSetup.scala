@@ -8,9 +8,7 @@ import scala.collection.mutable
 trait MatchSetup {
 }
 
-
 object MatchSetup {
-
   /** A [[MatchSetup]] represents the match setup.
    *
    * @param difficulty the difficulty of the match
@@ -68,7 +66,6 @@ object MatchSetup {
       final val TextNamLobbyFullTakenError = "No more slots available"
     }
   }
-
 
   object Data {
     /** Represent the name and the status of one player.
