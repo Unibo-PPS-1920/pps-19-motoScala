@@ -88,12 +88,12 @@ package object view {
         css = "dialogTextBig"
       case _ =>
     }
-    _description.getStyleClass.add(css)
     _title.getStyleClass.add(css)
-    content.setHeading(_title)
-    content.setBody(_description)
-    content.getStyleClass.add("dialogContentBackground")
+    _description.getStyleClass.add(css)
+    content.setHeading(new StackPane(_title))
+    content.setBody(new StackPane(_description))
     val dialog = new JFXDialog(mainPane, content, JFXDialog.DialogTransition.CENTER)
+    content.getStyleClass.add("dialogContentBackground")
     dialog.getStyleClass.add("dialogBackground")
     dialog.show()
     content.setCache(true)

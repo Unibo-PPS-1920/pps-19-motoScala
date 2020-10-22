@@ -71,11 +71,8 @@ private[engine] object GameLoop {
         val tickTime = System.currentTimeMillis() - start
         val deltaTime = getFrameMillis - tickTime
         if (deltaTime > 0) {
-          //          logger debug "wasting " + deltaTime + "ms"
           Thread.sleep(deltaTime)
-        } else {
-          logger debug "overrun by " + deltaTime + "ms"
-        }
+        } else logger warn s"Overrun by ${deltaTime} ms, please reduce FPS"
       }
     }
 
@@ -84,21 +81,21 @@ private[engine] object GameLoop {
     override def pause(): GameStatus = this.synchronized {
       _status match {
         case Running => _status = Paused; logger debug "pausing"; _status
-        case Paused | Stopped => logger error "Not running, can't pause"; _status
+        case Paused | Stopped => logger warn "Not running, can't pause"; _status
       }
     }
 
     override def unPause(): GameStatus = this.synchronized {
       _status match {
         case Paused => _status = Running; logger debug "resumed"; this.notifyAll(); _status
-        case Running | Stopped => logger error "Not paused, can't unpause"; _status
+        case Running | Stopped => logger warn "Not paused, can't unpause"; _status
       }
     }
 
     override def halt(): GameStatus = this.synchronized {
       _status match {
         case Running | Paused => _status = Stopped; logger debug "stopped"; _status
-        case Stopped => logger error "Already stopped"; _status
+        case Stopped => logger warn "Already stopped"; _status
       }
     }
 

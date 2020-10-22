@@ -133,7 +133,10 @@ object Coordinator {
       this.synchronized(componentManager.getEntityComponent[T](entity))
 
     override def registerSystem(system: System): Coordinator = {
-      this.synchronized(systemManager.registerSystem(system))
+      this.synchronized {
+        system.signature.signatureSet.foreach(e => require(componentManager.checkRegisteredComponent(e)))
+        systemManager.registerSystem(system)
+      }
       this
     }
 
