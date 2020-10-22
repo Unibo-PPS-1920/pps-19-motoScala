@@ -24,7 +24,7 @@ import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelDataEvent, LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, SetupLobbyEvent, _}
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, _}
 import it.unibo.pps1920.motoscala.view.{ObserverUI, showSimplePopup}
 import org.slf4j.LoggerFactory
 
@@ -130,15 +130,6 @@ object Controller {
       levels = dataManager.loadLvl()
       observers.foreach(_.notify(LevelDataEvent(levels)))
     }
-    override def shutdownMultiplayer(): Unit = {
-
-      multiplayerStatus = false
-      if (serverActor.isDefined) system.stop(serverActor.get)
-      if (clientActor.isDefined) system.stop(clientActor.get)
-      matchSetupMp = None
-      serverActor = None
-      clientActor = None
-    }
     override def joinResult(result: Boolean): Unit = {
       if (!result) shutdownMultiplayer()
       observers.foreach(_.notify(JoinResultEvent(result)))
@@ -152,40 +143,58 @@ object Controller {
         shutdownMultiplayer()
       })
     }
+    override def shutdownMultiplayer(): Unit = {
+
+      multiplayerStatus = false
+      if (serverActor.isDefined) system.stop(serverActor.get)
+      if (clientActor.isDefined) system.stop(clientActor.get)
+      matchSetupMp = None
+      serverActor = None
+      clientActor = None
+    }
     override def leaveLobby(): Unit = {
       if (serverActor.isDefined)
         serverActor.get ! CloseLobbyActorMessage()
       else if (clientActor.isDefined)
         clientActor.get ! LeaveEvent(clientActor.get)
     }
-    override def startMultiplayer(): Unit = {
+    override def startMultiplayerGame(): Unit = {
       serverActor.get ! GameStartActorMessage()
       setupGame(matchSetupMp.get.level)
     }
     override def setupGame(level: Level): Unit = {
       logger info s"level selected: $level"
 
+      //Get selected level
       val lvl = levels.filter(_.index == level).head
+
       var playerNum = 1
+      //Get the correct number of bumbper car
       val players = if (serverActor.isDefined) {
         playerNum = matchSetupMp.get.numReadyPlayers()
         (0 to playerNum).map(_ => BumperCarEntity(UUID.randomUUID())).toList
       } else
         List(BumperCarEntity(UUID.randomUUID()))
+      //Get the be removed from level
       val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)
       lvl.entities = lvl.entities.filterNot(entitiesToRemove.contains(_))
 
+      //Create one instance of engine
       engine = Option(motoscala.engine.GameEngine(this, players, if (matchSetupMp.isDefined) matchSetupMp.get
         .difficulty else actualSettings.diff))
+
+      //Start engine
       engine.get.init(lvl)
 
+
       var setups: List[LevelSetupData] = List()
+      //Prepare all data for level to sent
       players.slice(1, players.size)
         .foreach(player => setups = setups :+ LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player))
-
+      //Send to sel
       observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = serverActor
         .isEmpty, isHosting = serverActor.isDefined, players.head))))
-
+      //Send to clients if present
       if (serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
     }
 

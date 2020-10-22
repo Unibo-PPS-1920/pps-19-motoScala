@@ -57,7 +57,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     buttonReady.setOnAction(_ => controller.lobbyInfoChanged(isStatusChanged = true))
     buttonKick.setOnAction(_ => controller.kickSomeone(listPlayer.getSelectionModel.getSelectedItem.getText))
     buttonStart.setOnAction(_ => {
-      controller.startMultiplayer()
+      controller.startMultiplayerGame()
       viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
     })
     buttonReady.setDisable(false)

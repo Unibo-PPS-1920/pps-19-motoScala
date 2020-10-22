@@ -7,7 +7,7 @@ import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
 import scala.collection.mutable
 trait MatchSetup {
 }
-
+/** Provide default MatchSetup instance. */
 object MatchSetup {
   /** A [[MatchSetup]] represents the match setup.
    *

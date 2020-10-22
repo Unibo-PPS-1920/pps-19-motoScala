@@ -2,14 +2,20 @@ package it.unibo.pps1920.motoscala.model
 
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 
-/** Contains all possible entities in one level, whit their characteristic.
+/** Contains all possible entities in one level, whit their characteristic,
+ * contains even the level map size and level index.
  * <p><p><p><p>
+ * All entity contain basic information needed for construct ecs respectively entity.
+ * The entity are serialized and deserialized, for reconstruct one specific level, the size are used for the rendering
+ * the map and the index is used for order level.
+ *
  *
  */
 object Level {
   /** Represents one entity inside the game. */
   sealed trait LevelEntity
-  /** Represents one level, whitout ecs elements abtraction..
+  /** Represents one level, whiteout ecs elements abstraction.
+   * The level index, map coordinates and all entities.
    *
    * @param index The level index
    * @param mapSize The map size
