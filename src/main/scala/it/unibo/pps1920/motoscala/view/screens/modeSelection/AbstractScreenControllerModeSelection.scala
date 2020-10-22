@@ -56,9 +56,11 @@ abstract class AbstractScreenControllerModeSelection(
   private def initButtons(): Unit = {
 
     def addButtonMusic(button: Button*): Unit = {
-      button.foreach(_.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => controller
-        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))))
-      button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
+      button.foreach(btn => {
+        btn.addEventHandler[ActionEvent](ActionEvent.ACTION, _ =>
+          controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick)))
+        btn.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
+      })
     }
 
     addButtonMusic(buttonHost, buttonJoin)

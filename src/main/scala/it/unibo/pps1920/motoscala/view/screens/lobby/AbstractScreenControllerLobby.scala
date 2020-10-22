@@ -1,6 +1,8 @@
 package it.unibo.pps1920.motoscala.view.screens.lobby
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
@@ -50,8 +52,15 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
   }
 
   private def initButtons(): Unit = {
+    def addButtonMusic(button: Button*): Unit = {
+      button.foreach(btn => {
+        btn.addEventHandler[ActionEvent](ActionEvent.ACTION, _ =>
+          controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick)))
+        btn.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
+      })
+    }
 
-
+    addButtonMusic(buttonReady, buttonKick, buttonStart)
     buttonReady.setOnAction(_ => controller.lobbyInfoChanged(isStatusChanged = true))
     buttonKick.setOnAction(_ => controller.kickSomeone(listPlayer.getSelectionModel.getSelectedItem.getText))
     buttonStart.setOnAction(_ => {
@@ -67,7 +76,19 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
       cleanAll()
     })
   }
-
+  private def cleanAll(): Unit = {
+    buttonKick.setDisable(true)
+    buttonStart.setDisable(true)
+    buttonKick.setVisible(false)
+    buttonStart.setVisible(false)
+    ipLabel.setVisible(false)
+    portLabel.setVisible(false)
+    dropMenuDifficult.setDisable(true)
+    dropMenuLevel.setDisable(true)
+    listPlayer.getItems.clear()
+    ipLabel.setText("Ip:")
+    portLabel.setText("Port:")
+  }
   private def assertNodeInjected(): Unit = {
     assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(mainBorderPane != null, "fx:id=\"mainBorderPane\" was not injected: check your FXML file 'Lobby.fxml'.")
@@ -81,28 +102,23 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     assert(ipLabel != null, "fx:id=\"ipLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
     assert(portLabel != null, "fx:id=\"portLabel\" was not injected: check your FXML file 'Lobby.fxml'.")
   }
-
-
   protected def leaveLobby(): Unit = {
     Platform.runLater(() => {
       viewFacade.changeScreen(ChangeScreenEvent.GoBack)
     })
   }
-
   protected def updateLobby(lobbyData: LobbyData): Unit = {
     Platform.runLater(() => {
 
       lobbyData.difficulty.foreach(diff => dropMenuDifficult.setText(diff.toString))
       lobbyData.level.foreach(lvl => dropMenuLevel.setText(lvl.toString))
 
-
       val rpValues = lobbyData.readyPlayers.values
 
-      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1) {
+      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1)
         buttonStart.setDisable(false)
-      } else {
+      else
         buttonStart.setDisable(true)
-      }
 
       val lisPlayerStatus = listPlayer.getItems
       lisPlayerStatus.clear()
@@ -117,11 +133,9 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
       })
     })
   }
-
   protected def startMulti(): Unit = {
     viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   }
-
   protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
                              difficulties: List[Int]): Unit = {
     import scala.jdk.CollectionConverters._
@@ -157,9 +171,7 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     label.setTextFill(Color.Red)
     listPlayer.getItems.add(label)
   }
-
   private def reset(): Unit = {
-
     cleanAll()
     dropMenuDifficult.getItems.clear()
     dropMenuLevel.getItems.clear()
@@ -170,20 +182,6 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     portLabel.setVisible(true)
     dropMenuDifficult.setDisable(false)
     dropMenuLevel.setDisable(false)
-  }
-
-  private def cleanAll(): Unit = {
-    buttonKick.setDisable(true)
-    buttonStart.setDisable(true)
-    buttonKick.setVisible(false)
-    buttonStart.setVisible(false)
-    ipLabel.setVisible(false)
-    portLabel.setVisible(false)
-    dropMenuDifficult.setDisable(true)
-    dropMenuLevel.setDisable(true)
-    listPlayer.getItems.clear()
-    ipLabel.setText("Ip:")
-    portLabel.setText("Port:")
   }
 
 }
