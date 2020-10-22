@@ -60,18 +60,8 @@ protected[game] abstract class AbstractScreenControllerGame(
   }
 
   def initialize(): Unit = {
-    assertNodeInjected()
+    assertNodeInjected(root, canvas, canvasStack, buttonStart, labelTitle, labelScore, lifeBar)
     context = canvas.getGraphicsContext2D
-  }
-
-  private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(canvas != null, "fx:id=\"canvas\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(buttonStart != null, "fx:id=\"buttonStart\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(buttonBack != null, "fx:id=\"buttonBack\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(labelTitle != null, "fx:id=\"labelTitle\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(labelScore != null, "fx:id=\"scoreTile\" was not injected: check your FXML file 'Game.fxml'.")
-    assert(lifeBar != null, "fx:id=\"lifeBar\" was not injected: check your FXML file 'Game.fxml'.")
   }
 
   private def initButtons(): Unit = {
