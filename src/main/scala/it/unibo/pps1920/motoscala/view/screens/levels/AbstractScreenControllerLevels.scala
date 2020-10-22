@@ -30,14 +30,8 @@ protected[levels] abstract class AbstractScreenControllerLevels(
   }
 
   @FXML override def initialize(): Unit = {
-    assertNodeInjected()
+    assertNodeInjected(root, mainAnchorPane, grid)
     initBackButton()
-  }
-
-  private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Levels.fxml'.")
-    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Levels.fxml'.")
-    assert(grid != null, "fx:id=\"grid\" was not injected: check your FXML file 'Levels.fxml'.")
   }
 
   private def selectLevel(level: Int): Unit = {
