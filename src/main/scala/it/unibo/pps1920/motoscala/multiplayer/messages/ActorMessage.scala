@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.multiplayer.messages
 
 import akka.actor.ActorRef
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandableEvent, DisplayableEvent}
-import it.unibo.pps1920.motoscala.model.PlayerData
+import it.unibo.pps1920.motoscala.model.MatchSetup.Data.PlayerData
 import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
 
 import scala.collection.mutable
