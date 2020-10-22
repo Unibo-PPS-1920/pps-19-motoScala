@@ -10,6 +10,7 @@ import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
 import it.unibo.pps1920.motoscala.engine.Engine
+
 /**
  * System for handling removal of killed entities and to determine the end of a game
  */

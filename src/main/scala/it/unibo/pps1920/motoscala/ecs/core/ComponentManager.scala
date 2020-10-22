@@ -5,13 +5,14 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
 
 import scala.reflect.ClassTag
 
-/** A component manager manages [[it.unibo.pps1920.motoscala.ecs.Component]].
+/** A Component Manager manages [[it.unibo.pps1920.motoscala.ecs.Component]].
  * <p>
  * It allows component registration, binding to entity, and retrieving.
  * <p>
  * The set of component connected to an entity define an [[it.unibo.pps1920.motoscala.ecs.core.ECSSignature]]
  * */
 protected[core] trait ComponentManager {
+
   /** Register a component to the manager so that it can be bound to entities.
    * <p>
    * An unregistered component, if used, will produce an IllegalArgumentException.
@@ -19,7 +20,8 @@ protected[core] trait ComponentManager {
    * @param compType the component type
    */
   def registerComponentType(compType: ComponentType): Unit
-  /** Bind the component the entity.
+
+  /** Bind the component to the entity.
    * <p>
    * This will update che effective Signature of the component removing it.
    *
@@ -28,7 +30,8 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def bindComponentToEntity(entity: Entity, component: Component): ECSSignature
-  /** Unbind the component the entity.
+
+  /** Unbind the component from the entity.
    * <p>
    * This will update che effective Signature of the component removing it.
    *
@@ -37,6 +40,7 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def unbindComponentFromEntity(entity: Entity, component: Component): ECSSignature
+
   /** Get the entity signature.
    * <p>
    * It is indeed the set of component bound to the entity.
@@ -45,7 +49,8 @@ protected[core] trait ComponentManager {
    * @return the signature
    */
   def getEntitySignature(entity: Entity): ECSSignature
-  /** Get the component bound to the given entity.
+
+  /** Get the component that is bound to the given entity.
    * <p>
    *
    * @tparam T the component type
@@ -53,6 +58,7 @@ protected[core] trait ComponentManager {
    * @return the casted component
    */
   def getEntityComponent[T: ClassTag](entity: Entity): T
+
   /** Destroys the entity.
    * <p>
    * It is called from other modules
@@ -71,7 +77,6 @@ protected[core] object ComponentManager {
     import MagicValues._
 
     private def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
-
     override def registerComponentType(compType: ComponentType): Unit = registered = registered + compType
 
     override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
@@ -96,9 +101,7 @@ protected[core] object ComponentManager {
       entityComponent.get(entity).flatMap(_.get(implicitly[ClassTag[T]].runtimeClass)).get.asInstanceOf[T]
 
     override def entityDestroyed(entity: Entity): Unit = entityComponent -= entity
-
     override def getEntitySignature(entity: Entity): ECSSignature = ECSSignature(entityComponent(entity).keySet)
-
 
     private object ImplicitConversions {
       implicit def componentToComponentType(component: Component): ComponentType = component.getClass
