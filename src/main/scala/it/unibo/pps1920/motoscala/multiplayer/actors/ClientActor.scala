@@ -25,7 +25,6 @@ private class ClientActor(
   private var serverActor: Option[ActorRef] = None
   private var serverAddress: ActorSelection = _
 
-  //def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandableActorMessage(commandEvent)
   override def receive: Receive = idleBehaviour
 
   private def idleBehaviour: Receive = {
@@ -47,7 +46,6 @@ private class ClientActor(
     case TimeOut =>
       sendViewMessage(ServerNotFoundMsgTitle, ServerNotFoundMsgText)
       actorController.joinResult(false)
-
   }
 
   private def initMatchBehaviour: Receive = {
@@ -90,8 +88,9 @@ private class ClientActor(
   }
 }
 
+/** Factory for [[ClientActor]] instances. */
 object ClientActor {
-
+  /** Creates a new [[ClientActor]] */
   def props(controller: ActorController): Props = Props(new ClientActor(controller))
   object Constants {
     final val ResponseTime = 5

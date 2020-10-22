@@ -95,7 +95,8 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 25
       y: 25
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
@@ -104,7 +105,8 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 775
       y: 775
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
@@ -113,7 +115,8 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 775
       y: 25
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
@@ -122,7 +125,8 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 25
       y: 775
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15

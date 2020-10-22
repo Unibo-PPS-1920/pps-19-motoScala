@@ -19,7 +19,7 @@ class ServerActor(
   private var clients: Set[ActorRef] = Set()
   override def receive: Receive = idleBehaviour
 
-  def idleBehaviour: Receive = {
+  private def idleBehaviour: Receive = {
     case mess: LobbyDataActorMessage => tellToClients(mess)
 
     case JoinRequestActorMessage(name) => handleJoinRequest(name)
@@ -46,15 +46,12 @@ class ServerActor(
       tellToClients(ev)
   }
 
-  def inGameBehaviour: Receive = {
+  private def inGameBehaviour: Receive = {
     case CommandableActorMessage(event) => mediator.publishEvent(event)
     case SetupsForClientsMessage(setups) => clients.foreach(_ ! LevelSetupMessage(setups.iterator.next()))
   }
 
   private def handleJoinRequest(name: String): Unit = {
-    /*
-        val resp = controller.requestJoin(sender())
-    */
     val err = actorController.sendToLobbyStrategy[Option[ErrorReason]](_.tryAddPlayer(sender(), name))
 
     sender() ! JoinResponseActorMessage(err)
@@ -78,6 +75,8 @@ class ServerActor(
   override def notify(event: DisplayableEvent): Unit = clients.foreach(_ ! DisplayableActorMessage(event))
 }
 
+/** Factory for [[ServerActor]] instances. */
 object ServerActor {
+  /** Creates a new [[ServerActor]] */
   def props(controller: ActorController): Props = Props(new ServerActor(controller))
 }
