@@ -9,6 +9,7 @@ import it.unibo.pps1920.motoscala.model.NetworkAddr
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
+import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control.{Button, TextField, TextFormatter}
 import javafx.scene.layout.{AnchorPane, BorderPane}
@@ -54,19 +55,20 @@ abstract class AbstractScreenControllerModeSelection(
 
   private def initButtons(): Unit = {
 
-    def buttonHovered(button: Button*): Unit =
+    def addButtonMusic(button: Button*): Unit = {
+      button.foreach(_.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => controller
+        .redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))))
       button.foreach(_.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover))))
+    }
 
-    buttonHovered(buttonHost, buttonJoin)
+    addButtonMusic(buttonHost, buttonJoin)
 
     buttonHost.setOnAction(_ => {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       controller.becomeHost()
       viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
     })
 
     buttonJoin.setOnAction(_ => {
-      controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))
       toggleButtons()
       controller.tryJoinLobby(ipTextField.getText, portTextField.getText())
     })
@@ -89,39 +91,30 @@ abstract class AbstractScreenControllerModeSelection(
         null
     }
 
-    def getIpFormatter: UnaryOperator[Change] = getFormatter(_.matches(RegexIpAddress))
-
-    def getPortFormatter: UnaryOperator[Change] =
-      getFormatter(text => (text.length <= PortMaxLength && Try(NetworkAddr.validatePort(text.toInt))
+    def getIpFormatter: TextFormatter[Change] = new TextFormatter(getFormatter(_.matches(RegexIpAddress)))
+    def getPortFormatter: TextFormatter[Change] =
+      new TextFormatter(getFormatter(text => (text.length <= PortMaxLength && Try(NetworkAddr.validatePort(text.toInt))
         .getOrElse(false)) || text
-        .isEmpty)
+        .isEmpty))
 
+    ipTextField.setTextFormatter(getIpFormatter)
+    portTextField.setTextFormatter(getPortFormatter)
 
-    ipTextField.setTextFormatter(new TextFormatter(getIpFormatter))
+    def setUpTextField(textField: TextField)(strategy: String => Boolean)(externalStrategy: Boolean => Unit): Unit = {
+      textField.textProperty().addListener((_, _, newValue) => {
+        if (strategy(newValue)) {
+          notInError(ipTextField)
+          externalStrategy(true)
+        } else {
+          externalStrategy(false)
+          inError(ipTextField)
+        }
+        checkIpAndPort()
+      })
+    }
 
-    portTextField.setTextFormatter(new TextFormatter(getPortFormatter))
-
-    ipTextField.textProperty().addListener((_, _, newValue) => {
-      if (NetworkAddr.validateIPV4Address(newValue)) {
-        notInError(ipTextField)
-        ipReady = true
-      } else {
-        inError(ipTextField)
-        ipReady = false
-      }
-      checkIpAndPort()
-    })
-
-    portTextField.textProperty().addListener((_, _, newValue) => {
-      if (Try(NetworkAddr.validatePort(newValue.toInt)).getOrElse(false)) {
-        portReady = true
-        notInError(portTextField)
-      } else {
-        inError(portTextField)
-        portReady = false
-      }
-      checkIpAndPort()
-    })
+    setUpTextField(ipTextField)(NetworkAddr.validateIPV4Address)(ipReady = _)
+    setUpTextField(portTextField)(newVal => Try(NetworkAddr.validatePort(newVal.toInt)).getOrElse(false))(portReady = _)
 
     def checkIpAndPort(): Unit = {
       if (ipReady && portReady)
@@ -131,8 +124,6 @@ abstract class AbstractScreenControllerModeSelection(
     }
 
     def inError(field: TextField): Unit = field.setStyle(InErrorStyle)
-
-
     def notInError(field: TextField): Unit = field.setStyle(NotInErrorStyle)
   }
   protected def displayResult(res: Boolean): Unit = {
@@ -140,12 +131,12 @@ abstract class AbstractScreenControllerModeSelection(
     if (res) viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)
   }
   private[this] final object MagicValues {
-    final val RegexIpPartialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
-    final val RegexIpSubsequentPartialBlock: String = "(\\." + RegexIpPartialBlock + ")"
-    final val RegexIpAddress: String = "^" + (RegexIpPartialBlock + "?" + RegexIpSubsequentPartialBlock + "{0,3}")
-    final val PortMaxLength = 5
-    final val InErrorStyle = "-fx-border-color: red ; -fx-border-width: 5 ;"
-    final val NotInErrorStyle = ""
+    val RegexIpPartialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))"
+    val PortMaxLength = 5
+    val InErrorStyle = "-fx-border-color: red ; -fx-border-width: 5 ;"
+    val NotInErrorStyle = ""
+    val RegexIpSubsequentPartialBlock: String = "(\\." + RegexIpPartialBlock + ")"
+    val RegexIpAddress: String = "^" + (RegexIpPartialBlock + "?" + RegexIpSubsequentPartialBlock + "{0,3}")
   }
 }
 
