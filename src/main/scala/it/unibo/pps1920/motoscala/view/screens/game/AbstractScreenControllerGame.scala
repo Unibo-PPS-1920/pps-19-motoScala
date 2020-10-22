@@ -46,24 +46,37 @@ protected[game] abstract class AbstractScreenControllerGame(
   private var isPlaying: Boolean = false
 
   import MagicValues._
-  private object MagicValues {
-    val WinMessage = "You Win!"
-    val LoseMessage = "Game Over!"
-    val ScoreText = "Score"
-  }
-
   def sendCommandEvent(event: CommandEvent): Unit
-
   override def whenDisplayed(): Unit = {
     root.requestFocus()
     controller.redirectSoundEvent(PlayMusicEvent(Music.Game))
   }
-
   def initialize(): Unit = {
     assertNodeInjected(root, canvas, canvasStack, buttonStart, labelTitle, labelScore, lifeBar)
     context = canvas.getGraphicsContext2D
   }
-
+  /** Handle the setup message.
+   *
+   * @param data the setup data
+   */
+  protected def handleLevelSetup(data: LevelSetupData): Unit = {
+    playerEntity = data.player.some
+    mapSize = data.level.mapSize.some
+    canvasStack.setMaxWidth(mapSize.get.x)
+    canvasStack.setMaxHeight(mapSize.get.y)
+    canvas.heightProperty().bind(canvasStack.maxHeightProperty())
+    canvas.widthProperty().bind(canvasStack.maxWidthProperty())
+    lifeBar.setMinWidth(mapSize.get.x)
+    lifeBar.setProgress(1.0)
+    if (data.isSinglePlayer || data.isHosting) {
+      buttonStart setVisible true
+      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
+    } else {buttonStart setVisible false }
+    labelScore.setText(s"$ScoreText: ${0}")
+    initButtons()
+    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
+    viewFacade.getStage.setFullScreen(true)
+  }
   private def initButtons(): Unit = {
     buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MediumIcon))
     buttonBack.setOnAction(_ => dismiss())
@@ -89,52 +102,28 @@ protected[game] abstract class AbstractScreenControllerGame(
     controller.redirectSoundEvent(PlayMusicEvent(Music.Home))
     controller.shutdownMultiplayer()
   }
-
-  /** Handle the setup message.
-   *
-   * @param data the setup data
-   */
-  protected def handleLevelSetup(data: LevelSetupData): Unit = {
-    playerEntity = data.player.some
-    mapSize = data.level.mapSize.some
-    canvasStack.setMaxWidth(mapSize.get.x)
-    canvasStack.setMaxHeight(mapSize.get.y)
-    canvas.heightProperty().bind(canvasStack.maxHeightProperty())
-    canvas.widthProperty().bind(canvasStack.maxWidthProperty())
-    lifeBar.setMinWidth(mapSize.get.x)
-    lifeBar.setProgress(1.0)
-    if (data.isSinglePlayer || data.isHosting) {
-      buttonStart setVisible true
-      labelTitle.setText(if (data.isSinglePlayer) s"Level: ${data.level.index}" else "Multiplayer")
-    } else {buttonStart setVisible false }
-    labelScore.setText(s"$ScoreText: ${0}")
-    initButtons()
-    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some
-    viewFacade.getStage.setFullScreen(true)
-  }
-
+  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
   /** Handle the end message.
    *
    * @param data the end data
    */
   protected def handleLevelEnd(data: EndData): Unit = {
-    def updateScore(score: Option[Int]): String = controller.updateScore(score, gameIsEnded = true).toString
+    def gameEnd(message: String): Unit = {
+      showSimpleDialog(this.canvasStack, message, controller.score.toString, _ => dismiss())
+      controller.saveStats()
+      controller.shutdownMultiplayer()
+    }
     data match {
-      case EndData(true, BumperCarEntity(_), _) =>
-        showSimpleDialog(this.canvasStack, WinMessage, updateScore(None), _ => dismiss())
-      case EndData(false, BumperCarEntity(_), _) =>
-        showSimpleDialog(this.canvasStack, LoseMessage, updateScore(None), _ => dismiss())
-      case EndData(_, _, score) => labelScore.setText(s"$ScoreText: ${updateScore(Some(score))}")
+      case EndData(hasWon, BumperCarEntity(_), _) => gameEnd(if (hasWon) WinMessage else LoseMessage)
+      case EndData(_, _, score) => controller.score += score; labelScore.setText(s"$ScoreText: ${controller.score}")
     }
   }
-
   /** Handle the life message.
    *
    * @param data the life data
    */
   protected def handleEntityLife(data: LifeData): Unit =
     if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)
-
   /** Handle the draw message.
    *
    * @param players the players present in the game
@@ -158,8 +147,11 @@ protected[game] abstract class AbstractScreenControllerGame(
     playerPart._1.foreach(_ foreach (Drawables.PlayerDrawable.draw(_, context)))
     playerPart._2.foreach(_ foreach (Drawables.PlayerMPDrawable.draw(_, context)))
   }
-
-  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)
+  private object MagicValues {
+    val WinMessage = "You Win!"
+    val LoseMessage = "Game Over!"
+    val ScoreText = "Score"
+  }
 }
 
 

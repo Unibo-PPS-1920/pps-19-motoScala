@@ -15,7 +15,7 @@ class ServerActor(
   protected val actorController: ActorController) extends ActorWhitLogging with EventObserver[DisplayableEvent] {
 
   override protected val logger: Logger = LoggerFactory getLogger classOf[ServerActor]
-  private val levelMediator: Mediator = actorController.getMediator
+  private val mediator: Mediator = actorController.mediator
   private var clients: Set[ActorRef] = Set()
   override def receive: Receive = idleBehaviour
 
@@ -41,13 +41,13 @@ class ServerActor(
       actorController.shutdownMultiplayer()
 
     case ev: GameStartActorMessage =>
-      levelMediator.subscribe(this)
+      mediator.subscribe(this)
       changeBehaviourWhitLogging(inGameBehaviour)
       tellToClients(ev)
   }
 
   def inGameBehaviour: Receive = {
-    case CommandableActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case CommandableActorMessage(event) => mediator.publishEvent(event)
     case SetupsForClientsMessage(setups) => clients.foreach(_ ! LevelSetupMessage(setups.iterator.next()))
   }
 

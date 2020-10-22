@@ -2,7 +2,7 @@ package it.unibo.pps1920.motoscala.multiplayer.actors
 
 import akka.actor.{ActorRef, ActorSelection, Props, Timers}
 import it.unibo.pps1920.motoscala.controller.ActorController
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, CommandableEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
 import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
 import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor.Constants.ResponseTime
 import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor.SchedulerTickKey
@@ -21,11 +21,11 @@ private class ClientActor(
   import MagicValues._
 
   override protected val logger: Logger = LoggerFactory getLogger classOf[ClientActor]
-  private val levelMediator: Mediator = actorController.getMediator
+  private val mediator: Mediator = actorController.mediator
   private var serverActor: Option[ActorRef] = None
   private var serverAddress: ActorSelection = _
 
-  def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandableActorMessage(commandEvent)
+  //def handle(commandEvent: CommandEvent): Unit = serverActor.get ! CommandableActorMessage(commandEvent)
   override def receive: Receive = idleBehaviour
 
   private def idleBehaviour: Receive = {
@@ -57,7 +57,7 @@ private class ClientActor(
     case GameStartActorMessage() =>
       changeBehaviourWhitLogging(inGameBehaviour)
       actorController.gameStart()
-      levelMediator.subscribe(this)
+      mediator.subscribe(this)
     case KickActorMessage(_) => actorController.gotKicked()
     case ev: LeaveEvent =>
       serverActor.get ! ev
@@ -70,7 +70,7 @@ private class ClientActor(
 
   private def inGameBehaviour: Receive = {
     case GameEndActorMessage => actorController.gameEnd()
-    case DisplayableActorMessage(event) => actorController.getMediator.publishEvent(event)
+    case DisplayableActorMessage(event) => mediator.publishEvent(event)
     case LevelSetupMessage(levelSetupData) =>
       actorController.sendToViewStrategy(_.notify(LevelSetupEvent(levelSetupData)))
   }
