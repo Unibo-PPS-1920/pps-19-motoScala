@@ -52,10 +52,10 @@ entities: !<scala.collection.immutable.$colon$colon>
       y: 0
   - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
     position:
-      x: 400
-      y: 500
+      x: 100
+      y: 100
     shape:
-      radius: 25.0
+      radius: 50.0
     velocity:
       x: 3
       y: 3
