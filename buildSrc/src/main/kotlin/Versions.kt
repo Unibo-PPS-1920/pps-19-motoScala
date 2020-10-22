@@ -2,10 +2,12 @@ object Versions {
     //PLUGINS
     const val scoverage = "4.0.2"
     const val shadow = "6.0.0"
-    
+    const val sem_vers_pianini = "0.2.2"
+    const val javafx_plugin = "0.0.9"
+
     //JAVAFX
-    const val jfoenix = "8.0.8"
-    const val ikonli = "2.4.0"
+    const val jfoenix = "9.0.10"
+    const val ikonli = "11.5.0"
     const val enzo = "0.3.6"
 
     //SCALA_FX
@@ -24,7 +26,12 @@ object Versions {
     const val scala_collection_contrib = "0.2.1"
     const val scala_parallel_collections = "0.2.0"
     const val scala_async = "1.0.0-M1"
-    const val scala_xml = "1.2.0"
+
+    //SCALA_LIBS
+    const val scala_fsa = "0.1.0"
+    const val scala_refined = "0.9.16"
+    const val scala_cats_core = "2.2.0"
+    const val scala_monix = "3.2.2"
 
     //AKKA
     const val akka = "2.6.9"
@@ -37,4 +44,7 @@ object Versions {
 
     //JACKSON
     const val jackson = "2.11.2"
+
+    //TUPROLOG
+    const val tuprolog = "3.3.0"
 }

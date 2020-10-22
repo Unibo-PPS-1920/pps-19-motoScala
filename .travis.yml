@@ -1,50 +1,58 @@
-language: java
+language: bash
 git:
   depth: false
 os: linux
 dist: xenial
-before_script:
-  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-stages:
-  stages:
-    - check
-    - telegram
-    - deploy
 env:
-  global:
-    -OFFICIAL_REPO_SLUG="Unibo-PPS-1920/pps-19-motoScala"
+  # JAVA 8- JDK="bellsoft-jdk8u265+1-linux-amd64-full"
+  - JDK="bellsoft-jdk11.0.8+10-linux-amd64-full"
+stages:
+  - check
+  - deploy
 jobs:
   include:
     - stage: check
-      name: "Gradle check on Linux OS and JDK8"
+      name: "Gradle check on Linux OS and JDK 8"
       os: linux
       script:
-        - mkdir "$TRAVIS_BUILD_DIR"/motoScala
-        - cd "$TRAVIS_BUILD_DIR"/motoScala
-        - ./gradlew clean check fatjar --parallel
-    - stage: telegram
-      name: Telegram notification
-      if: tag IS NOT present AND type != pull_request
+        - ./gradlew check --scan --parallel
+    - stage: deploy
+      name: "Deploy on Linux OS and JDK 8"
       os: linux
-      script:
-        - 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage -d chat_id=$TELEGRAM_CHAT_ID
-      -d "text=$(dirname $TRAVIS_REPO_SLUG) pushed to $TRAVIS_BRANCH %0ACommit: $TRAVIS_COMMIT_MESSAGE%0ALink:
-      https://github.com/Unibo-PPS-1920/pps1920-motoScala-report/commits/$TRAVIS_BRANCH"'
+      #if: type != pull_request
+      if: tag IS present
+      env:
+        - PUBLISH="true"
 before_install:
-  - source ./install-jdk.sh --url https://download.bell-sw.com/java/8u265+1/bellsoft-jdk8u265+1-linux-amd64-full.tar.gz
+  - echo "Downloading jdk"
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  - source ./install-jdk.sh --url https://download.bell-sw.com/java/11.0.8+10/bellsoft-jdk11.0.8+10-linux-amd64-full.tar.gz
+  # JAVA8 - source ./install-jdk.sh --url https://download.bell-sw.com/java/11.0.8+10/bellsoft-jdk11.0.8+10-linux-amd64-full.tar.gz
   - java -version
+before_deploy:
+  - echo "Preparing for deploy"
+  - ./gradlew check assemble scaladoc --scan --parallel
+  - mkdir -p report
+  - cp --parent build/reports report -R
+  - cp --parent build/docs report -R
 deploy:
-  provider: releases
-  api_key:
-    secure: Q/1LXFY3iRS5HhAdt8oL9f6DFIwiZ2zBKfI0Yh8kFq0r7IntdGGBdlhAdy+Uxch60MdmS3HfgqducR4ZuBMzYe9gHd2N5xDj9K9Y0BDoN4vE7Y6MCUEjeRXDg40eDlNpaFnHwAc7RIU8jVwBQ3C+QSilwBSjoa8eEXCSu7Q76KyvgtvkP9ietjN9cOsXFPkGgcCaPRAc4naGNZ5Y2uChpTVtIRHZgafXRul8MUiHJritUSgixymr9ARgW0T0Q8wjz5LP6gYkLOFBm34VvQO38pb0rcufva4KMW9CkF/zexkwVTknjZL8OKWSmnhls5DKPn+yvNSg8SmKvN3DOFTdoncExqgcIJYqWOd/4iUP2JTvyEzOZtr93v87fb/SxzRjx/OgrRNOHL4tpMRsBZdQVnSQO7uNvqCWhGmO6hFRzWib5sEZgfl/xg4u6ZMuba8ARrFME9DZkpbwwQz6BORvZjvfoXhsmCOxF4o7eNYikgLvc87jOPsI7KgjHGJxuwzO9eZ5ER2ziBwfg/j0q4zeZ4qEmhyaSL6lCxhLFvkj91DOb7Q9erC/bax05z1J89Q8CHp8TcpDLUbxK13kN/lWmNOx04dqCTQ3Y0Ke0dsZlaGJLna9DlIipLoYs586XILF14lOaJFRI3UGDtlzLnDfH8P+GE3ji02v9szccFXUNaw=
-  file_glob: true
-  file: "${HOME}/build/libs/pps-19-motoScala-*"
-  on:
-    os: linux
-    repo: Unibo-PPS-1920/pps-19-motoScala
-    branch: release
-    tags: true
-  skip_cleanup: 'true'
-after_deploy: 'curl -X  POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage
-  -d chat_id=$TELEGRAM_CHAT_ID -d "text= Commit: $TRAVIS_COMMIT_MESSAGE %0ATag: $TRAVIS_TAG
-  %0ALink: https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/latest/download/"'
+  - provider: releases
+    api_key: $GITHUB_TOKEN
+    file_glob: true
+    file: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/build/libs/pps-19-motoScala-*.jar"
+    skip_cleanup: 'true'
+    on:
+      os: linux
+      repo: Unibo-PPS-1920/pps-19-motoScala
+      condition: $PUBLISH = "true"
+      all_branches: true
+  - provider: pages
+    github_token: $GITHUB_TOKEN
+    edge: true
+    skip_cleanup: 'true'
+    local_dir: "${HOME}/build/Unibo-PPS-1920/pps-19-motoScala/report"
+    on:
+      os: linux
+      repo: Unibo-PPS-1920/pps-19-motoScala
+      condition: $PUBLISH = "true"
+      all_branches: true

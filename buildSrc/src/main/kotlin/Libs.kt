@@ -4,6 +4,8 @@ object Libs {
     object Plugins {
         const val scoverage = "org.scoverage"
         const val shadow = "com.github.johnrengelman.shadow"
+        const val sem_vers_pianini = "org.danilopianini.git-sensitive-semantic-versioning"
+        const val javafx_plugin = "org.openjfx.javafxplugin"
     }
 
     object JavaFx {
@@ -23,7 +25,6 @@ object Libs {
 
         //SCALA
         const val scala_library = "org.scala-lang:scala-library:" + Versions.scala_library
-        //testImplementation 'org.scalactic:scalactic_0.26:3.2.2'
 
         //SCALA TEST
         const val scalatest = "org.scalatest:scalatest_2.13:" + Versions.scalatest
@@ -31,13 +32,19 @@ object Libs {
         const val scalatest_funspec = "org.scalatest:scalatest-funspec_2.13:" + Versions.scalatest
         const val scalatest_mustmatchers = "org.scalatest:scalatest-mustmatchers_2.13:" + Versions.scalatest
         const val scalatest_shouldmatchers = "org.scalatest:scalatest-shouldmatchers_2.13:" + Versions.scalatest
+        const val scalatest_scalactic = "org.scalactic:scalactic_0.26:" + Versions.scalatest
         const val scalatest_plus = "org.scalatestplus:junit-4-12_2.13:" + Versions.scalatest_plus
-        const val scala_xml = "org.scala-lang.modules:scala-xml_2.13:" + Versions.scala_xml
 
         //SCALA MODULES
         const val scala_collection_contrib = "org.scala-lang.modules:scala-collection-contrib_2.13:" + Versions.scala_collection_contrib
         const val scala_parallel_collections = "org.scala-lang.modules:scala-parallel-collections_2.13:" + Versions.scala_parallel_collections
         const val scala_async = "org.scala-lang.modules:scala-async_2.13:" + Versions.scala_async
+
+        //SCALA LIBS
+        const val scala_fsa = "org.driangle:simple-state-machine_2.13:" + Versions.scala_fsa
+        const val scala_refined = "eu.timepit:refined_2.13:" + Versions.scala_refined
+        const val scala_cats_core = "org.typelevel:cats-core_2.13:" + Versions.scala_cats_core
+        const val scala_monix = "io.monix:monix_2.13:" + Versions.scala_monix
     }
 
     object Akka {
@@ -55,7 +62,7 @@ object Libs {
     }
 
     object Loggers {
-        const val logback = "ch.qos.logback:logback-parent:" + Versions.logback_classic
+        const val logback = "ch.qos.logback:logback-classic:" + Versions.logback_classic
     }
 
     object Serializers {
@@ -68,6 +75,11 @@ object Libs {
         const val jackson_annotation = "com.fasterxml.jackson.core:jackson-annotations:" + Versions.jackson
         const val jackson_core = "com.fasterxml.jackson.core:jackson-core:" + Versions.jackson
         const val jackson_databind = "com.fasterxml.jackson.core:jackson-databind:" + Versions.jackson
+        const val jackson_module = "com.fasterxml.jackson.module:jackson-module-scala_2.13:" + Versions.jackson
         const val jackson_yaml = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:" + Versions.jackson
+    }
+
+    object TuProlog {
+        const val tuprolog = "it.unibo.alice.tuprolog:tuprolog:" + Versions.tuprolog
     }
 }
