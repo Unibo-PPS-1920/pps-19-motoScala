@@ -32,37 +32,88 @@ object ActorMessage {
   /*Server to Client messages*/
 
   /*in game messages*/
-  /** */
+  /** This message means that the game is end. */
   final case class GameEndActorMessage() extends ActorMessage
+  /** This message carry the new state of the world, computed by the server,
+   * it is used by the view for display the new world to user.
+   *
+   * @param event the event to display
+   */
   final case class DisplayableActorMessage(event: DisplayableEvent) extends ActorMessage
+  /** This message carry the command from the Client to the Server, the command is used by the server for computate the
+   * new world and return a [[DisplayableActorMessage]].
+   *
+   * @param event the command to tell
+   */
   final case class CommandableActorMessage(event: CommandableEvent) extends ActorMessage
 
   /*in lobby messages*/
 
+  /** This message contains the data updated data of the lobby.
+   *
+   * @param lobbyData the new data
+   */
   final case class LobbyDataActorMessage(lobbyData: LobbyData) extends ActorMessage
+  /** This message tell to one client that server want to kick it out.
+   *
+   * @param ref the client ref
+   */
   final case class KickActorMessage(ref: ActorRef) extends ActorMessage
+  /** This message carry the result of the join request.
+   *
+   * @param option if None the request is accepted, otherwise the message contain the reason
+   */
   final case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage
+  /** Used to tell to clients that Server the server has close the lobby. */
   final case class CloseLobbyActorMessage() extends ActorMessage
+  /** Used to set up the view for client.
+   *
+   * @param levelData contains all data needed for client to setup
+   */
   final case class LevelSetupMessage(levelData: LevelSetupData) extends ActorMessage
 
 
   /*Client to Server messages*/
+
+  /** Used to tell to server that client want to leave lobby.
+   *
+   * @param ref used for
+   * */
   final case class LeaveEvent(ref: ActorRef) extends ActorMessage
-  final case class TryJoin(serverSelection: String, name: String) extends ActorMessage
+
+
+  /** Used to ask if is possible to join in one lobby whit that name.
+   *
+   * @param name name of the client
+   * */
   final case class JoinRequestActorMessage(name: String) extends ActorMessage
 
 
-  //*Both used*//
+  /*Both used*/
+
+  /** Used to deliver the sender status (ready or not) to the receiver.
+   *
+   * @param status the new status
+   */
   final case class ReadyActorMessage(status: Boolean) extends ActorMessage
+  /** Used to inform server and client that the game is now started. */
   final case class GameStartActorMessage() extends ActorMessage
 
+
+  /*Used only from controller to Client*/
+
+  /** Used to ask if is possible to join in one lobby whit that name, and provide client whit server selection for
+   * the purpose.
+   *
+   * @param serverSelection server actor selection addr
+   * @param name name of the client
+   * */
+  final case class TryJoin(serverSelection: String, name: String) extends ActorMessage
 
   /*Self sent message*/
 
   /*Internal Timeout message, sent by internal general purpose Timeout*/
   final case class TimeOut() extends ActorMessage
-
-
 }
 
 object MessageData {
