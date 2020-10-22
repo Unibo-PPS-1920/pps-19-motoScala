@@ -69,7 +69,6 @@ private class ClientActor(
   }
 
   private def inGameBehaviour: Receive = {
-    case GameEndActorMessage => actorController.gameEnd()
     case DisplayableActorMessage(event) => mediator.publishEvent(event)
     case LevelSetupMessage(levelSetupData) =>
       actorController.sendToViewStrategy(_.notify(LevelSetupEvent(levelSetupData)))

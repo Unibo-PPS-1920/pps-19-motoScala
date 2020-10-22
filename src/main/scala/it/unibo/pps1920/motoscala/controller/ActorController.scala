@@ -14,7 +14,6 @@ trait ActorController {
   def getLobbyData: LobbyData
   def gameStart(): Unit
   def shutdownMultiplayer(): Unit
-  def gameEnd(): Unit
   def gotKicked(): Unit
   def joinResult(result: Boolean): Unit
 }

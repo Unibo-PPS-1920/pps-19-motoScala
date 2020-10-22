@@ -106,8 +106,6 @@ object Controller {
     /*Used by Client Actor*/
     override def gameStart(): Unit = observers.foreach(_.notify(LoadLevelEvent()))
 
-    override def gameEnd(): Unit = {}
-
     override def getLobbyData: DataType.LobbyData =
       LobbyData(Some(matchSetupMp.get.difficulty),
                 Some(matchSetupMp.get.level), Some(matchSetupMp.get.mode), matchSetupMp.get.getPlayerStatus)
@@ -117,7 +115,6 @@ object Controller {
       clientActor = Some(system.actorOf(ClientActor.props(this), ClientActorName))
       clientActor.get ! TryJoin(s"$ActorSelectionProtocol$ip:$port$ActorSelectionPath", actualSettings.name)
     }
-
     override def becomeHost(): Unit = {
       shutdownMultiplayer()
       loadAllLevels()
@@ -138,7 +135,6 @@ object Controller {
       observers.foreach(_.notify(JoinResultEvent(result)))
     }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = strategy.apply(matchSetupMp.get)
-
     override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = observers.foreach(strategy(_))
     override def gotKicked(): Unit = {
       observers.foreach(obs => {
@@ -148,6 +144,7 @@ object Controller {
       })
     }
     override def shutdownMultiplayer(): Unit = {
+
       multiplayerStatus = false
       if (serverActor.isDefined) system.stop(serverActor.get)
       if (clientActor.isDefined) system.stop(clientActor.get)
@@ -200,7 +197,6 @@ object Controller {
         dataManager.saveScore(ScoresData(loadedStats))
       }
     }
-
 
     override def loadStats(): Unit =
       observers.foreach(_.notify(ScoreDataEvent(dataManager.loadScore().getOrElse(ScoresData(HashMap())))))

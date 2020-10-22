@@ -112,6 +112,7 @@ protected[game] abstract class AbstractScreenControllerGame(
       showSimpleDialog(this.canvasStack, message, controller.score.toString, _ => dismiss())
       controller.saveStats()
       controller.shutdownMultiplayer()
+      controller.score = 0
     }
     data match {
       case EndData(hasWon, BumperCarEntity(_), _) => gameEnd(if (hasWon) WinMessage else LoseMessage)
