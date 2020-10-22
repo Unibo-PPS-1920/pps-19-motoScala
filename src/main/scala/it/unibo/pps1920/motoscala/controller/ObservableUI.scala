@@ -4,7 +4,7 @@ import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.view.ObserverUI
 
-/** The Controller side of the Observer, the [[ObserverUI]] can observe the [[ObservableUI]].
+/** The Controller side of the Observer, the [[it.unibo.pps1920.motoscala.view.ObserverUI]] can observe the [[ObservableUI]].
  * Expose all the function that the view can call to the Controller, it expose even some useful getter. */
 trait ObservableUI extends SoundController {
   /** The getter of actual selected level. */
@@ -58,7 +58,7 @@ trait ObservableUI extends SoundController {
   /** Mediator getter, provide the mediator for view instances, is useful for screes that use it for registers itself
    * to new coming events.
    *
-   * @return the [[Mediator]]
+   * @return the [[it.unibo.pps1920.motoscala.controller.mediation.Mediator]]
    * */
   def mediator: Mediator
   /** Deserialize and load all Levels. */

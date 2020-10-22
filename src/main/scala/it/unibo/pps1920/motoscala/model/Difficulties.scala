@@ -1,7 +1,5 @@
 package it.unibo.pps1920.motoscala.model
 
-import it.unibo.pps1920.motoscala.model.Difficulties.Difficult
-
 /** Provide a default [[Difficult]] Instance */
 object Difficulties extends Enumeration {
   val EASY: Difficult = Difficult("Easy", 1)

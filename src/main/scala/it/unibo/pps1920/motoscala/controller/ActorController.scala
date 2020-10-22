@@ -11,7 +11,7 @@ trait ActorController {
   /** One strategy used to send one action to view without passing trough controller.
    * Used for avoid redundant call, or spoiled call.
    *
-   * @param strategy
+   * @param strategy the strategy to use
    */
   def sendToViewStrategy(strategy: ObserverUI => Unit): Unit
   /**
@@ -19,15 +19,15 @@ trait ActorController {
    * Used for avoid redundant call, or spoiled call.
    * It can be used for retrieving useful data.
    *
-   * @param strategy
-   * @tparam T
-   * @return
+   * @param strategy the strategy to use
+   * @tparam T the return param
+   * @return return the T type passed
    */
   def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T
   /** Mediator getter, provide the mediator for view instances, is useful for screes that use it for registers itself
    * to new coming events.
    *
-   * @return the [[Mediator]]
+   * @return the [[it.unibo.pps1920.motoscala.controller.mediation.Mediator]]
    * */
   def mediator: Mediator
   /** Called to retrieve the actual lobby status.
