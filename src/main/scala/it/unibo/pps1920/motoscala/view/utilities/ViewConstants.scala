@@ -36,6 +36,7 @@ protected[view] object ViewConstants {
       val BlackPupa: String = EntitiesFolder + "BlackPupa.png"
       val BluePupa: String = EntitiesFolder + "BluePupa.png"
       val Polar: String = EntitiesFolder + "Polar.png"
+      val BigBoss: String = EntitiesFolder + "BigBoss.png"
       val Nabicon: String = EntitiesFolder + "Nabicon.png"
       val Beecon: String = EntitiesFolder + "Beecon.png"
       val PowerUpJump: String = EntitiesFolder + "PowerUpJump.png"

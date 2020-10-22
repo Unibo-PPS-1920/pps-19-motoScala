@@ -34,6 +34,7 @@ object Level {
   case class BluePupa(position: Coordinate, shape: Circle, velocity: Coordinate) extends LevelEntity
   case class BlackPupa(position: Coordinate, shape: Circle, velocity: Coordinate) extends LevelEntity
   case class Polar(position: Coordinate, shape: Circle, velocity: Coordinate) extends LevelEntity
+  case class BigBoss(position: Coordinate, shape: Circle, velocity: Coordinate) extends LevelEntity
   case class Nabicon(position: Coordinate, shape: Rectangle, velocity: Coordinate) extends LevelEntity
   case class Beecon(position: Coordinate, shape: Rectangle, velocity: Coordinate) extends LevelEntity
   case class JumpPowerUp(position: Coordinate, shape: Circle) extends LevelEntity

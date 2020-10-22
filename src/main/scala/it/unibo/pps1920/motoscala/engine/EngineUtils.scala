@@ -76,6 +76,15 @@ protected[engine] object EngineUtils {
                                CollisionComponent(PolaLifer * difficult, mass = BaseEnemyMass),
                                AIComponent(Foolishness.Polar / difficult, mutable.Stack(playerStack.head)),
                                ScoreComponent(PolaScore * difficult))
+      case BigBoss(position, shape, velocity) =>
+        val bigBoss = BigBossEntity(UUID.randomUUID())
+        coordinator.addEntity(bigBoss)
+          .addEntityComponents(bigBoss, ShapeComponent(shape),
+                               PositionComponent((position.x, position.y)),
+                               VelocityComponent(defVel = (velocity.x, velocity.y)),
+                               CollisionComponent(BigBossLife * difficult, mass = BigBossMass),
+                               AIComponent(Foolishness.BigBoss / difficult, mutable.Stack(playerStack.head)),
+                               ScoreComponent(BigBosScore * difficult))
       case Nabicon(position, shape, velocity) =>
         val nabi = NabiconEntity(UUID.randomUUID())
         coordinator.addEntity(nabi)
@@ -142,7 +151,7 @@ private object Scores {
   val BlackPupaScore: Int = 400
   val RedPupaScore: Int = 200
   val BluePupaScore: Int = 500
-
+  val BigBosScore: Int = 3000
 }
 /**
  * Possible entity masses
@@ -151,27 +160,30 @@ private object Masses {
   val PowerUpMass: Int = 0
   val PlayerMass: Int = 100
   val BaseEnemyMass: Int = 30
-  val BeeconMass: Int = 1000
+  val BigBossMass: Int = 250
+  val BeeconMass: Int = Int.MaxValue
   val NabiconMass: Int = Int.MaxValue
 }
 /**
  * Possible entity life values
  */
 private object Life {
-  val NabiconLife: Int = 10
-  val BeeconLife: Int = 10
-  val PolaLifer: Int = 5
-  val BlackPupaLife: Int = 12
-  val RedPupaLife: Int = 10
-  val BluePupaLife: Int = 15
-  val PowerUpLife: Int = 10
+  val NabiconLife: Int = 100
+  val BeeconLife: Int = 100
+  val PolaLifer: Int = 100
+  val BlackPupaLife: Int = 120
+  val RedPupaLife: Int = 100
+  val BluePupaLife: Int = 150
+  val PowerUpLife: Int = 100
+  val BigBossLife: Int = 700
 }
 /**
  * Possible enemy foolishness
  */
 private object Foolishness {
-  val Polar: Int = 100
+  val Polar: Int = 30
   val BlackPupa: Int = 50
   val RedPupa: Int = 75
   val BluePupa: Int = 25
+  val BigBoss: Int = 10
 }

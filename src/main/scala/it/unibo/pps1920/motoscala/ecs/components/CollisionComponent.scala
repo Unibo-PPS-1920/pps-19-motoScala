@@ -13,7 +13,7 @@ import it.unibo.pps1920.motoscala.ecs.{Component, Entity}
  */
 final case class CollisionComponent(var life: Int,
                                     var mass: Double,
-                                    var damage: Int = 1,
+                                    var damage: Int = 10,
                                     var collEntity: Entity = new Entity {override def uuid: UUID = UUID.randomUUID()},
                                     var isColliding: Boolean = false,
                                     var duration: Int = 0,
