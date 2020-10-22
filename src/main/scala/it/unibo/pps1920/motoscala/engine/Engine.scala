@@ -57,7 +57,7 @@ object GameEngine {
     override def tick(): Unit = coordinator.updateSystems()
 
     override def init(level: LevelData): Unit = {
-      import it.unibo.pps1920.motoscala.ecs.systems.Collision.CollisionsSystem
+      import it.unibo.pps1920.motoscala.ecs.systems.collision.CollisionsSystem
       logger info "engine init start"
       mediator.subscribe(this)
       coordinator.registerComponentType(classOf[PositionComponent])
