@@ -22,14 +22,9 @@ abstract class AbstractScreenControllerStats(
   @FXML protected var listView: ListView[String] = _
 
   @FXML override def initialize(): Unit = {
+    assertNodeInjected(root, mainAnchorPane, listView)
     assertNodeInjected()
     initBackButton()
-  }
-
-  private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Stats.fxml'.")
-    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Stats.fxml'.")
-    assert(listView != null, "fx:id=\"listView\" was not injected: check your FXML file 'Stats.fxml'.")
   }
 
   protected def populateScoreBoard(score: ScoresData): Unit = {

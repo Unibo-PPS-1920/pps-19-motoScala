@@ -31,8 +31,8 @@ abstract class AbstractScreenControllerSettings(
   @FXML protected var textPlayerName: TextField = _
 
   import MagicValues._
-
   @FXML override def initialize(): Unit = {
+    assertNodeInjected(root, mainAnchorPane, effectSlider, diffSlider, musicSlider, textPlayerName)
     assertNodeInjected()
     extendButtonBackBehaviour()
     initBackButton()
@@ -40,19 +40,9 @@ abstract class AbstractScreenControllerSettings(
     initTextField()
   }
 
-  private def assertNodeInjected(): Unit = {
-    assert(root != null, "fx:id=\"root\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(mainAnchorPane != null, "fx:id=\"mainAnchorPane\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(diffSlider != null, "fx:id=\"diffSlider\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(musicSlider != null, "fx:id=\"volumeSlider\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(effectSlider != null, "fx:id=\"effectSlider\" was not injected: check your FXML file 'Settings.fxml'.")
-    assert(textPlayerName != null, "fx:id=\"textPlayerName\" was not injected: check your FXML file 'Settings.fxml'.")
-  }
-
   private def initSlider(): Unit = {
     musicSlider.setOnMouseReleased(_ => sendStats())
     effectSlider.setOnMouseReleased(_ => sendStats())
-
     diffSlider.setLabelFormatter(new StringConverter[lang.Double]() {
       override def toString(`object`: lang.Double): String = `object` match {
         case n if n <= EASY.number => EASY.name
@@ -67,26 +57,20 @@ abstract class AbstractScreenControllerSettings(
     })
   }
 
-  private def sendStats(): Unit = {
-    controller
-      .saveSettings(SettingsData(musicSlider.getValue.toFloat, effectSlider.getValue.toFloat, diffSlider
-        .getValue.toInt, if (textPlayerName.getText.isBlank) DefaultName else textPlayerName.getText))
-  }
+  private def sendStats(): Unit =
+    controller.saveSettings(SettingsData(musicSlider.getValue.toFloat, effectSlider.getValue.toFloat, diffSlider
+      .getValue.toInt, if (textPlayerName.getText.isBlank) DefaultName else textPlayerName.getText))
 
   private def initTextField(): Unit = {
     val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter => {
       val text: String = formatter.getControlNewText
-      if (text.length <= NameMaxLength || text.isEmpty)
-        formatter
-      else
-        null
+      if (text.length <= NameMaxLength || text.isEmpty) formatter else null
     }
     textPlayerName.setTextFormatter(new TextFormatter(portFormatter))
   }
 
   private def extendButtonBackBehaviour(): Unit =
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => sendStats())
-
 
   def displaySettings(settings: SettingsData): Unit = {
     effectSlider.setValue(settings.effectVolume)
