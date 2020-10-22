@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.view.drawable
+package it.unibo.pps1920.motoscala.view.drawables
 
 import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures

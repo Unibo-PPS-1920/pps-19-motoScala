@@ -11,7 +11,7 @@ import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
 import it.unibo.pps1920.motoscala.view._
-import it.unibo.pps1920.motoscala.view.drawable.Drawables
+import it.unibo.pps1920.motoscala.view.drawables.Drawables
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
