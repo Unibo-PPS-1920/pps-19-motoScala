@@ -13,10 +13,12 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent.LobbyDataEvent
 import org.slf4j.{Logger, LoggerFactory}
 class ServerActor(
   protected val actorController: ActorController) extends ActorWhitLogging with EventObserver[DisplayableEvent] {
+
   override protected val logger: Logger = LoggerFactory getLogger classOf[ServerActor]
   private val levelMediator: Mediator = actorController.getMediator
   private var clients: Set[ActorRef] = Set()
   override def receive: Receive = idleBehaviour
+
   def idleBehaviour: Receive = {
     case mess: LobbyDataActorMessage => tellToClients(mess)
 
@@ -43,15 +45,12 @@ class ServerActor(
       changeBehaviourWhitLogging(inGameBehaviour)
       tellToClients(ev)
   }
+
   def inGameBehaviour: Receive = {
     case CommandableActorMessage(event) => actorController.getMediator.publishEvent(event)
     case SetupsForClientsMessage(setups) => clients.foreach(_ ! LevelSetupMessage(setups.iterator.next()))
   }
-  /**
-   * Notify the observer with the event.
-   *
-   */
-  override def notify(event: DisplayableEvent): Unit = clients.foreach(_ ! DisplayableActorMessage(event))
+
   private def handleJoinRequest(name: String): Unit = {
     /*
         val resp = controller.requestJoin(sender())
@@ -64,12 +63,19 @@ class ServerActor(
       updateClients()
     }
   }
+
   private def updateClients(): Unit = {
     val lobbyData = actorController.getLobbyData
     actorController.sendToViewStrategy(_.notify(ViewEvent.LobbyDataEvent(lobbyData)))
     tellToClients(LobbyDataActorMessage(lobbyData))
   }
+
   private def tellToClients(mess: ActorMessage): Unit = clients.foreach(_ ! mess)
+  /**
+   * Notify the observer with the event.
+   *
+   */
+  override def notify(event: DisplayableEvent): Unit = clients.foreach(_ ! DisplayableActorMessage(event))
 }
 
 object ServerActor {
