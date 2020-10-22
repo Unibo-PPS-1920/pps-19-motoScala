@@ -37,5 +37,5 @@ abstract class ScreenController(protected val viewFacade: ViewFacade,
    * @param nodes the nodes
    */
   def assertNodeInjected(nodes: Node*): Unit =
-    nodes.zipWithIndex.foreach(t => assert(t._1 != null, s"#${t._2} id not injected in class ${this.getClass.getName}"))
+    nodes.zipWithIndex.foreach(t => assert(t._1 != null, s"#${t._2 + 1} id not injected in ${this.getClass.getName}"))
 }

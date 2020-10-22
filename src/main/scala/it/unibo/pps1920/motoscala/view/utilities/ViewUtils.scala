@@ -1,5 +1,8 @@
 package it.unibo.pps1920.motoscala.view.utilities
 
+import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Window.{ScreenMinHeight, ScreenMinWidth}
 import javafx.event.{ActionEvent, EventHandler}
 import javafx.scene.Scene
@@ -35,4 +38,15 @@ protected[view] object ViewUtils {
       onMouseEntered = handler2
     }
   }
+
+  import javafx.scene.control.Button
+
+  def addButtonMusic(button: Button*)(controller: ObservableUI): Unit = {
+    button.foreach(btn => {
+      btn.addEventHandler[ActionEvent](ActionEvent.ACTION, _ =>
+        controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick)))
+      btn.setOnMouseEntered(_ => controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))
+    })
+  }
+
 }
