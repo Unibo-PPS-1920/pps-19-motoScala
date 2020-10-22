@@ -18,58 +18,60 @@ final class DataManager {
   private val yamlManager: YamlManager = new YamlManager
   /** Deserialize and load then return the settings file.
    *
-   * @return one SettingsData object.
+   * @return one SettingsData object
    * */
   def loadSettings(): Option[SettingsData] = yamlManager.loadYamlFromPath(SettingsFile)(classOf[SettingsData])
   /** Serialize the SettingsData passed to standard settings folder.
    *
    * @param sett The SettingsData that is serialized
-   * @return True if the serialization returns no error.
+   * @return True if the serialization returns no error
    */
   def saveSettings(sett: SettingsData): Boolean = yamlManager.saveYaml(SettingsFile)(sett)
   /** Deserialize and load then return the stats file.
    *
-   * @return one ScoresData object.
+   * @return one ScoresData object
    */
   def loadScore(): Option[ScoresData] = yamlManager.loadYamlFromPath(ScoreFile)(classOf[ScoresData])
   /** Serialize the ScoresData passed to standard stats folder.
    *
    * @param scores The scores table.
-   * @return True if the serialization returns no error.
+   * @return True if the serialization returns no error
    */
   def saveScore(scores: ScoresData): Boolean = yamlManager.saveYaml(ScoreFile)(scores)
   /** Initializes the main application tree folder.
    *
-   * @return True if the operations returns no error.
+   * @return True if the operations returns no error
    */
   def initAppDirectory(): Boolean = {
     tryAndBoolResult(FileManager.createLocalDirectoryTreeFromFile(AppMainFolder),
                      FileManager.createLocalDirectory(AppSettingsFolder),
                      FileManager.createLocalDirectory(AppScoreFolder),
-                     FileManager.createLocalDirectory(AppUserLevelFolder))((this.logger))
+                     FileManager.createLocalDirectory(AppUserLevelFolder))(logger)
   }
   /** Deserialize and return one list custom user level, located inside the user level folder.
    *
-   * @return the List[LevelData.
+   * @return the List of LevelData
    */
   def loadUserLvl(): List[LevelData] = {
     FileManager.getListFiles(AppUserLevelFolder)
-      .map(pf => this.yamlManager.loadYamlFromPath(AppUserLevelFolder + pf)(classOf[LevelData]))
+      .map(pf => yamlManager.loadYamlFromPath(AppUserLevelFolder + pf)(classOf[LevelData]))
       .filter(_.isDefined).map(_.get)
   }
-  /** Serialize one custom user level. */
-  def saveLvl(data: LevelData): Unit = {
-    this.yamlManager.saveYaml(s"${AppMainFolder}${SystemSeparator}${LevelFile}${Yaml}")(data)
-  }
+  /** Serialize one custom user level.
+   *
+   * @return the List of LevelData
+   */
+  def saveLvl(data: LevelData): Unit =
+    yamlManager.saveYaml(s"$AppMainFolder$SystemSeparator$LevelFile$Yaml")(data)
 
   /** Deserialize internal application levels.
    *
-   * @return the List[LevelData.
+   * @return the List of LevelData
    */
   def loadLvl(): List[LevelData] = {
     (1 to LevelNumber).map(i => {
       yamlManager
-        .loadYamlFromURL(FileManager.loadFromJarToURL(s"${Levels}${LevelFile}${i}${Yaml}"))(classOf[LevelData]).get
+        .loadYamlFromURL(FileManager.loadFromJarToURL(s"$Levels$LevelFile$i$Yaml"))(classOf[LevelData]).get
     }).toList
   }
 }

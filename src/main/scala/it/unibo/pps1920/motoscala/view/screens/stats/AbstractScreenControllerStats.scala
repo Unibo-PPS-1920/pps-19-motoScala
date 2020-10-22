@@ -8,12 +8,18 @@ import javafx.fxml.FXML
 import javafx.scene.control.ListView
 import javafx.scene.layout.{AnchorPane, BorderPane}
 
+/** Abstract ScreenController dedicated to show Stats View.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+abstract class AbstractScreenControllerStats(
+  protected override val viewFacade: ViewFacade,
+  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
 
-abstract class AbstractScreenControllerStats(protected override val viewFacade: ViewFacade,
-                                             protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {
   @FXML protected var root: BorderPane = _
   @FXML protected var mainAnchorPane: AnchorPane = _
-  @FXML protected var listView: ListView[String] = _ //change to complex data
+  @FXML protected var listView: ListView[String] = _
 
   @FXML override def initialize(): Unit = {
     assertNodeInjected()
@@ -26,14 +32,9 @@ abstract class AbstractScreenControllerStats(protected override val viewFacade: 
     assert(listView != null, "fx:id=\"listView\" was not injected: check your FXML file 'Stats.fxml'.")
   }
 
-
   protected def populateScoreBoard(score: ScoresData): Unit = {
-    this.listView.getItems.clear()
-    score.scoreTable.toList.map(userScore => s"${
-      userScore._1
-    } \t ${userScore._2}").foreach(field => this.listView.getItems.add(field))
-
-
+    listView.getItems.clear()
+    score.scoreTable.toList.map(userScore => s"${userScore._1} \t ${userScore._2}").foreach(listView.getItems.add(_))
   }
-
 }
+

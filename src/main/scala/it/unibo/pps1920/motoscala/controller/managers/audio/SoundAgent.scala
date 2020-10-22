@@ -8,7 +8,8 @@ import javafx.util.Duration
 import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success, Try}
-/** A specific sound agent, that extends [[Thread]], this Thread, should be used for play all [[Clips]] and [[Music]]
+
+/** A specific sound agent, that extends [[java.lang.Thread]], this Thread, should be used for play all [[Clips]] and [[Music]]
  * the agent should use one safe Queue, for handle the external event.
  * */
 sealed trait SoundAgent extends Thread with SoundAgentLogic {
@@ -16,74 +17,92 @@ sealed trait SoundAgent extends Thread with SoundAgentLogic {
   protected val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)
   /** Enqueue the event to be handled from the agent.
    *
-   * @param ev the event.
+   * @param ev the event
    * */
   def enqueueEvent(ev: MediaEvent): Unit
 }
 
 private final class ConcreteSoundAgent extends SoundAgent {
+  import MagicValues._
+
   private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]
   private var clips: Map[Clips, AudioClip] = Map()
   private var medias: Map[Music, MediaPlayer] = Map()
   private var actualMusicPlayer: Option[MediaPlayer] = None
   private var actualClipPlayer: Option[AudioClip] = None
-  private var volumeMusic: Double = 0.5
-  private var volumeEffect: Double = 1.0
+  private var volumeMusic: Double = DefaultVolumeMusic
+  private var volumeEffect: Double = DefaultVolumeVolume
   cacheSounds()
 
   override def run(): Unit = {
     while (true) {
-      Try(this.blockingQueue.take()) match {
+      Try(blockingQueue.take()) match {
         case Success(ev) => ev.handle(this)
         case Failure(exception) => logger warn exception.getMessage
       }
     }
   }
+
   override def playMusic(media: Music): Unit = {
-    if (!this.medias.contains(media)) {
-      this.medias += (media -> new MediaPlayer(new Media(loadFromJarToString(media.entryName))))
+    if (!medias.contains(media)) {
+      medias += (media -> new MediaPlayer(new Media(loadFromJarToString(media.entryName))))
     }
-    this.actualMusicPlayer = this.medias.get(media)
-    this.actualMusicPlayer.foreach(_.setVolume(volumeMusic))
-    this.actualMusicPlayer.foreach(_.play())
-    this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
-    this.medias.filterNot(p => p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())
+    actualMusicPlayer = medias.get(media)
+    actualMusicPlayer.foreach(_.setVolume(volumeMusic))
+    actualMusicPlayer.foreach(_.play())
+    actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))
+    medias.filterNot(_._2 == actualMusicPlayer.get).foreach(_._2.pause())
   }
-  override def stopMusic(): Unit = this.actualMusicPlayer.foreach(_.stop())
-  override def pauseMusic(): Unit = this.actualMusicPlayer.foreach(_.pause())
-  override def resumeMusic(): Unit = this.actualMusicPlayer.foreach(_.play())
+
+  override def stopMusic(): Unit = actualMusicPlayer.foreach(_.stop())
+
+  override def pauseMusic(): Unit = actualMusicPlayer.foreach(_.pause())
+
+  override def resumeMusic(): Unit = actualMusicPlayer.foreach(_.play())
+
   override def playClip(clip: Clips): Unit = {
-    if (!this.clips.contains(clip)) {
-      this.clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
+    if (!clips.contains(clip)) {
+      clips += (clip -> new AudioClip(loadFromJarToString(clip.entryName)))
     }
-    this.actualClipPlayer = Some(this.clips(clip))
-    this.actualClipPlayer.get.play(volumeEffect)
+    actualClipPlayer = Some(clips(clip))
+    actualClipPlayer.get.play(volumeEffect)
   }
+
   override def setVolumeMusic(value: Double): Unit = {
-    this.volumeMusic = if (value < 0.05) 0.0 else value
-    this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic))
+    volumeMusic = if (value < SoundErrorThresholds) 0.0 else value
+    actualMusicPlayer.foreach(_.setVolume(volumeMusic))
   }
+
   override def setVolumeEffect(value: Double): Unit = {
-    this.volumeEffect = if (value < 0.05) 0.0 else value
-    this.actualClipPlayer.foreach(_.setVolume(this.volumeEffect))
+    volumeEffect = if (value < SoundErrorThresholds) 0.0 else value
+    actualClipPlayer.foreach(_.setVolume(volumeEffect))
   }
+
   override def restartMusic(): Unit = {
-    this.actualMusicPlayer.foreach(_.stop())
-    this.actualMusicPlayer.foreach(_.seek(Duration.ZERO))
-    this.actualMusicPlayer.foreach(_.play())
+    actualMusicPlayer.foreach(_.stop())
+    actualMusicPlayer.foreach(_.seek(Duration.ZERO))
+    actualMusicPlayer.foreach(_.play())
   }
-  override def enqueueEvent(ev: MediaEvent): Unit = this.blockingQueue.add(ev)
+
+  override def enqueueEvent(ev: MediaEvent): Unit = blockingQueue.add(ev)
 
   private def cacheSounds(): Unit = {
     //Increase loading speed with cache
-    this.medias += (Music.Home -> new MediaPlayer(new Media(loadFromJarToString(Music.Home.entryName))))
-    this.medias += (Music.Game -> new MediaPlayer(new Media(loadFromJarToString(Music.Game.entryName))))
-    this.medias(Music.Home).play()
-    this.medias(Music.Home).stop()
-    this.medias(Music.Game).play()
-    this.medias(Music.Game).stop()
+    medias += (Music.Home -> new MediaPlayer(new Media(loadFromJarToString(Music.Home.entryName))))
+    medias += (Music.Game -> new MediaPlayer(new Media(loadFromJarToString(Music.Game.entryName))))
+    medias(Music.Home).play()
+    medias(Music.Home).stop()
+    medias(Music.Game).play()
+    medias(Music.Game).stop()
+  }
+
+  private final object MagicValues {
+    val DefaultVolumeMusic = 0.5
+    val DefaultVolumeVolume = 1.0
+    val SoundErrorThresholds = 0.05
   }
 }
+
 /** Factory for [[SoundAgent]] instances. */
 object SoundAgent {
   /** Creates a new [[SoundAgent]] */
