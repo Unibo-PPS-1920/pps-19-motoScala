@@ -8,7 +8,7 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 protected[controller] trait SoundController {
   /** Represents the controller that manage sounds, using one [[it.unibo.pps1920.motoscala.controller.managers.audio.SoundAgent]].
    *
-   * @Param the media event to be handled
+   * @param me the media event to be handled
    */
   def redirectSoundEvent(me: MediaEvent): Unit
 }
