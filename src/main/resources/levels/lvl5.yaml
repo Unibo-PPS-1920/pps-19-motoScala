@@ -21,8 +21,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     shape:
       radius: 30.0
     velocity:
-      x: 15
-      y: 15
+      x: 10
+      y: 10
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 300
@@ -30,8 +30,8 @@ entities: !<scala.collection.immutable.$colon$colon>
     shape:
       radius: 30.0
     velocity:
-      x: 15
-      y: 15
+      x: 10
+      y: 10
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 600
