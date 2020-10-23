@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractScreenControllerModeSelection.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.view.screens.modeSelection</a> &gt; <span class="el_source">AbstractScreenControllerModeSelection.scala</span></div><h1>AbstractScreenControllerModeSelection.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.view.screens.modeSelection
+
+import java.util.function.UnaryOperator
+
+import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.model.NetworkAddr
+import it.unibo.pps1920.motoscala.view.ViewFacade
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
+import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.addButtonMusic
+import javafx.fxml.FXML
+import javafx.scene.control.{Button, TextField, TextFormatter}
+import javafx.scene.layout.{AnchorPane, BorderPane}
+
+import scala.util.Try
+
+/** Abstract ScreenController dedicated to show the menu for selecting, client or server.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L22">protected[modeSelection] abstract class AbstractScreenControllerModeSelection(</span>
+<span class="nc" id="L23">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L24">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
+
+<span class="nc" id="L26">  @FXML protected var root: BorderPane = _</span>
+<span class="nc" id="L27">  @FXML protected var mainAnchorPane: AnchorPane = _</span>
+<span class="nc" id="L28">  @FXML protected var buttonHost: Button = _</span>
+<span class="nc" id="L29">  @FXML protected var buttonJoin: Button = _</span>
+<span class="nc" id="L30">  @FXML protected var ipTextField: TextField = _</span>
+<span class="nc" id="L31">  @FXML protected var portTextField: TextField = _</span>
+<span class="nc" id="L32">  private var ipReady: Boolean = false</span>
+<span class="nc" id="L33">  private var portReady: Boolean = false</span>
+
+  import MagicValues._
+  @FXML override def initialize(): Unit = {
+<span class="nc" id="L37">    assertNodeInjected(root, mainAnchorPane, buttonHost, buttonJoin, ipTextField, portTextField)</span>
+<span class="nc" id="L38">    assertNodeInjected()</span>
+<span class="nc" id="L39">    initButtons()</span>
+<span class="nc" id="L40">    initBackButton()</span>
+<span class="nc" id="L41">    initTextFields()</span>
+  }
+  private def initButtons(): Unit = {
+<span class="nc" id="L44">    addButtonMusic(buttonHost, buttonJoin)(controller)</span>
+<span class="nc" id="L45">    buttonHost.setOnAction(_ =&gt; {</span>
+<span class="nc" id="L46">      controller.becomeHost()</span>
+<span class="nc" id="L47">      viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)</span>
+    })
+<span class="nc" id="L49">    buttonJoin.setOnAction(_ =&gt; {</span>
+<span class="nc" id="L50">      toggleButtons()</span>
+<span class="nc" id="L51">      controller.tryJoinLobby(ipTextField.getText, portTextField.getText())</span>
+    })
+  }
+  private def toggleButtons(): Unit = {
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    buttonJoin.setDisable(!buttonJoin.isDisabled)</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">    buttonBack.setDisable(!buttonBack.isDisabled)</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    buttonHost.setDisable(!buttonHost.isDisabled)</span>
+  }
+  private def initTextFields(): Unit = {
+    import javafx.scene.control.TextFormatter.Change
+<span class="nc" id="L61">    def getFormatter(strategy: String =&gt; Boolean): UnaryOperator[Change] = formatter =&gt; {</span>
+<span class="nc" id="L62">      val value: String = formatter.getControlNewText</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">      if (strategy(value)) formatter else null</span>
+    }
+<span class="nc" id="L65">    def getIpFormatter: TextFormatter[Change] = new TextFormatter(getFormatter(_.matches(RegexIpAddress)))</span>
+    def getPortFormatter: TextFormatter[Change] =
+<span class="nc bnc" id="L67" title="All 2 branches missed.">      new TextFormatter(getFormatter(text =&gt; (text.length &lt;= PortMaxLength &amp;&amp; Try(NetworkAddr.validatePort(text.toInt))</span>
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        .getOrElse(false)) || text</span>
+        .isEmpty))
+<span class="nc" id="L70">    ipTextField.setTextFormatter(getIpFormatter)</span>
+<span class="nc" id="L71">    portTextField.setTextFormatter(getPortFormatter)</span>
+    def setUpTextField(textField: TextField)(strategy: String =&gt; Boolean)(externalStrategy: Boolean =&gt; Unit): Unit = {
+<span class="nc" id="L73">      textField.textProperty().addListener((_, _, newValue) =&gt; {</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (strategy(newValue)) {</span>
+<span class="nc" id="L75">          notInError(ipTextField)</span>
+<span class="nc" id="L76">          externalStrategy(true)</span>
+<span class="nc" id="L77">        } else {</span>
+<span class="nc" id="L78">          externalStrategy(false)</span>
+<span class="nc" id="L79">          inError(ipTextField)</span>
+        }
+<span class="nc" id="L81">        checkIpAndPort()</span>
+      })
+    }
+<span class="nc" id="L84">    setUpTextField(ipTextField)(NetworkAddr.validateIPV4Address)(ipReady = _)</span>
+<span class="nc" id="L85">    setUpTextField(portTextField)(newVal =&gt; Try(NetworkAddr.validatePort(newVal.toInt)).getOrElse(false))(portReady = _)</span>
+<span class="nc bnc" id="L86" title="All 4 branches missed.">    def checkIpAndPort(): Unit = if (ipReady &amp;&amp; portReady) buttonJoin.setDisable(false) else buttonJoin.setDisable(true)</span>
+<span class="nc" id="L87">    def inError(field: TextField): Unit = field.setStyle(InErrorStyle)</span>
+<span class="nc" id="L88">    def notInError(field: TextField): Unit = field.setStyle(NotInErrorStyle)</span>
+<span class="nc" id="L89">  }</span>
+<span class="nc" id="L90">  override def whenDisplayed(): Unit = {}</span>
+  protected def displayResult(res: Boolean): Unit = {
+<span class="nc" id="L92">    toggleButtons()</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (res) viewFacade.changeScreen(ChangeScreenEvent.GotoLobby)</span>
+  }
+
+<span class="nc bnc" id="L96" title="All 4 branches missed.">  private[this] final object MagicValues {</span>
+<span class="nc" id="L97">    val RegexIpPartialBlock = &quot;(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))&quot;</span>
+<span class="nc" id="L98">    val PortMaxLength = 5</span>
+<span class="nc" id="L99">    val InErrorStyle = &quot;-fx-border-color: red ; -fx-border-width: 5 ;&quot;</span>
+<span class="nc" id="L100">    val NotInErrorStyle = &quot;&quot;</span>
+<span class="nc" id="L101">    val RegexIpSubsequentPartialBlock: String = &quot;(\\.&quot; + RegexIpPartialBlock + &quot;)&quot;</span>
+<span class="nc" id="L102">    val RegexIpAddress: String = &quot;^&quot; + (RegexIpPartialBlock + &quot;?&quot; + RegexIpSubsequentPartialBlock + &quot;{0,3}&quot;)</span>
+  }
+<span class="nc" id="L104">}</span>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

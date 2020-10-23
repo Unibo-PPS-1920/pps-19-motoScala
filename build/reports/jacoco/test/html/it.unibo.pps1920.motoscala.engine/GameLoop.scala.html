@@ -2,77 +2,105 @@
 
 import it.unibo.pps1920.motoscala.engine.GameStatus._
 import org.slf4j.LoggerFactory
-
+/**
+ * Game Loop
+ */
 trait GameLoop extends Thread {
+  /**
+   * fps setter
+   *
+   * @param value new fps
+   */
   def fps_=(value: Int): Unit
+  /**
+   * fps getter
+   *
+   * @return actual fps
+   */
   def fps: Int
+  /**
+   * gets game status
+   *
+   * @return game status
+   */
   def status: GameStatus
+  /**
+   * pauses the game
+   *
+   * @return new status
+   */
   def pause(): GameStatus
+  /**
+   * resumes the game
+   *
+   * @return new status
+   */
   def unPause(): GameStatus
+  /**
+   * stops the game
+   *
+   * @return new status
+   */
   def halt(): GameStatus
 }
 
+<span class="fc" id="L47">private[engine] object GameLoop {</span>
+<span class="fc" id="L48">  def apply(fps: Int, engine: UpdatableEngine): GameLoop = new GameLoopImpl(fps, engine)</span>
 
-<span class="fc" id="L16">private[engine] object GameLoop {</span>
-<span class="fc" id="L17">  def apply(fps: Int, engine: UpdatableEngine): GameLoop = new GameLoopImpl(fps, engine)</span>
-
-<span class="fc" id="L19">  private class GameLoopImpl(</span>
-<span class="pc" id="L20">    override var fps: Int,</span>
-<span class="fc" id="L21">    val engine: UpdatableEngine</span>
-<span class="fc" id="L22">  ) extends GameLoop {</span>
-<span class="fc" id="L23">    private val Ms = 1000</span>
-<span class="fc" id="L24">    private val logger = LoggerFactory getLogger classOf[GameLoop]</span>
-<span class="fc" id="L25">    @volatile private var _status: GameStatus = Stopped</span>
+<span class="fc" id="L50">  private class GameLoopImpl(</span>
+<span class="pc" id="L51">    override var fps: Int,</span>
+<span class="fc" id="L52">    val engine: UpdatableEngine</span>
+<span class="fc" id="L53">  ) extends GameLoop {</span>
+<span class="fc" id="L54">    private val Ms = 1000</span>
+<span class="fc" id="L55">    private val logger = LoggerFactory getLogger classOf[GameLoop]</span>
+<span class="fc" id="L56">    @volatile private var _status: GameStatus = Stopped</span>
 
     override def run(): Unit = {
-<span class="fc" id="L28">      _status = Running</span>
+<span class="fc" id="L59">      _status = Running</span>
       //noinspection LoopVariableNotUpdated
-<span class="pc bpc" id="L30" title="4 of 6 branches missed.">      while (_status != Stopped) {</span>
-<span class="pc bpc" id="L31" title="3 of 6 branches missed.">        if (_status == Paused) {</span>
-<span class="pc" id="L32">          this.synchronized {</span>
-<span class="nc" id="L33">            wait()</span>
+<span class="pc bpc" id="L61" title="4 of 6 branches missed.">      while (_status != Stopped) {</span>
+<span class="pc bpc" id="L62" title="3 of 6 branches missed.">        if (_status == Paused) {</span>
+<span class="pc" id="L63">          this.synchronized {</span>
+<span class="nc" id="L64">            wait()</span>
           }
         }
-<span class="fc" id="L36">        val start = System.currentTimeMillis()</span>
+<span class="fc" id="L67">        val start = System.currentTimeMillis()</span>
 
-<span class="fc" id="L38">        engine.tick()</span>
+<span class="fc" id="L69">        engine.tick()</span>
 
-<span class="fc" id="L40">        val tickTime = System.currentTimeMillis() - start</span>
-<span class="fc" id="L41">        val deltaTime = getFrameMillis - tickTime</span>
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (deltaTime &gt; 0) {</span>
-          //          logger debug &quot;wasting &quot; + deltaTime + &quot;ms&quot;
-<span class="fc" id="L44">          Thread.sleep(deltaTime)</span>
-        } else {
-<span class="nc" id="L46">          logger debug &quot;overrun by &quot; + deltaTime + &quot;ms&quot;</span>
-        }
+<span class="fc" id="L71">        val tickTime = System.currentTimeMillis() - start</span>
+<span class="fc" id="L72">        val deltaTime = getFrameMillis - tickTime</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (deltaTime &gt; 0) {</span>
+<span class="fc" id="L74">          Thread.sleep(deltaTime)</span>
+<span class="nc" id="L75">        } else logger warn s&quot;Overrun by ${deltaTime} ms, please reduce FPS&quot;</span>
       }
     }
 
-<span class="fc" id="L51">    private def getFrameMillis: Long = Ms / fps</span>
+<span class="fc" id="L79">    private def getFrameMillis: Long = Ms / fps</span>
 
     override def pause(): GameStatus = this.synchronized {
-<span class="pc" id="L54">      _status match {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        case Running =&gt; _status = Paused; logger debug &quot;pausing&quot;; _status</span>
-<span class="pc bpc" id="L56" title="2 of 6 branches missed.">        case Paused | Stopped =&gt; logger error &quot;Not running, can't pause&quot;; _status</span>
+<span class="pc" id="L82">      _status match {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        case Running =&gt; _status = Paused; logger debug &quot;pausing&quot;; _status</span>
+<span class="pc bpc" id="L84" title="2 of 6 branches missed.">        case Paused | Stopped =&gt; logger warn &quot;Not running, can't pause&quot;; _status</span>
       }
     }
 
     override def unPause(): GameStatus = this.synchronized {
-<span class="pc" id="L61">      _status match {</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">        case Paused =&gt; _status = Running; logger debug &quot;resumed&quot;; this.notifyAll(); _status</span>
-<span class="pc bpc" id="L63" title="3 of 6 branches missed.">        case Running | Stopped =&gt; logger error &quot;Not paused, can't unpause&quot;; _status</span>
+<span class="pc" id="L89">      _status match {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        case Paused =&gt; _status = Running; logger debug &quot;resumed&quot;; this.notifyAll(); _status</span>
+<span class="pc bpc" id="L91" title="3 of 6 branches missed.">        case Running | Stopped =&gt; logger warn &quot;Not paused, can't unpause&quot;; _status</span>
       }
     }
 
     override def halt(): GameStatus = this.synchronized {
-<span class="pc" id="L68">      _status match {</span>
-<span class="pc bpc" id="L69" title="3 of 6 branches missed.">        case Running | Paused =&gt; _status = Stopped; logger debug &quot;stopped&quot;; _status</span>
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        case Stopped =&gt; logger error &quot;Already stopped&quot;; _status</span>
+<span class="pc" id="L96">      _status match {</span>
+<span class="pc bpc" id="L97" title="3 of 6 branches missed.">        case Running | Paused =&gt; _status = Stopped; logger debug &quot;stopped&quot;; _status</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        case Stopped =&gt; logger warn &quot;Already stopped&quot;; _status</span>
       }
     }
 
     def status: GameStatus = this.synchronized {
-<span class="fc" id="L75">      _status</span>
+<span class="fc" id="L103">      _status</span>
     }
   }
 

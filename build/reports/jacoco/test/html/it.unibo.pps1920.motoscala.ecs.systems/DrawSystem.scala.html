@@ -2,29 +2,33 @@
 
 import java.util.UUID
 
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.DrawEntityData
-import it.unibo.pps1920.motoscala.controller.mediation.{Event, Mediator}
-import it.unibo.pps1920.motoscala.ecs.components.{DirectionComponent, PositionComponent, ShapeComponent}
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.DrawEntityEvent
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.EntityData
+import it.unibo.pps1920.motoscala.controller.mediation.Mediator
+import it.unibo.pps1920.motoscala.ecs.components.{PositionComponent, ShapeComponent, VelocityComponent}
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.util.Direction
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
 
-<span class="fc" id="L11">object DrawSystem {</span>
-  import it.unibo.pps1920.motoscala.ecs.components.VelocityComponent
+/**
+ * System for generating display data to be drawn on the canvas
+ */
+<span class="fc" id="L16">object DrawSystem {</span>
+  /** Factory for [[DrawSystem]] instances */
   def apply(mediator: Mediator, coordinator: Coordinator,
-<span class="fc" id="L14">            myUuid: UUID): System = new DrawSystemImpl(mediator, coordinator, myUuid)</span>
+<span class="fc" id="L19">            UUIDs: List[UUID]): System = new DrawSystemImpl(mediator, coordinator, UUIDs)</span>
 
-<span class="fc" id="L16">  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator, myUuid: UUID)</span>
-<span class="fc" id="L17">    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent], classOf[ShapeComponent])) {</span>
+<span class="fc" id="L21">  private class DrawSystemImpl(mediator: Mediator, coordinator: Coordinator, UUIDs: List[UUID])</span>
+<span class="fc" id="L22">    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[VelocityComponent], classOf[ShapeComponent])) {</span>
     override def update(): Unit = {
-<span class="pc bpc" id="L19" title="1 of 2 branches missed.">      val entitiesToView = entitiesRef().collect(e =&gt; {</span>
-        import it.unibo.pps1920.motoscala.ecs.components.VelocityComponent
-        import it.unibo.pps1920.motoscala.ecs.util.Direction
-<span class="fc" id="L22">        val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]</span>
-<span class="fc" id="L23">        val s = coordinator.getEntityComponent(e, classOf[ShapeComponent]).get.asInstanceOf[ShapeComponent]</span>
-<span class="fc" id="L24">        val v = coordinator.getEntityComponent(e, classOf[VelocityComponent]).get.asInstanceOf[VelocityComponent]</span>
-<span class="fc" id="L25">        DrawEntityData(p.pos, Direction.velToDir(v.vel), s.shape, e)</span>
-<span class="pc bpc" id="L26" title="3 of 6 branches missed.">      }).partition(_.entity.uuid == myUuid)</span>
-<span class="fc" id="L27">      mediator.publishEvent(Event.DrawEntityEvent(entitiesToView._1.head, entitiesToView._2.toSeq))</span>
+
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">      val entitiesToView = entitiesRef().collect(e =&gt; {</span>
+<span class="fc" id="L26">        val p = coordinator.getEntityComponent[PositionComponent](e)</span>
+<span class="fc" id="L27">        val s = coordinator.getEntityComponent[ShapeComponent](e)</span>
+<span class="fc" id="L28">        val v = coordinator.getEntityComponent[VelocityComponent](e)</span>
+<span class="fc" id="L29">        EntityData(p.pos, Direction.vecToDir(v.currentVel), s.shape, e)</span>
+<span class="fc" id="L30">      }).partition(x =&gt; UUIDs.contains(x.entity.uuid))</span>
+<span class="fc" id="L31">      mediator.publishEvent(DrawEntityEvent(entitiesToView._1.map(e =&gt; Some(e)), entitiesToView._2))</span>
     }
   }
 }

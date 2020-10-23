@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ECSSignature.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.core</a> &gt; <span class="el_source">ECSSignature.scala</span></div><h1>ECSSignature.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.core
+
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
+
+/** Represents an ECS Signature. It is a collection of components */
+trait ECSSignature {
+
+  /** Add the component or components to the signature so sign the component/s.
+   *
+   * @param componentType the component type
+   * @return the signature
+   */
+  def signComponent(componentType: ComponentType*): ECSSignature
+
+  /** Add the collection of components to the signature so sign the components.
+   *
+   * @param componentTypes the collection of components
+   * @return the signature
+   */
+  def signComponent(componentTypes: Iterable[ComponentType]): ECSSignature
+
+  /** Remove the component or components to the signature so repudiate the component/s.
+   *
+   * @param componentType the component type
+   * @return the signature
+   */
+  def repudiateComponent(componentType: ComponentType*): ECSSignature
+
+  /** Remove the collection of components to the signature so repudiate the components.
+   *
+   * @param componentTypes the collection of components
+   * @return the signature
+   */
+  def repudiateComponent(componentTypes: Iterable[ComponentType]): ECSSignature
+
+  /** Get the set of component that compose the signature.
+   *
+   * @return
+   */
+  def signatureSet: Set[ComponentType]
+}
+
+<span class="fc" id="L43">object ECSSignature {</span>
+<span class="pc bpc" id="L44" title="5 of 8 branches missed.">  private case class ECSSignatureImpl() extends ECSSignature {</span>
+<span class="fc" id="L45">    private var signature: Set[ComponentType] = Set()</span>
+
+    override def signComponent(componentType: ComponentType*): ECSSignature = {
+<span class="fc" id="L48">      signature = signature ++ componentType</span>
+<span class="fc" id="L49">      this</span>
+    }
+
+    override def signComponent(componentTypes: Iterable[ComponentType]): ECSSignature = {
+<span class="fc" id="L53">      componentTypes.foreach(signComponent(_))</span>
+<span class="fc" id="L54">      this</span>
+    }
+
+    override def repudiateComponent(componentType: ComponentType*): ECSSignature = {
+<span class="fc" id="L58">      signature = signature -- componentType</span>
+<span class="fc" id="L59">      this</span>
+    }
+
+<span class="fc" id="L62">    override def signatureSet: Set[ComponentType] = signature</span>
+    override def repudiateComponent(componentTypes: Iterable[ComponentType]): ECSSignature = {
+<span class="fc" id="L64">      componentTypes.foreach(signComponent(_))</span>
+<span class="fc" id="L65">      this</span>
+    }
+  }
+
+  /** Factory for [[ECSSignature]] instances */
+  def apply(types: Iterable[ComponentType]): ECSSignature = {
+<span class="fc" id="L71">    ECSSignatureImpl().signComponent(types)</span>
+  }
+
+  /** Factory for [[ECSSignature]] instances */
+  def apply(componentType: ComponentType*): ECSSignature = {
+<span class="fc" id="L76">    apply(componentType)</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

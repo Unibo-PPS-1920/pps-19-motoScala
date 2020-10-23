@@ -1,24 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractScreenControllerSettings.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.view.screens.settings</a> &gt; <span class="el_source">AbstractScreenControllerSettings.scala</span></div><h1>AbstractScreenControllerSettings.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.view.screens.settings
 
+import java.lang
+import java.util.function.UnaryOperator
+
 import it.unibo.pps1920.motoscala.controller.ObservableUI
+import it.unibo.pps1920.motoscala.model.Difficulties.{EASY, HARD, MEDIUM}
+import it.unibo.pps1920.motoscala.model.Settings.SettingsData
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
+import javafx.event.ActionEvent
 import javafx.fxml.FXML
+import javafx.scene.control.{Slider, TextField, TextFormatter}
 import javafx.scene.layout.{AnchorPane, BorderPane}
+import javafx.util.StringConverter
 
-<span class="nc" id="L9">abstract class AbstractScreenControllerSettings(protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L10">                                                protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
-<span class="nc" id="L11">  @FXML protected var root: BorderPane = _</span>
-<span class="nc" id="L12">  @FXML protected var mainAnchorPane: AnchorPane = _</span>
+/** Abstract ScreenController dedicated to show settings menu.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L22">protected[settings] abstract class AbstractScreenControllerSettings(</span>
+<span class="nc" id="L23">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L24">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
 
+<span class="nc" id="L26">  @FXML protected var root: BorderPane = _</span>
+<span class="nc" id="L27">  @FXML protected var mainAnchorPane: AnchorPane = _</span>
+<span class="nc" id="L28">  @FXML protected var effectSlider: Slider = _</span>
+<span class="nc" id="L29">  @FXML protected var diffSlider: Slider = _</span>
+<span class="nc" id="L30">  @FXML protected var musicSlider: Slider = _</span>
+<span class="nc" id="L31">  @FXML protected var textPlayerName: TextField = _</span>
+
+  import MagicValues._
   @FXML override def initialize(): Unit = {
-<span class="nc" id="L15">    assertNodeInjected()</span>
-<span class="nc" id="L16">    initBackButton()</span>
+<span class="nc" id="L35">    assertNodeInjected(root, mainAnchorPane, effectSlider, diffSlider, musicSlider, textPlayerName)</span>
+<span class="nc" id="L36">    assertNodeInjected()</span>
+<span class="nc" id="L37">    extendButtonBackBehaviour()</span>
+<span class="nc" id="L38">    initBackButton()</span>
+<span class="nc" id="L39">    initSlider()</span>
+<span class="nc" id="L40">    initTextField()</span>
   }
 
-  private def assertNodeInjected(): Unit = {
-<span class="nc bnc" id="L20" title="All 2 branches missed.">    assert(root != null, &quot;fx:id=\&quot;root\&quot; was not injected: check your FXML file 'Stats.fxml'.&quot;)</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">    assert(mainAnchorPane != null, &quot;fx:id=\&quot;mainAnchorPane\&quot; was not injected: check your FXML file 'Stats.fxml'.&quot;)</span>
+  private def initSlider(): Unit = {
+<span class="nc" id="L44">    musicSlider.setOnMouseReleased(_ =&gt; sendStats())</span>
+<span class="nc" id="L45">    effectSlider.setOnMouseReleased(_ =&gt; sendStats())</span>
+<span class="nc" id="L46">    diffSlider.setLabelFormatter(new StringConverter[lang.Double]() {</span>
+<span class="nc" id="L47">      override def toString(`object`: lang.Double): String = `object` match {</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        case n if n &lt;= EASY.number =&gt; EASY.name</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        case n if n &lt;= MEDIUM.number =&gt; MEDIUM.name</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        case n if n &lt;= HARD.number =&gt; HARD.name</span>
+      }
+<span class="nc bnc" id="L52" title="All 2 branches missed.">      override def fromString(string: String): lang.Double = string match {</span>
+<span class="nc bnc" id="L53" title="All 6 branches missed.">        case str if str == EASY.name =&gt; EASY.number</span>
+<span class="nc bnc" id="L54" title="All 6 branches missed.">        case str if str == MEDIUM.name =&gt; MEDIUM.number</span>
+<span class="nc bnc" id="L55" title="All 6 branches missed.">        case str if str == HARD.name =&gt; HARD.number</span>
+      }
+    })
   }
-}
+
+  private def sendStats(): Unit =
+<span class="nc" id="L61">    controller.saveSettings(SettingsData(musicSlider.getValue.toFloat, effectSlider.getValue.toFloat, diffSlider</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">      .getValue.toInt, if (textPlayerName.getText.isBlank) DefaultName else textPlayerName.getText))</span>
+
+  private def initTextField(): Unit = {
+<span class="nc" id="L65">    val portFormatter: UnaryOperator[javafx.scene.control.TextFormatter.Change] = formatter =&gt; {</span>
+<span class="nc" id="L66">      val text: String = formatter.getControlNewText</span>
+<span class="nc bnc" id="L67" title="All 4 branches missed.">      if (text.length &lt;= NameMaxLength || text.isEmpty) formatter else null</span>
+    }
+<span class="nc" id="L69">    textPlayerName.setTextFormatter(new TextFormatter(portFormatter))</span>
+  }
+
+  private def extendButtonBackBehaviour(): Unit =
+<span class="nc" id="L73">    buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ =&gt; sendStats())</span>
+
+  def displaySettings(settings: SettingsData): Unit = {
+<span class="nc" id="L76">    effectSlider.setValue(settings.effectVolume)</span>
+<span class="nc" id="L77">    musicSlider.setValue(settings.musicVolume)</span>
+<span class="nc" id="L78">    diffSlider.setValue(settings.diff)</span>
+<span class="nc" id="L79">    textPlayerName.setText(settings.name)</span>
+  }
+
+<span class="nc bnc" id="L82" title="All 4 branches missed.">  private[this] final object MagicValues {</span>
+    final val NameMaxLength = 6
+    final val DefaultName = &quot;Player&quot;
+  }
+<span class="nc" id="L86">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

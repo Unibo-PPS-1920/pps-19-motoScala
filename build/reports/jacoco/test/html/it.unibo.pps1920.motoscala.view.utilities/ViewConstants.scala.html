@@ -3,44 +3,46 @@
 import scalafx.scene.paint.Color
 import scalafx.stage.Screen
 
-<span class="nc" id="L6">object ViewConstants {</span>
-<span class="nc" id="L7">  object Window {</span>
-<span class="nc" id="L8">    val Window_title: String = &quot;MotoScala&quot;</span>
-<span class="nc" id="L9">    val ScreenWidth: Double = Screen.primary.visualBounds.width</span>
-<span class="nc" id="L10">    val HalfScreenWidth: Double = ScreenWidth / 2</span>
-<span class="nc" id="L11">    val ScreenHeight: Double = Screen.primary.visualBounds.height</span>
-<span class="nc" id="L12">    val HalfScreenHeight: Double = ScreenHeight / 2</span>
-<span class="nc" id="L13">    val StageIconPath = &quot;/images/Icon.png&quot;</span>
-<span class="nc" id="L14">    val ScreenMinWidth: Int = 700</span>
-<span class="nc" id="L15">    val ScreenMinHeight: Int = 800</span>
+/** Constants for the view */
+<span class="nc" id="L7">protected[view] object ViewConstants {</span>
+<span class="nc" id="L8">  object Window {</span>
+<span class="nc" id="L9">    val Window_title: String = &quot;MotoScala&quot;</span>
+<span class="nc" id="L10">    val ScreenWidth: Double = Screen.primary.visualBounds.width</span>
+<span class="nc" id="L11">    val HalfScreenWidth: Double = ScreenWidth / 2</span>
+<span class="nc" id="L12">    val ScreenHeight: Double = Screen.primary.visualBounds.height</span>
+<span class="nc" id="L13">    val HalfScreenHeight: Double = ScreenHeight / 2</span>
+<span class="nc" id="L14">    val StageIconPath = &quot;/images/Icon.png&quot;</span>
+<span class="nc" id="L15">    val ScreenMinWidth: Int = 700</span>
+<span class="nc" id="L16">    val ScreenMinHeight: Int = 800</span>
   }
 
-<span class="nc" id="L18">  object Canvas {</span>
-<span class="nc" id="L19">    val CanvasWidth: Int = 800</span>
-<span class="nc" id="L20">    val CanvasHeight: Int = 800</span>
+<span class="nc" id="L19">  object Canvas {</span>
+<span class="nc" id="L20">    val CanvasWidth: Int = 800</span>
+<span class="nc" id="L21">    val CanvasHeight: Int = 800</span>
   }
 
-
-  /** Entities constants */
-<span class="nc" id="L25">  object Entities {</span>
-
-    /** Colors constants */
-<span class="nc" id="L28">    object Colors {</span>
-<span class="nc" id="L29">      val DefaultPlayerColor: Color = Color.Green</span>
+<span class="nc" id="L24">  object Entities {</span>
+<span class="nc" id="L25">    object Colors {</span>
+<span class="nc" id="L26">      val DefaultPlayerColor: Color = Color.Green</span>
     }
-
-    /** Textures constants */
-<span class="nc" id="L33">    object Textures {</span>
-<span class="nc" id="L34">      val TextureFolder: String = &quot;/textures/&quot;</span>
-<span class="nc" id="L35">      val EntitiesFolder: String = TextureFolder + &quot;/entities/&quot;</span>
-<span class="nc" id="L36">      val BackgroundTexture: String = TextureFolder + &quot;background.png&quot;</span>
-<span class="nc" id="L37">      val ParticleTexture: String = TextureFolder + &quot;particle.png&quot;</span>
-<span class="nc" id="L38">      val BumperCar: String = EntitiesFolder + &quot;entity_22.png&quot;</span>
-<span class="nc" id="L39">      val RedPupa: String = EntitiesFolder + &quot;entity_13.png&quot;</span>
-<span class="nc" id="L40">      val BlackPupa: String = EntitiesFolder + &quot;entity_09.png&quot;</span>
-<span class="nc" id="L41">      val BluePupa: String = EntitiesFolder + &quot;entity_10.png&quot;</span>
-<span class="nc" id="L42">      val Polar: String = EntitiesFolder + &quot;entity_20.png&quot;</span>
+<span class="nc" id="L28">    object Textures {</span>
+<span class="nc" id="L29">      val TextureFolder: String = &quot;/textures/&quot;</span>
+<span class="nc" id="L30">      val EntitiesFolder: String = TextureFolder + &quot;entities/&quot;</span>
+<span class="nc" id="L31">      val BackgroundTexture: String = TextureFolder + &quot;background.png&quot;</span>
+<span class="nc" id="L32">      val ParticleTexture: String = TextureFolder + &quot;particle.png&quot;</span>
+<span class="nc" id="L33">      val BumperCar: String = EntitiesFolder + &quot;BumperCar.png&quot;</span>
+<span class="nc" id="L34">      val BumperCarMP: String = EntitiesFolder + &quot;BumperCarMP.png&quot;</span>
+<span class="nc" id="L35">      val RedPupa: String = EntitiesFolder + &quot;RedPupa.png&quot;</span>
+<span class="nc" id="L36">      val BlackPupa: String = EntitiesFolder + &quot;BlackPupa.png&quot;</span>
+<span class="nc" id="L37">      val BluePupa: String = EntitiesFolder + &quot;BluePupa.png&quot;</span>
+<span class="nc" id="L38">      val Polar: String = EntitiesFolder + &quot;Polar.png&quot;</span>
+<span class="nc" id="L39">      val BigBoss: String = EntitiesFolder + &quot;BigBoss.png&quot;</span>
+<span class="nc" id="L40">      val Nabicon: String = EntitiesFolder + &quot;Nabicon.png&quot;</span>
+<span class="nc" id="L41">      val Beecon: String = EntitiesFolder + &quot;Beecon.png&quot;</span>
+<span class="nc" id="L42">      val PowerUpJump: String = EntitiesFolder + &quot;PowerUpJump.png&quot;</span>
+<span class="nc" id="L43">      val PowerUpWeight: String = EntitiesFolder + &quot;PowerUpWeight.png&quot;</span>
+<span class="nc" id="L44">      val PowerUpSpeed: String = EntitiesFolder + &quot;PowerUpSpeed.png&quot;</span>
     }
-<span class="nc" id="L44">  }</span>
-<span class="nc" id="L45">}</span>
+<span class="nc" id="L46">  }</span>
+<span class="nc" id="L47">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

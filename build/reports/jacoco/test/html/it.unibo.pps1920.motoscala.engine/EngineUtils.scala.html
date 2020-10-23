@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EngineUtils.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.engine</a> &gt; <span class="el_source">EngineUtils.scala</span></div><h1>EngineUtils.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.engine
+
+import java.util.UUID
+
+import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator
+import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import it.unibo.pps1920.motoscala.engine.Constants.{DefaultDamage, PlayerLife}
+import it.unibo.pps1920.motoscala.engine.Life._
+import it.unibo.pps1920.motoscala.engine.Masses._
+import it.unibo.pps1920.motoscala.engine.Scores._
+import it.unibo.pps1920.motoscala.model.Level._
+
+import scala.collection.mutable
+import scala.util.Random
+
+
+<span class="nc" id="L19">protected[engine] object EngineUtils {</span>
+  /**
+   * Sets up the game
+   *
+   * @param coordinator coordinator
+   * @param level level entities
+   * @param iterablePlayers user controlled players
+   * @param difficult level difficulty
+   */
+  def addEntities(coordinator: Coordinator, level: LevelData, iterablePlayers: Iterator[BumperCarEntity],
+                  difficult: Int): Unit = {
+<span class="nc" id="L30">    val playerStack = mutable.Stack[BumperCarEntity]()</span>
+<span class="nc" id="L31">    level.entities.foreach {</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">      case Player(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L33">        val player = iterablePlayers.next()</span>
+<span class="nc" id="L34">        playerStack.push(player)</span>
+<span class="nc" id="L35">        coordinator.addEntity(player)</span>
+<span class="nc" id="L36">          .addEntityComponents(player,</span>
+<span class="nc" id="L37">                               ShapeComponent(shape),</span>
+<span class="nc" id="L38">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L39">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L40">                               JumpComponent(),</span>
+<span class="nc" id="L41">                               CollisionComponent(PlayerLife, mass = PlayerMass),</span>
+<span class="nc" id="L42">                               ScoreComponent(PlayerScore))</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">      case BlackPupa(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L44">        val black = BlackPupaEntity(UUID.randomUUID())</span>
+<span class="nc" id="L45">        coordinator.addEntity(black)</span>
+<span class="nc" id="L46">          .addEntityComponents(black, ShapeComponent(shape),</span>
+<span class="nc" id="L47">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L48">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L49">                               CollisionComponent(BlackPupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),</span>
+<span class="nc" id="L50">                               AIComponent(Foolishness.BlackPupa / difficult, Random.shuffle(playerStack)),</span>
+<span class="nc" id="L51">                               ScoreComponent(BlackPupaLife * difficult))</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">      case RedPupa(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L53">        val red = RedPupaEntity(UUID.randomUUID())</span>
+<span class="nc" id="L54">        coordinator.addEntity(red)</span>
+<span class="nc" id="L55">          .addEntityComponents(red, ShapeComponent(shape),</span>
+<span class="nc" id="L56">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L57">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L58">                               CollisionComponent(RedPupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),</span>
+<span class="nc" id="L59">                               AIComponent(Foolishness.RedPupa / difficult, Random.shuffle(playerStack)),</span>
+<span class="nc" id="L60">                               ScoreComponent(RedPupaScore * difficult))</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">      case BluePupa(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L62">        val blue = BluePupaEntity(UUID.randomUUID())</span>
+<span class="nc" id="L63">        coordinator.addEntity(blue)</span>
+<span class="nc" id="L64">          .addEntityComponents(blue, ShapeComponent(shape),</span>
+<span class="nc" id="L65">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L66">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L67">                               CollisionComponent(BluePupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),</span>
+<span class="nc" id="L68">                               AIComponent(Foolishness.BluePupa / difficult, Random.shuffle(playerStack)),</span>
+<span class="nc" id="L69">                               ScoreComponent(BluePupaLife * difficult))</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">      case Polar(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L71">        val polar = PolarEntity(UUID.randomUUID())</span>
+<span class="nc" id="L72">        coordinator.addEntity(polar)</span>
+<span class="nc" id="L73">          .addEntityComponents(polar, ShapeComponent(shape),</span>
+<span class="nc" id="L74">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L75">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L76">                               CollisionComponent(PolaLifer, damage = DefaultDamage * difficult, mass = BaseEnemyMass),</span>
+<span class="nc" id="L77">                               AIComponent(Foolishness.Polar / difficult, mutable.Stack(playerStack.head)),</span>
+<span class="nc" id="L78">                               ScoreComponent(PolaScore * difficult))</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">      case BigBoss(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L80">        val bigBoss = BigBossEntity(UUID.randomUUID())</span>
+<span class="nc" id="L81">        coordinator.addEntity(bigBoss)</span>
+<span class="nc" id="L82">          .addEntityComponents(bigBoss, ShapeComponent(shape),</span>
+<span class="nc" id="L83">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L84">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L85">                               CollisionComponent(BigBossLife, damage = DefaultDamage * difficult, mass = BigBossMass),</span>
+<span class="nc" id="L86">                               AIComponent(Foolishness.BigBoss / difficult, mutable.Stack(playerStack.head)),</span>
+<span class="nc" id="L87">                               ScoreComponent(BigBosScore * difficult))</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      case Nabicon(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L89">        val nabi = NabiconEntity(UUID.randomUUID())</span>
+<span class="nc" id="L90">        coordinator.addEntity(nabi)</span>
+<span class="nc" id="L91">          .addEntityComponents(nabi, ShapeComponent(shape),</span>
+<span class="nc" id="L92">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L93">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L94">                               CollisionComponent(NabiconLife, damage = 0, mass = NabiconMass),</span>
+<span class="nc" id="L95">                               ScoreComponent(NabiconScore))</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">      case Beecon(position, shape, velocity) =&gt;</span>
+<span class="nc" id="L97">        val bee = BeeconEntity(UUID.randomUUID())</span>
+<span class="nc" id="L98">        coordinator.addEntity(bee)</span>
+<span class="nc" id="L99">          .addEntityComponents(bee, ShapeComponent(shape),</span>
+<span class="nc" id="L100">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L101">                               VelocityComponent(defVel = (velocity.x, velocity.y)),</span>
+<span class="nc" id="L102">                               CollisionComponent(BeeconLife, mass = BeeconMass),</span>
+<span class="nc" id="L103">                               ScoreComponent(BeeconScore))</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">      case JumpPowerUp(position, shape) =&gt;</span>
+<span class="nc" id="L105">        val jmp = JumpPowerUpEntity(UUID.randomUUID())</span>
+<span class="nc" id="L106">        coordinator.addEntity(jmp)</span>
+<span class="nc" id="L107">          .addEntityComponents(jmp, ShapeComponent(shape),</span>
+<span class="nc" id="L108">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L109">                               CollisionComponent(PowerUpLife, mass = PowerUpMass),</span>
+<span class="nc" id="L110">                               VelocityComponent(),</span>
+<span class="nc" id="L111">                               PowerUpComponent(effect = PowerUpEffect.JumpPowerUp(duration = Duration.Short)))</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">      case WeightBoostPowerUp(position, shape) =&gt;</span>
+<span class="nc" id="L113">        val w = WeightPowerUpEntity(UUID.randomUUID())</span>
+<span class="nc" id="L114">        coordinator.addEntity(w)</span>
+<span class="nc" id="L115">          .addEntityComponents(w, ShapeComponent(shape),</span>
+<span class="nc" id="L116">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L117">                               CollisionComponent(PowerUpLife, mass = PowerUpMass),</span>
+<span class="nc" id="L118">                               VelocityComponent(),</span>
+<span class="nc" id="L119">                               PowerUpComponent(effect = PowerUpEffect</span>
+<span class="nc" id="L120">                                 .WeightBoostPowerUp(duration = Duration.Long, isActive = false, _ + 50)))</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">      case SpeedBoostPowerUp(position, shape) =&gt;</span>
+<span class="nc" id="L122">        val s = SpeedPowerUpEntity(UUID.randomUUID())</span>
+<span class="nc" id="L123">        coordinator.addEntity(s)</span>
+<span class="nc" id="L124">          .addEntityComponents(s, ShapeComponent(shape),</span>
+<span class="nc" id="L125">                               PositionComponent((position.x, position.y)),</span>
+<span class="nc" id="L126">                               CollisionComponent(PowerUpLife, mass = PowerUpMass),</span>
+<span class="nc" id="L127">                               VelocityComponent(),</span>
+<span class="nc" id="L128">                               PowerUpComponent(effect = PowerUpEffect</span>
+<span class="nc" id="L129">                                 .SpeedBoostPowerUp(duration = Duration.Medium, isActive = false,</span>
+<span class="nc" id="L130">                                                    e =&gt; Vector2(e.x * 0.5, e.y * 0.5))))</span>
+    }
+  }
+}
+/**
+ * Possible powerup durations
+ */
+<span class="nc" id="L137">private object Duration {</span>
+<span class="nc" id="L138">  val Short: Int = 5 * 60</span>
+<span class="nc" id="L139">  val Medium: Int = 10 * 60</span>
+<span class="nc" id="L140">  val Long: Int = 15 * 60</span>
+}
+/**
+ * Possible entity bounties
+ */
+<span class="nc" id="L145">private object Scores {</span>
+<span class="nc" id="L146">  val PlayerScore: Int = 0</span>
+<span class="nc" id="L147">  val NabiconScore: Int = 500</span>
+<span class="nc" id="L148">  val BeeconScore: Int = 700</span>
+<span class="nc" id="L149">  val BaseEnemyScore: Int = 300</span>
+<span class="nc" id="L150">  val PolaScore: Int = 100</span>
+<span class="nc" id="L151">  val BlackPupaScore: Int = 200</span>
+<span class="nc" id="L152">  val RedPupaScore: Int = 300</span>
+<span class="nc" id="L153">  val BluePupaScore: Int = 500</span>
+<span class="nc" id="L154">  val BigBosScore: Int = 3000</span>
+}
+/**
+ * Possible entity masses
+ */
+<span class="nc" id="L159">private object Masses {</span>
+<span class="nc" id="L160">  val PowerUpMass: Int = 0</span>
+<span class="nc" id="L161">  val PlayerMass: Int = 100</span>
+<span class="nc" id="L162">  val BaseEnemyMass: Int = 30</span>
+<span class="nc" id="L163">  val BigBossMass: Int = 150</span>
+<span class="nc" id="L164">  val BeeconMass: Int = Int.MaxValue</span>
+<span class="nc" id="L165">  val NabiconMass: Int = Int.MaxValue</span>
+}
+/**
+ * Possible entity life values
+ */
+<span class="nc" id="L170">private object Life {</span>
+<span class="nc" id="L171">  val NabiconLife: Int = 100</span>
+<span class="nc" id="L172">  val BeeconLife: Int = 100</span>
+<span class="nc" id="L173">  val PolaLifer: Int = 100</span>
+<span class="nc" id="L174">  val BlackPupaLife: Int = 150</span>
+<span class="nc" id="L175">  val RedPupaLife: Int = 200</span>
+<span class="nc" id="L176">  val BluePupaLife: Int = 250</span>
+<span class="nc" id="L177">  val PowerUpLife: Int = 100</span>
+<span class="nc" id="L178">  val BigBossLife: Int = 700</span>
+}
+/**
+ * Possible enemy foolishness
+ */
+<span class="nc" id="L183">private object Foolishness {</span>
+<span class="nc" id="L184">  val Polar: Int = 30</span>
+<span class="nc" id="L185">  val BlackPupa: Int = 40</span>
+<span class="nc" id="L186">  val RedPupa: Int = 40</span>
+<span class="nc" id="L187">  val BluePupa: Int = 20</span>
+<span class="nc" id="L188">  val BigBoss: Int = 10</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

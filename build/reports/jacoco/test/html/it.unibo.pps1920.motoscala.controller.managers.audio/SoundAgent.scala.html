@@ -2,80 +2,112 @@
 
 import java.util.concurrent.ArrayBlockingQueue
 
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
-import javafx.application.Platform
+import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJarToString
 import javafx.scene.media.{AudioClip, Media, MediaPlayer}
 import javafx.util.Duration
 import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success, Try}
 
-trait SoundAgent extends Thread with SoundAgentLogic {
+/** A specific sound agent, that extends [[java.lang.Thread]], this Thread, should be used for play all [[Clips]] and [[Music]]
+ * the agent should use one safe Queue, for handle the external event.
+ * */
+<span class="nc" id="L15">sealed trait SoundAgent extends Thread with SoundAgentLogic {</span>
+<span class="nc" id="L16">  private final val QueueSize = 1000</span>
+<span class="nc" id="L17">  protected val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QueueSize)</span>
+  /** Enqueue the event to be handled from the agent.
+   *
+   * @param ev the event
+   * */
   def enqueueEvent(ev: MediaEvent): Unit
 }
 
-<span class="nc" id="L17">private final class ConcreteSoundAgent extends SoundAgent {</span>
-  final val QUEUE_SIZE = 100
-<span class="nc" id="L19">  private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]</span>
-<span class="nc" id="L20">  private var clips: Map[Clips, AudioClip] = Map()</span>
-<span class="nc" id="L21">  private var medias: Map[Music, MediaPlayer] = Map()</span>
-<span class="nc" id="L22">  private val blockingQueue: ArrayBlockingQueue[MediaEvent] = new ArrayBlockingQueue[MediaEvent](QUEUE_SIZE)</span>
-<span class="nc" id="L23">  private var actualMusicPlayer: Option[MediaPlayer] = None</span>
-<span class="nc" id="L24">  private var actualClipPlayer: AudioClip = _</span>
-<span class="nc" id="L25">  private var volumeMusic: Double = 0.5</span>
-<span class="nc" id="L26">  private var volumeEffect: Double = 1.0</span>
+<span class="nc" id="L25">private final class ConcreteSoundAgent extends SoundAgent {</span>
+  import MagicValues._
+
+<span class="nc" id="L28">  private val logger = LoggerFactory getLogger classOf[ConcreteSoundAgent]</span>
+<span class="nc" id="L29">  private var clips: Map[Clips, AudioClip] = Map()</span>
+<span class="nc" id="L30">  private var medias: Map[Music, MediaPlayer] = Map()</span>
+<span class="nc" id="L31">  private var actualMusicPlayer: Option[MediaPlayer] = None</span>
+<span class="nc" id="L32">  private var actualClipPlayer: Option[AudioClip] = None</span>
+<span class="nc" id="L33">  private var volumeMusic: Double = DefaultVolumeMusic</span>
+<span class="nc" id="L34">  private var volumeEffect: Double = DefaultVolumeVolume</span>
+<span class="nc" id="L35">  cacheSounds()</span>
 
   override def run(): Unit = {
     while (true) {
-<span class="nc" id="L30">      Try(this.blockingQueue.take()) match {</span>
-<span class="nc bnc" id="L31" title="All 2 branches missed.">        case Success(ev) =&gt; ev.handle(this)</span>
-<span class="nc bnc" id="L32" title="All 2 branches missed.">        case Failure(exception) =&gt; logger warn exception.getMessage</span>
+<span class="nc" id="L39">      Try(blockingQueue.take()) match {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        case Success(ev) =&gt; processEvent(ev)</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        case Failure(exception) =&gt; logger warn exception.getMessage</span>
       }
     }
   }
-  override def playMusic(media: Music): Unit = {
-<span class="nc bnc" id="L37" title="All 2 branches missed.">    if (!this.medias.contains(media)) {</span>
-<span class="nc" id="L38">      this.medias += (media -&gt; new MediaPlayer(new Media(loadFromJar(media.entryName))))</span>
-    }
-<span class="nc" id="L40">    Platform.runLater(() =&gt; {</span>
-<span class="nc" id="L41">      this.actualMusicPlayer = this.medias.get(media)</span>
-<span class="nc" id="L42">      this.actualMusicPlayer.foreach(_.setVolume(volumeMusic))</span>
-<span class="nc" id="L43">      this.actualMusicPlayer.foreach(_.play())</span>
-<span class="nc" id="L44">      this.actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">      this.medias.filterNot(p =&gt; p._2 == this.actualMusicPlayer.get).foreach(_._2.pause())</span>
-    })
-  }
-<span class="nc" id="L48">  override def stopMusic(): Unit = Platform.runLater(() =&gt; this.actualMusicPlayer.foreach(_.stop()))</span>
-<span class="nc" id="L49">  override def pauseMusic(): Unit = Platform.runLater(() =&gt; this.actualMusicPlayer.foreach(_.pause()))</span>
-<span class="nc" id="L50">  override def resumeMusic(): Unit = Platform.runLater(() =&gt; this.actualMusicPlayer.foreach(_.play()))</span>
-  override def playClip(clip: Clips): Unit = {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (!this.clips.contains(clip)) {</span>
-<span class="nc" id="L53">      this.clips += (clip -&gt; new AudioClip(loadFromJar(clip.entryName)))</span>
-    }
-<span class="nc" id="L55">    Platform.runLater(() =&gt; {</span>
-<span class="nc" id="L56">      this.actualClipPlayer = this.clips(clip)</span>
-<span class="nc" id="L57">      this.actualClipPlayer.play(volumeEffect)</span>
-    })
-  }
-  override def setVolumeMusic(value: Double): Unit = {
-<span class="nc" id="L61">    this.volumeMusic = value</span>
-<span class="nc" id="L62">    Platform.runLater(() =&gt; {this.actualMusicPlayer.foreach(_.setVolume(this.volumeMusic)) })</span>
-  }
-  override def setVolumeEffect(value: Double): Unit = {
-<span class="nc" id="L65">    this.volumeEffect = value</span>
-<span class="nc" id="L66">    Platform.runLater(() =&gt; {this.actualClipPlayer.setVolume(this.volumeEffect) })</span>
-  }
-  override def restartMusic(): Unit = {
-<span class="nc" id="L69">    Platform.runLater(() =&gt; {</span>
-<span class="nc" id="L70">      this.actualMusicPlayer.foreach(_.stop())</span>
-<span class="nc" id="L71">      this.actualMusicPlayer.foreach(_.seek(Duration.ZERO))</span>
-<span class="nc" id="L72">      this.actualMusicPlayer.foreach(_.play())</span>
-    })
-  }
-<span class="nc" id="L75">  override def enqueueEvent(ev: MediaEvent): Unit = Platform.runLater(() =&gt; {this.blockingQueue.add(ev) })</span>
-}
 
-<span class="nc" id="L78">object SoundAgent {</span>
-<span class="nc" id="L79">  def apply(): SoundAgent = new ConcreteSoundAgent</span>
+<span class="nc" id="L46">  def processEvent(ev: MediaEvent): Unit = ev.handle(this)</span>
+
+  override def playMusic(media: Music): Unit = {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (!medias.contains(media)) {</span>
+<span class="nc" id="L50">      medias += (media -&gt; new MediaPlayer(new Media(loadFromJarToString(media.entryName))))</span>
+    }
+<span class="nc" id="L52">    actualMusicPlayer = medias.get(media)</span>
+<span class="nc" id="L53">    actualMusicPlayer.foreach(_.setVolume(volumeMusic))</span>
+<span class="nc" id="L54">    actualMusicPlayer.foreach(_.play())</span>
+<span class="nc" id="L55">    actualMusicPlayer.foreach(_.setCycleCount(MediaPlayer.INDEFINITE))</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">    medias.filterNot(_._2 == actualMusicPlayer.get).foreach(_._2.pause())</span>
+  }
+
+<span class="nc" id="L59">  override def stopMusic(): Unit = actualMusicPlayer.foreach(_.stop())</span>
+
+<span class="nc" id="L61">  override def pauseMusic(): Unit = actualMusicPlayer.foreach(_.pause())</span>
+
+<span class="nc" id="L63">  override def resumeMusic(): Unit = actualMusicPlayer.foreach(_.play())</span>
+
+  override def playClip(clip: Clips): Unit = {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (!clips.contains(clip)) {</span>
+<span class="nc" id="L67">      clips += (clip -&gt; new AudioClip(loadFromJarToString(clip.entryName)))</span>
+    }
+<span class="nc" id="L69">    actualClipPlayer = Some(clips(clip))</span>
+<span class="nc" id="L70">    actualClipPlayer.get.play(volumeEffect)</span>
+  }
+
+  override def setVolumeMusic(value: Double): Unit = {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    volumeMusic = if (value &lt; SoundErrorThresholds) 0.0 else value</span>
+<span class="nc" id="L75">    actualMusicPlayer.foreach(_.setVolume(volumeMusic))</span>
+  }
+
+  override def setVolumeEffect(value: Double): Unit = {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">    volumeEffect = if (value &lt; SoundErrorThresholds) 0.0 else value</span>
+<span class="nc" id="L80">    actualClipPlayer.foreach(_.setVolume(volumeEffect))</span>
+  }
+
+  override def restartMusic(): Unit = {
+<span class="nc" id="L84">    actualMusicPlayer.foreach(_.stop())</span>
+<span class="nc" id="L85">    actualMusicPlayer.foreach(_.seek(Duration.ZERO))</span>
+<span class="nc" id="L86">    actualMusicPlayer.foreach(_.play())</span>
+  }
+
+<span class="nc" id="L89">  override def enqueueEvent(ev: MediaEvent): Unit = blockingQueue.add(ev)</span>
+
+  private def cacheSounds(): Unit = {
+    //Increase loading speed with cache
+<span class="nc" id="L93">    medias += (Music.Home -&gt; new MediaPlayer(new Media(loadFromJarToString(Music.Home.entryName))))</span>
+<span class="nc" id="L94">    medias += (Music.Game -&gt; new MediaPlayer(new Media(loadFromJarToString(Music.Game.entryName))))</span>
+<span class="nc" id="L95">    medias(Music.Home).play()</span>
+<span class="nc" id="L96">    medias(Music.Home).stop()</span>
+<span class="nc" id="L97">    medias(Music.Game).play()</span>
+<span class="nc" id="L98">    medias(Music.Game).stop()</span>
+  }
+
+<span class="nc bnc" id="L101" title="All 4 branches missed.">  private final object MagicValues {</span>
+<span class="nc" id="L102">    val DefaultVolumeMusic = 0.5</span>
+<span class="nc" id="L103">    val DefaultVolumeVolume = 1.0</span>
+<span class="nc" id="L104">    val SoundErrorThresholds = 0.05</span>
+  }
+<span class="nc" id="L106">}</span>
+
+/** Factory for [[SoundAgent]] instances. */
+<span class="nc" id="L109">object SoundAgent {</span>
+  /** Creates a new [[SoundAgent]] */
+<span class="nc" id="L111">  def apply(): SoundAgent = new ConcreteSoundAgent</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

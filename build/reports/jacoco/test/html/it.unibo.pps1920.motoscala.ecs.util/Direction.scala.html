@@ -9,48 +9,43 @@ import it.unibo.pps1920.motoscala.ecs.util.Direction._
 
 
 <span class="pc bpc" id="L11" title="14 of 22 branches missed.">sealed case class Direction(value: Vector2) {</span>
-<span class="fc" id="L12">  def +(dir: Direction): Direction = Direction((dir.value add value).unit())</span>
+  /**
+   * Sums two directions
+   *
+   * @param dir direction to be summed
+   * @return resulting direction
+   */
+<span class="fc" id="L18">  def +(dir: Direction): Direction = Direction((dir.value add value).clip())</span>
 
-
-<span class="nc" id="L15">  def angle(): Int = this match {</span>
-<span class="nc bnc" id="L16" title="All 2 branches missed.">    case Direction.Center =&gt; 0</span>
-<span class="nc bnc" id="L17" title="All 2 branches missed.">    case Direction.North =&gt; 0</span>
-<span class="nc bnc" id="L18" title="All 2 branches missed.">    case Direction.NorthWest =&gt; 315</span>
-<span class="nc bnc" id="L19" title="All 2 branches missed.">    case Direction.NorthEast =&gt; 45</span>
-<span class="nc bnc" id="L20" title="All 2 branches missed.">    case Direction.South =&gt; 180</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">    case Direction.SouthWest =&gt; 225</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">    case Direction.SouthEast =&gt; 135</span>
-<span class="nc bnc" id="L23" title="All 2 branches missed.">    case Direction.West =&gt; 270</span>
-<span class="nc bnc" id="L24" title="All 2 branches missed.">    case Direction.East =&gt; 90</span>
-<span class="nc" id="L25">    case _ =&gt; -1</span>
-  }
-
-
-<span class="nc" id="L29">  def opposite(): Direction = this match {</span>
-<span class="nc bnc" id="L30" title="All 2 branches missed.">    case Center =&gt; Center //Direction(Vector2(-1 * math.random(), -1 * math.random()).unit())</span>
-<span class="nc bnc" id="L31" title="All 2 branches missed.">    case North =&gt; South</span>
-<span class="nc bnc" id="L32" title="All 2 branches missed.">    case NorthWest =&gt; SouthEast</span>
-<span class="nc bnc" id="L33" title="All 2 branches missed.">    case NorthEast =&gt; SouthWest</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">    case South =&gt; North</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">    case SouthWest =&gt; NorthEast</span>
-<span class="nc bnc" id="L36" title="All 2 branches missed.">    case SouthEast =&gt; NorthWest</span>
-<span class="nc bnc" id="L37" title="All 2 branches missed.">    case West =&gt; East</span>
-<span class="nc bnc" id="L38" title="All 2 branches missed.">    case East =&gt; West</span>
-<span class="nc" id="L39">    case _ =&gt; Center</span>
+  /**
+   * Inverts a direction
+   *
+   * @return opposite direction
+   */
+<span class="nc" id="L25">  def opposite(): Direction = this match {</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    case Center =&gt; Center</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">    case North =&gt; South</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">    case NorthWest =&gt; SouthEast</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">    case NorthEast =&gt; SouthWest</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">    case South =&gt; North</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    case SouthWest =&gt; NorthEast</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    case SouthEast =&gt; NorthWest</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    case West =&gt; East</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    case East =&gt; West</span>
+<span class="nc" id="L35">    case _ =&gt; Center</span>
   }
 }
-<span class="pc" id="L42">object Direction {</span>
-  import scala.util.Try
-<span class="pc" id="L44">  object Center extends Direction(Vector2(0, 0))</span>
-<span class="pc" id="L45">  object North extends Direction(Vector2(0, -1))</span>
-<span class="pc" id="L46">  object NorthWest extends Direction(Vector2(-1, -1))</span>
-<span class="pc" id="L47">  object NorthEast extends Direction(Vector2(1, -1))</span>
-<span class="pc" id="L48">  object South extends Direction(Vector2(0, 1))</span>
-<span class="pc" id="L49">  object SouthWest extends Direction(Vector2(-1, 1))</span>
-<span class="pc" id="L50">  object SouthEast extends Direction(Vector2(1, 1))</span>
-<span class="pc" id="L51">  object West extends Direction(Vector2(-1, 0))</span>
-<span class="pc" id="L52">  object East extends Direction(Vector2(1, 0))</span>
-<span class="pc bpc" id="L53" title="2 of 4 branches missed.">  def velToDir(vec : Vector2): Direction = Direction(Vector2(if (vec.x!=0) vec.x / vec.x.abs else 0, if (vec.y!=0) vec.y / vec.y.abs else 0))</span>
+<span class="pc" id="L38">object Direction {</span>
+<span class="pc" id="L39">  object Center extends Direction(Vector2(0, 0))</span>
+<span class="pc" id="L40">  object North extends Direction(Vector2(0, -1))</span>
+<span class="pc" id="L41">  object NorthWest extends Direction(Vector2(-1, -1))</span>
+<span class="pc" id="L42">  object NorthEast extends Direction(Vector2(1, -1))</span>
+<span class="pc" id="L43">  object South extends Direction(Vector2(0, 1))</span>
+<span class="pc" id="L44">  object SouthWest extends Direction(Vector2(-1, 1))</span>
+<span class="pc" id="L45">  object SouthEast extends Direction(Vector2(1, 1))</span>
+<span class="pc" id="L46">  object West extends Direction(Vector2(-1, 0))</span>
+<span class="pc" id="L47">  object East extends Direction(Vector2(1, 0))</span>
+<span class="fc" id="L48">  def vecToDir(vec: Vector2): Direction = Direction(vec.clip())</span>
 }
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

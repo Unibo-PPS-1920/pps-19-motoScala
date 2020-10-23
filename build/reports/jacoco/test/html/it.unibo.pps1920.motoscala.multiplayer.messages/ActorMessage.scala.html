@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActorMessage.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.multiplayer.messages</a> &gt; <span class="el_source">ActorMessage.scala</span></div><h1>ActorMessage.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.multiplayer.messages
+
+import akka.actor.ActorRef
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
+import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandableEvent, DisplayableEvent}
+import it.unibo.pps1920.motoscala.model.MatchSetup.Data.PlayerData
+import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
+import it.unibo.pps1920.motoscala.multiplayer.messages.ErrorMsg.ErrorReason
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
+
+import scala.collection.mutable
+
+/** Represent a message used to by akka actors. */
+sealed trait ActorMessage
+
+/** Types used in design. */
+<span class="nc" id="L17">object DataType {</span>
+  type LobbyData = MessageData.LobbyData
+}
+
+/** Represent a message used to by akka actors. */
+<span class="nc" id="L22">object ActorMessage {</span>
+
+
+  /*SERVER to client MESSAGES*/
+
+  /** Contain the setup for the view of the receiver client.
+   *
+   * @param setups all the necessary data for setup view
+   */
+<span class="nc bnc" id="L31" title="All 20 branches missed.">  final case class SetupsForClientsMessage(setups: List[LevelSetupData])</span>
+
+  /*Server to Client messages*/
+
+  /*in game messages*/
+  /** This message means that the game is end. */
+<span class="nc bnc" id="L37" title="All 4 branches missed.">  final case class GameEndActorMessage() extends ActorMessage</span>
+  /** This message contains one media to be played. */
+<span class="nc bnc" id="L39" title="All 20 branches missed.">  final case class PlayMediaMessage(md: MediaEvent) extends ActorMessage</span>
+
+  /** This message carry the new state of the world, computed by the server,
+   * it is used by the view for display the new world to user.
+   *
+   * @param event the event to display
+   */
+<span class="nc bnc" id="L46" title="All 20 branches missed.">  final case class DisplayableActorMessage(event: DisplayableEvent) extends ActorMessage</span>
+  /** This message carry the command from the Client to the Server, the command is used by the server for computate the
+   * new world and return a [[DisplayableActorMessage]].
+   *
+   * @param event the command to tell
+   */
+<span class="nc bnc" id="L52" title="All 20 branches missed.">  final case class CommandableActorMessage(event: CommandableEvent) extends ActorMessage</span>
+
+  /*in lobby messages*/
+
+  /** This message contains the data updated data of the lobby.
+   *
+   * @param lobbyData the new data
+   */
+<span class="nc bnc" id="L60" title="All 20 branches missed.">  final case class LobbyDataActorMessage(lobbyData: LobbyData) extends ActorMessage</span>
+  /** This message tell to one client that server want to kick it out.
+   *
+   * @param ref the client ref
+   */
+<span class="nc bnc" id="L65" title="All 20 branches missed.">  final case class KickActorMessage(ref: ActorRef) extends ActorMessage</span>
+  /** This message carry the result of the join request.
+   *
+   * @param option if None the request is accepted, otherwise the message contain the reason
+   */
+<span class="nc bnc" id="L70" title="All 20 branches missed.">  final case class JoinResponseActorMessage(option: Option[ErrorReason] = None) extends ActorMessage</span>
+  /** Used to tell to clients that Server the server has close the lobby. */
+<span class="nc bnc" id="L72" title="All 4 branches missed.">  final case class CloseLobbyActorMessage() extends ActorMessage</span>
+  /** Used to set up the view for client.
+   *
+   * @param levelData contains all data needed for client to setup
+   */
+<span class="nc bnc" id="L77" title="All 20 branches missed.">  final case class LevelSetupMessage(levelData: LevelSetupData) extends ActorMessage</span>
+
+
+  /*Client to Server messages*/
+
+  /** Used to tell to server that client want to leave lobby.
+   *
+   * @param ref used for
+   * */
+<span class="nc bnc" id="L86" title="All 20 branches missed.">  final case class LeaveEvent(ref: ActorRef) extends ActorMessage</span>
+
+
+  /** Used to ask if is possible to join in one lobby whit that name.
+   *
+   * @param name name of the client
+   * */
+<span class="nc bnc" id="L93" title="All 20 branches missed.">  final case class JoinRequestActorMessage(name: String) extends ActorMessage</span>
+
+
+  /*Both used*/
+
+  /** Used to deliver the sender status (ready or not) to the receiver.
+   *
+   * @param status the new status
+   */
+<span class="nc bnc" id="L102" title="All 18 branches missed.">  final case class ReadyActorMessage(status: Boolean) extends ActorMessage</span>
+  /** Used to inform server and client that the game is now started. */
+<span class="nc bnc" id="L104" title="All 4 branches missed.">  final case class GameStartActorMessage() extends ActorMessage</span>
+
+
+  /*Used only from controller to Client*/
+
+  /** Used to ask if is possible to join in one lobby whit that name, and provide client whit server selection for
+   * the purpose.
+   *
+   * @param serverSelection server actor selection addr
+   * @param name name of the client
+   * */
+<span class="nc bnc" id="L115" title="All 28 branches missed.">  final case class TryJoin(serverSelection: String, name: String) extends ActorMessage</span>
+
+  /*Self sent message*/
+
+  /*Internal Timeout message, sent by internal general purpose Timeout*/
+<span class="nc bnc" id="L120" title="All 4 branches missed.">  final case class TimeOut() extends ActorMessage</span>
+}
+
+<span class="nc" id="L123">object MessageData {</span>
+  /** Contains the lobby data, the data can be None, where None means no difference between previous data.
+   *
+   * @param difficulty the difficult levl None if the same as previous
+   * @param level the level index None if the same as previous
+   * @param readyPlayers the lobby players status with name, None if the same as previous
+   */
+<span class="nc bnc" id="L130" title="All 36 branches missed.">  final case class LobbyData(</span>
+<span class="nc" id="L131">    difficulty: Option[Int] = None, level: Option[Int] = None, readyPlayers: mutable.Map[ActorRef, PlayerData])</span>
+}
+
+<span class="nc" id="L134">object ErrorMsg {</span>
+  /** Contains the error of the join request result.
+   *
+   * @param title error title
+   * @param text error body
+   */
+<span class="nc bnc" id="L140" title="All 28 branches missed.">  final case class ErrorReason(title: String, text: String)</span>
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -3,12 +3,11 @@
 import java.net.URL
 
 import alice.tuprolog._
-import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJar
+import it.unibo.pps1920.motoscala.controller.managers.file.FileManager.loadFromJarToString
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData
 import it.unibo.pps1920.motoscala.ecs.components.{AIComponent, PositionComponent}
-import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
-import it.unibo.pps1920.motoscala.ecs.managers.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.util.Scala2P._
 import it.unibo.pps1920.motoscala.ecs.util.{Direction, Vector2}
 import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, System}
@@ -16,37 +15,54 @@ import it.unibo.pps1920.motoscala.engine.CommandQueue
 
 import scala.language.postfixOps
 
-<span class="fc" id="L19">object AISystem {</span>
-<span class="fc" id="L20">  def apply(coordinator: Coordinator, queue: CommandQueue): System = new AISystemImpl(coordinator, queue)</span>
-<span class="fc" id="L21">  private class AISystemImpl(coordinator: Coordinator, queue: CommandQueue)</span>
-<span class="fc" id="L22">    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[AIComponent])) {</span>
+/**
+ * System for generating movement of ai controlled entities
+ */
 
-<span class="fc" id="L24">    val position = &quot;/prolog/movement.pl&quot;</span>
+<span class="fc" id="L22">object AISystem {</span>
+  def apply(coordinator: Coordinator, queue: CommandQueue,
+<span class="fc" id="L24">            skipFrames: scala.Int): System = new AISystemImpl(coordinator, queue, skipFrames)</span>
+<span class="fc" id="L25">  private class AISystemImpl(coordinator: Coordinator, queue: CommandQueue, skipFrames: scala.Int)</span>
+<span class="fc" id="L26">    extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[AIComponent])) {</span>
 
-<span class="fc" id="L26">    val engine = new Prolog()</span>
-<span class="fc" id="L27">    engine.setTheory(new Theory(new URL(loadFromJar(position)).openStream()))</span>
+<span class="fc" id="L28">    private val position = &quot;/prolog/movement.pl&quot;</span>
+<span class="fc" id="L29">    private val engine = new Prolog()</span>
+<span class="fc" id="L30">    engine.setTheory(new Theory(new URL(loadFromJarToString(position)).openStream()))</span>
 
-<span class="fc" id="L29">    var frames = 0</span>
+<span class="fc" id="L32">    private var frames = 0</span>
+<span class="fc" id="L33">    private val X = 4</span>
+<span class="fc" id="L34">    private val Y = 5</span>
+<span class="fc" id="L35">    private val idlePosition = (0, 0)</span>
+
     def update(): Unit = {
-<span class="fc" id="L31">      frames = frames + 1</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">      if (frames % 1 == 0) {</span>
-<span class="fc" id="L33">        val positions = entitiesRef().map(e =&gt; {</span>
-<span class="fc" id="L34">          val p = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent].pos</span>
-<span class="fc" id="L35">          (p.x, p.y)</span>
-        }).toSeq
-<span class="fc" id="L37">        entitiesRef().foreach(e =&gt; {</span>
-<span class="fc" id="L38">          val pos = coordinator.getEntityComponent(e, classOf[PositionComponent]).get.asInstanceOf[PositionComponent]</span>
-            .pos
-<span class="fc" id="L40">          val ai = coordinator.getEntityComponent(e, classOf[AIComponent]).get.asInstanceOf[AIComponent]</span>
-<span class="fc" id="L41">          val tPos = coordinator.getEntityComponent(BumperCarEntity(ai.target), classOf[PositionComponent]).get</span>
-            .asInstanceOf[PositionComponent].pos
+<span class="fc" id="L38">      frames = frames + 1</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">      if (frames % skipFrames == 0) {</span>
+<span class="fc" id="L40">        entitiesRef().foreach(e =&gt; {</span>
+          //other entities to avoid
+<span class="pc bpc" id="L42" title="3 of 6 branches missed.">          val toAvoid = entitiesRef().filter(_.uuid != e.uuid).map(e2 =&gt; {</span>
+<span class="fc" id="L43">            val p = coordinator.getEntityComponent[PositionComponent](e2).pos</span>
+<span class="fc" id="L44">            (p.x, p.y)</span>
+          })
+<span class="fc" id="L46">          val pos = coordinator.getEntityComponent[PositionComponent](e).pos</span>
+<span class="fc" id="L47">          val ai = coordinator.getEntityComponent[AIComponent](e)</span>
+          //remove eliminated players
+<span class="fc bfc" id="L49" title="All 2 branches covered.">          ai.targets.popWhile(!coordinator.isEntityAlive(_))</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">          val tPos: Vector2 = if (ai.targets.nonEmpty) {</span>
+<span class="fc" id="L51">            coordinator.getEntityComponent[PositionComponent](ai.targets.head).pos</span>
+          } else {
+<span class="fc" id="L53">            idlePosition</span>
+          }
+<span class="fc" id="L55">          val query = new Struct(&quot;move_avoiding&quot;, ai.foolishness,</span>
+<span class="fc" id="L56">                                 (pos.x, pos.y),</span>
+<span class="fc" id="L57">                                 (tPos.x, tPos.y),</span>
+<span class="fc" id="L58">                                 toAvoid,</span>
+<span class="fc" id="L59">                                 new Var(),</span>
+<span class="fc" id="L60">                                 new Var())</span>
+<span class="fc" id="L61">          val s = engine.solve(query).getSolution</span>
 
-<span class="fc" id="L44">          val query = new Struct(&quot;move_avoiding&quot;, (pos.x, pos.y).toString(), (tPos.x, tPos.y)</span>
-<span class="fc" id="L45">            .toString(), positions, new Var(), new Var())</span>
-<span class="fc" id="L46">          val s = engine.solve(query).getSolution</span>
-<span class="fc" id="L47">          val v = Vector2(x = extractTerm(s, 3), y = extractTerm(s, 4))</span>
-<span class="fc" id="L48">          queue</span>
-<span class="fc" id="L49">            .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))</span>
+<span class="fc" id="L63">          val v = Vector2(x = extractTerm(s, X), y = extractTerm(s, Y))</span>
+<span class="fc" id="L64">          queue</span>
+<span class="fc" id="L65">            .enqueue(CommandEvent(EventData.CommandData(e, Direction(v))))</span>
         })
       }
 

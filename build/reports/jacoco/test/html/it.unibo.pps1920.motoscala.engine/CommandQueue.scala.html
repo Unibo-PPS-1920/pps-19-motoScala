@@ -3,11 +3,13 @@
 import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandEvent
 
 import scala.collection.mutable
-
-<span class="pc bnc" id="L7" title="All 8 branches missed.">case class CommandQueue() {</span>
-<span class="fc" id="L8">  private val eventQueue: mutable.Queue[CommandEvent] = mutable.Queue()</span>
-<span class="fc" id="L9">  def enqueue(event: CommandEvent): Unit = this.synchronized(eventQueue.enqueue(event))</span>
-<span class="nc" id="L10">  def dequeue(): CommandEvent = this.synchronized(eventQueue.dequeue())</span>
-<span class="fc" id="L11">  def dequeueAll(): Seq[CommandEvent] = this.synchronized(eventQueue.dequeueAll(_ =&gt; true))</span>
+/**
+ * thread-safe queue of commands
+ */
+<span class="pc bnc" id="L9" title="All 8 branches missed.">case class CommandQueue() {</span>
+<span class="fc" id="L10">  private val eventQueue: mutable.Queue[CommandEvent] = mutable.Queue()</span>
+<span class="fc" id="L11">  def enqueue(event: CommandEvent): Unit = this.synchronized(eventQueue.enqueue(event))</span>
+<span class="nc" id="L12">  def dequeue(): CommandEvent = this.synchronized(eventQueue.dequeue())</span>
+<span class="fc" id="L13">  def dequeueAll(): Seq[CommandEvent] = this.synchronized(eventQueue.dequeueAll(_ =&gt; true))</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

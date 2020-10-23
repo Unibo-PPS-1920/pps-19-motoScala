@@ -4,22 +4,39 @@ import it.unibo.pps1920.motoscala.view.screens.{FXMLScreens, ScreenController}
 import javafx.scene.Node
 import javafx.scene.layout.Pane
 
-private[view] trait ScreenLoader {
+/** A Screen loader caches rendered screens and provides method for rendering and displaying nodes */
+protected[view] trait ScreenLoader {
+  /** Get the screen controller of a particular screen
+   *
+   * @param screen the Fxml screen
+   * @return the screen controller
+   */
   def getScreenController(screen: FXMLScreens): ScreenController
+  /** Apply the screen to the root pane.
+   *
+   * @param screen the Fxml screen
+   * @param root the root pane
+   */
   def applyScreen(screen: FXMLScreens, root: Pane): Unit
+  /** Load the node in cache.
+   *
+   * @param screen the Fxml screen
+   * @param controller the screen controller
+   */
   def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit
 }
-<span class="nc" id="L12">private[view] object ScreenLoader {</span>
-<span class="nc" id="L13">  class ScreenLoaderImpl extends ScreenLoader {</span>
-<span class="nc" id="L14">    private var cache: Map[FXMLScreens, (Node, ScreenController)] = Map()</span>
 
-<span class="nc" id="L16">    override def getScreenController(screen: FXMLScreens): ScreenController = cache(screen)._2</span>
-<span class="nc" id="L17">    def applyScreen(screen: FXMLScreens, root: Pane): Unit = root.getChildren.setAll(cache(screen)._1)</span>
-    def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit = {
-<span class="nc" id="L19">      println(screen, controller.getClass)</span>
-<span class="nc" id="L20">      cache += (screen -&gt; ((loadFxml(screen, controller), controller)))</span>
-    }
+<span class="nc" id="L29">protected[view] object ScreenLoader {</span>
+<span class="nc" id="L30">  class ScreenLoaderImpl extends ScreenLoader {</span>
+<span class="nc" id="L31">    private var cache: Map[FXMLScreens, (Node, ScreenController)] = Map()</span>
+
+<span class="nc" id="L33">    override def getScreenController(screen: FXMLScreens): ScreenController = cache(screen)._2</span>
+<span class="nc" id="L34">    override def applyScreen(screen: FXMLScreens, root: Pane): Unit = root.getChildren.setAll(cache(screen)._1)</span>
+    override def loadFXMLNode(screen: FXMLScreens, controller: ScreenController): Unit =
+<span class="nc" id="L36">      cache += (screen -&gt; ((loadFxml(screen, controller), controller)))</span>
   }
-<span class="nc" id="L23">  def apply(): ScreenLoader = new ScreenLoaderImpl()</span>
+
+  /** Factory for [[ScreenLoader]] instances */
+<span class="nc" id="L40">  def apply(): ScreenLoader = new ScreenLoaderImpl()</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

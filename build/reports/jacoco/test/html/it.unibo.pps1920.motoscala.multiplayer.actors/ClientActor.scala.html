@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientActor.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.multiplayer.actors</a> &gt; <span class="el_source">ClientActor.scala</span></div><h1>ClientActor.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.multiplayer.actors
+
+import akka.actor.{ActorRef, ActorSelection, Props, Timers}
+import it.unibo.pps1920.motoscala.controller.ActorController
+import it.unibo.pps1920.motoscala.controller.mediation.Event.CommandableEvent
+import it.unibo.pps1920.motoscala.controller.mediation.{EventObserver, Mediator}
+import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor.Constants.ResponseTime
+import it.unibo.pps1920.motoscala.multiplayer.actors.ClientActor.SchedulerTickKey
+import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LeaveLobbyEvent, LevelSetupEvent, LobbyDataEvent}
+import it.unibo.pps1920.motoscala.view.showSimplePopup
+import org.slf4j.{Logger, LoggerFactory}
+
+import scala.concurrent.duration._
+import scala.language.postfixOps
+
+<span class="nc" id="L17">private class ClientActor(</span>
+<span class="nc" id="L18">  protected val actorController: ActorController)</span>
+<span class="nc" id="L19">  extends ActorWhitLogging with Timers with EventObserver[CommandableEvent] {</span>
+
+  import MagicValues._
+
+<span class="nc" id="L23">  override protected val logger: Logger = LoggerFactory getLogger classOf[ClientActor]</span>
+<span class="nc" id="L24">  private val mediator: Mediator = actorController.mediator</span>
+<span class="nc" id="L25">  private var serverActor: Option[ActorRef] = None</span>
+<span class="nc" id="L26">  private var serverAddress: ActorSelection = _</span>
+<span class="nc" id="L27">  override def receive: Receive = idleBehaviour</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">  private def idleBehaviour: Receive = {</span>
+<span class="nc bnc" id="L29" title="All 4 branches missed.">    case TryJoin(selection, name) =&gt;</span>
+<span class="nc" id="L30">      serverAddress = context.system.actorSelection(selection)</span>
+<span class="nc" id="L31">      serverAddress ! JoinRequestActorMessage(name)</span>
+<span class="nc" id="L32">      timers.startSingleTimer(SchedulerTickKey, TimeOut, ResponseTime seconds)</span>
+<span class="nc bnc" id="L33" title="All 4 branches missed.">    case rdyMsg: ReadyActorMessage =&gt; serverActor.get ! rdyMsg</span>
+<span class="nc bnc" id="L34" title="All 4 branches missed.">    case reqMsg: JoinRequestActorMessage =&gt; serverActor.get ! reqMsg</span>
+<span class="nc bnc" id="L35" title="All 8 branches missed.">    case JoinResponseActorMessage(None) =&gt;</span>
+<span class="nc" id="L36">      timers.cancelAll()</span>
+<span class="nc" id="L37">      changeBehaviourWhitLogging(initMatchBehaviour)</span>
+<span class="nc" id="L38">      serverActor = Some(sender())</span>
+<span class="nc" id="L39">      actorController.joinResult(true)</span>
+<span class="nc bnc" id="L40" title="All 8 branches missed.">    case JoinResponseActorMessage(Some(error)) =&gt;</span>
+<span class="nc" id="L41">      timers.cancelAll()</span>
+<span class="nc" id="L42">      sendViewMessage(error.title, error.text)</span>
+<span class="nc" id="L43">      actorController.joinResult(false)</span>
+<span class="nc bnc" id="L44" title="All 4 branches missed.">    case TimeOut =&gt;</span>
+<span class="nc" id="L45">      sendViewMessage(ServerNotFoundMsgTitle, ServerNotFoundMsgText)</span>
+<span class="nc" id="L46">      actorController.joinResult(false)</span>
+  }
+<span class="nc bnc" id="L48" title="All 2 branches missed.">  private def initMatchBehaviour: Receive = {</span>
+    //Update view lobby data
+<span class="nc bnc" id="L50" title="All 4 branches missed.">    case LobbyDataActorMessage(lobbyData) =&gt; actorController.sendToViewStrategy(_.notify(LobbyDataEvent(lobbyData)))</span>
+<span class="nc bnc" id="L51" title="All 4 branches missed.">    case readyMsg: ReadyActorMessage =&gt; serverActor.get ! readyMsg</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">    case GameStartActorMessage() =&gt;</span>
+<span class="nc" id="L53">      changeBehaviourWhitLogging(inGameBehaviour)</span>
+<span class="nc" id="L54">      actorController.gameStart()</span>
+<span class="nc" id="L55">      mediator.subscribe(this)</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">    case KickActorMessage(_) =&gt; actorController.gotKicked()</span>
+<span class="nc bnc" id="L57" title="All 4 branches missed.">    case ev: LeaveEvent =&gt;</span>
+<span class="nc" id="L58">      serverActor.get ! ev</span>
+<span class="nc" id="L59">      actorController.shutdownMultiplayer()</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">    case CloseLobbyActorMessage() =&gt;</span>
+<span class="nc" id="L61">      actorController.sendToViewStrategy(_.notify(LeaveLobbyEvent()))</span>
+<span class="nc" id="L62">      sendViewMessage(LobbyClosedMsgTitle, LobbyClosedMsgText)</span>
+<span class="nc" id="L63">      actorController.shutdownMultiplayer()</span>
+  }
+<span class="nc bnc" id="L65" title="All 2 branches missed.">  private def inGameBehaviour: Receive = {</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">    case DisplayableActorMessage(event) =&gt; mediator.publishEvent(event)</span>
+<span class="nc bnc" id="L67" title="All 4 branches missed.">    case LevelSetupMessage(levelSetupData) =&gt;</span>
+<span class="nc" id="L68">      actorController.sendToViewStrategy(_.notify(LevelSetupEvent(levelSetupData)))</span>
+  }
+<span class="nc" id="L70">  private def sendViewMessage(title: String, text: String): Unit = showSimplePopup(text, title)</span>
+  /**
+   * Notify the observer with the event.
+   *
+   * @param event the notified event.
+   */
+<span class="nc" id="L76">  override def notify(event: CommandableEvent): Unit = serverActor.get ! CommandableActorMessage(event)</span>
+<span class="nc bnc" id="L77" title="All 6 branches missed.">  override protected def addCustomBehaviour(): Option[Receive] = Some({ case PlayMediaMessage(meEv) =&gt; actorController</span>
+<span class="nc" id="L78">    .redirectSoundEvent(meEv)</span>
+  })
+<span class="nc bnc" id="L80" title="All 4 branches missed.">  private[this] object MagicValues {</span>
+    final val LobbyClosedMsgTitle = &quot;Lobby has been closed&quot;
+    final val LobbyClosedMsgText = &quot;Choose another server&quot;
+    final val ServerNotFoundMsgTitle = &quot;Cannot find server&quot;
+    final val ServerNotFoundMsgText = &quot;Timeout reached&quot;
+  }
+<span class="nc" id="L86">}</span>
+
+/** Factory for [[ClientActor]] instances. */
+<span class="nc" id="L89">object ClientActor {</span>
+  /** Creates a new [[ClientActor]] */
+<span class="nc" id="L91">  def props(controller: ActorController): Props = Props(new ClientActor(controller))</span>
+<span class="nc" id="L92">  object Constants {</span>
+    final val ResponseTime = 5
+  }
+
+<span class="nc" id="L96">  private case object SchedulerTickKey</span>
+<span class="nc" id="L97">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -5,119 +5,157 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{PlayMusicEvent, PlaySoundEffect, StopMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{Clips, Music}
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandEvent, EntityData}
-import it.unibo.pps1920.motoscala.controller.mediation.EventData.LevelSetupData
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.{EndData, LifeData}
 import it.unibo.pps1920.motoscala.ecs.Entity
 import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
 import it.unibo.pps1920.motoscala.model.Level.Coordinate
-import it.unibo.pps1920.motoscala.view.drawable.EntityDrawable
-import it.unibo.pps1920.motoscala.view.loaders.ImageLoader
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
-import it.unibo.pps1920.motoscala.view.utilities.ViewConstants.Entities.Textures
-import it.unibo.pps1920.motoscala.view.{JavafxEnums, ViewFacade, iconSetter}
+import it.unibo.pps1920.motoscala.view._
+import it.unibo.pps1920.motoscala.view.drawables.Drawables
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelSetupData
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import javafx.fxml.FXML
 import javafx.scene.canvas.{Canvas, GraphicsContext}
-import javafx.scene.control.{Button, Label}
+import javafx.scene.control.{Button, Label, ProgressBar}
 import javafx.scene.layout.{BorderPane, StackPane}
 import org.kordamp.ikonli.material.Material
 
-<span class="nc" id="L23">abstract class AbstractScreenControllerGame(</span>
-<span class="nc" id="L24">  protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L25">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
-<span class="nc" id="L26">  private var gameEventHandler: Option[GameEventHandler] = None</span>
-<span class="nc" id="L27">  private var playerEntity: Option[Entity] = None</span>
-<span class="nc" id="L28">  private var mapSize: Option[Coordinate] = None</span>
-<span class="nc" id="L29">  private var isPlaying: Boolean = false</span>
+/** Abstract ScreenController dedicated to drawing and command handling.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L29">protected[game] abstract class AbstractScreenControllerGame(</span>
+<span class="nc" id="L30">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L31">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
 
-<span class="nc" id="L31">  @FXML protected var root: BorderPane = _</span>
-<span class="nc" id="L32">  @FXML protected var canvas: Canvas = _</span>
-<span class="nc" id="L33">  @FXML protected var canvasStack: StackPane = _</span>
-<span class="nc" id="L34">  @FXML protected var buttonStart: Button = _</span>
-<span class="nc" id="L35">  @FXML protected var labelTitle: Label = _</span>
-<span class="nc" id="L36">  private var context: GraphicsContext = _</span>
+<span class="nc" id="L33">  private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MediumIcon)</span>
+<span class="nc" id="L34">  private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MediumIcon)</span>
+<span class="nc" id="L35">  @FXML protected final var root: BorderPane = _</span>
+<span class="nc" id="L36">  @FXML protected final var canvas: Canvas = _</span>
+<span class="nc" id="L37">  @FXML protected final var canvasStack: StackPane = _</span>
+<span class="nc" id="L38">  @FXML protected final var buttonStart: Button = _</span>
+<span class="nc" id="L39">  @FXML protected final var labelTitle: Label = _</span>
+<span class="nc" id="L40">  @FXML protected final var labelScore: Label = _</span>
+<span class="nc" id="L41">  @FXML protected final var lifeBar: ProgressBar = _</span>
+<span class="nc" id="L42">  private var context: GraphicsContext = _</span>
 
-<span class="nc" id="L38">  private val PlayIcon = iconSetter(Material.PLAY_ARROW, JavafxEnums.MEDIUM_ICON)</span>
-<span class="nc" id="L39">  private val PauseIcon = iconSetter(Material.PAUSE, JavafxEnums.MEDIUM_ICON)</span>
+<span class="nc" id="L44">  private var gameEventHandler: Option[GameEventHandler] = None</span>
+<span class="nc" id="L45">  private var playerEntity: Option[Entity] = None</span>
+<span class="nc" id="L46">  private var mapSize: Option[Coordinate] = None</span>
+<span class="nc" id="L47">  private var isPlaying: Boolean = false</span>
 
-  def initialize(): Unit = {
-<span class="nc" id="L42">    assertNodeInjected()</span>
-<span class="nc" id="L43">    context = canvas.getGraphicsContext2D</span>
-  }
-  private def dismiss(): Unit = {
-<span class="nc" id="L46">    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
-<span class="nc" id="L47">    gameEventHandler.foreach(_.dismiss())</span>
-<span class="nc" id="L48">    controller.stop()</span>
-<span class="nc" id="L49">    viewFacade.changeScreen(ScreenEvent.GoBack)</span>
-<span class="nc" id="L50">    viewFacade.getStage.setFullScreen(false)</span>
-<span class="nc" id="L51">    controller.redirectSoundEvent(StopMusic())</span>
-<span class="nc" id="L52">    controller.redirectSoundEvent(PlayMusicEvent(Music.Home))</span>
-  }
-  private def assertNodeInjected(): Unit = {
-<span class="nc bnc" id="L55" title="All 2 branches missed.">    assert(root != null, &quot;fx:id=\&quot;root\&quot; was not injected: check your FXML file 'Game.fxml'.&quot;)</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">    assert(canvas != null, &quot;fx:id=\&quot;canvas\&quot; was not injected: check your FXML file 'Game.fxml'.&quot;)</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">    assert(buttonStart != null, &quot;fx:id=\&quot;buttonStart\&quot; was not injected: check your FXML file 'Game.fxml'.&quot;)</span>
-<span class="nc bnc" id="L58" title="All 2 branches missed.">    assert(buttonBack != null, &quot;fx:id=\&quot;buttonBack\&quot; was not injected: check your FXML file 'Game.fxml'.&quot;)</span>
-<span class="nc bnc" id="L59" title="All 2 branches missed.">    assert(labelTitle != null, &quot;fx:id=\&quot;labelTitle\&quot; was not injected: check your FXML file 'Game.fxml'.&quot;)</span>
-  }
-
-  private def initButtons(): Unit = {
-    //BACK
-<span class="nc" id="L64">    buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MEDIUM_ICON))</span>
-<span class="nc" id="L65">    buttonBack.setOnAction(_ =&gt; dismiss())</span>
-    //PLAY-PAUSE
-<span class="nc" id="L67">    isPlaying = false</span>
-<span class="nc" id="L68">    buttonStart.setGraphic(PlayIcon)</span>
-<span class="nc bnc" id="L69" title="All 6 branches missed.">    buttonStart.setOnAction(_ =&gt; if (buttonStart.getGraphic == PlayIcon) {</span>
-<span class="nc" id="L70">      buttonStart.setGraphic(PauseIcon)</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">      if (!isPlaying) {controller.start(); isPlaying = true } else controller.resume()</span>
-    } else {
-<span class="nc" id="L73">      buttonStart.setGraphic(PlayIcon)</span>
-<span class="nc" id="L74">      controller.pause()</span>
-    })
-  }
-  protected def handleSetup(data: LevelSetupData): Unit = {
-<span class="nc" id="L78">    playerEntity = data.playerEntity.some</span>
-<span class="nc" id="L79">    mapSize = data.level.mapSize.some</span>
-<span class="nc" id="L80">    canvasStack.setMaxWidth(mapSize.get.x)</span>
-<span class="nc" id="L81">    canvasStack.setMaxHeight(mapSize.get.y)</span>
-<span class="nc" id="L82">    canvas.heightProperty().bind(canvasStack.maxHeightProperty())</span>
-<span class="nc" id="L83">    canvas.widthProperty().bind(canvasStack.maxWidthProperty())</span>
-<span class="nc bnc" id="L84" title="All 4 branches missed.">    if (data.isSinglePlayer || data.isHosting) {</span>
-<span class="nc" id="L85">      buttonStart setVisible true</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">      labelTitle.setText(if (data.isSinglePlayer) s&quot;Level: ${data.level.index}&quot; else &quot;Multiplayer&quot;)</span>
-<span class="nc" id="L87">    } else {buttonStart setVisible false }</span>
-<span class="nc" id="L88">    initButtons()</span>
-<span class="nc" id="L89">    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some</span>
-<span class="nc" id="L90">    viewFacade.getStage.setFullScreen(true)</span>
-  }
-
-  protected def drawEntities(player: EntityData, entities: Seq[EntityData]): Unit = {
-<span class="nc" id="L94">    context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)</span>
-    //context.drawImage(ImageLoader.getImage(Textures.BackgroundTexture), 0, 0, mapSize.get.x, mapSize.get.y)
-<span class="nc" id="L96">    entities.foreach(e =&gt; e.entity match {</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">      case BumperCarEntity(_) =&gt;</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">      case RedPupaEntity(_) =&gt; Drawables.RedPupaDrawable.draw(e)</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">      case BlackPupaEntity(_) =&gt; Drawables.BlackPupaDrawable.draw(e)</span>
-<span class="nc bnc" id="L100" title="All 2 branches missed.">      case BluePupaEntity(_) =&gt; Drawables.BluePupaDrawable.draw(e)</span>
-<span class="nc bnc" id="L101" title="All 2 branches missed.">      case PolarEntity(_) =&gt; Drawables.PolarDrawable.draw(e)</span>
-    })
-<span class="nc" id="L103">    Drawables.PlayerDrawable.draw(player)</span>
-  }
-
-  override def whenDisplayed(): Unit = {
-<span class="nc" id="L107">    root.requestFocus()</span>
-<span class="nc" id="L108">    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))</span>
-  }
-
+  import MagicValues._
   def sendCommandEvent(event: CommandEvent): Unit
-
-<span class="nc bnc" id="L113" title="All 4 branches missed.">  private object Drawables {</span>
-<span class="nc" id="L114">    val PlayerDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BumperCar), context)</span>
-<span class="nc" id="L115">    val BlackPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BlackPupa), context)</span>
-<span class="nc" id="L116">    val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa), context)</span>
-<span class="nc" id="L117">    val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa), context)</span>
-<span class="nc" id="L118">    val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar), context)</span>
+  override def whenDisplayed(): Unit = {
+<span class="nc" id="L52">    root.requestFocus()</span>
+<span class="nc" id="L53">    controller.redirectSoundEvent(PlayMusicEvent(Music.Game))</span>
   }
-<span class="nc" id="L120">}</span>
+  def initialize(): Unit = {
+<span class="nc" id="L56">    assertNodeInjected(root, canvas, canvasStack, buttonStart, labelTitle, labelScore, lifeBar)</span>
+<span class="nc" id="L57">    context = canvas.getGraphicsContext2D</span>
+  }
+  /** Handle the setup message.
+   *
+   * @param data the setup data
+   */
+  protected def handleLevelSetup(data: LevelSetupData): Unit = {
+<span class="nc" id="L64">    playerEntity = data.player.some</span>
+<span class="nc" id="L65">    mapSize = data.level.mapSize.some</span>
+<span class="nc" id="L66">    canvasStack.setMaxWidth(mapSize.get.x)</span>
+<span class="nc" id="L67">    canvasStack.setMaxHeight(mapSize.get.y)</span>
+<span class="nc" id="L68">    canvas.heightProperty().bind(canvasStack.maxHeightProperty())</span>
+<span class="nc" id="L69">    canvas.widthProperty().bind(canvasStack.maxWidthProperty())</span>
+<span class="nc" id="L70">    lifeBar.setMinWidth(mapSize.get.x)</span>
+<span class="nc" id="L71">    lifeBar.setProgress(1.0)</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">    if (data.isSinglePlayer || data.isHosting) {</span>
+<span class="nc" id="L73">      buttonStart setVisible true</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      labelTitle.setText(if (data.isSinglePlayer) s&quot;Level: ${data.level.index}&quot; else &quot;Multiplayer&quot;)</span>
+<span class="nc" id="L75">    } else {buttonStart setVisible false }</span>
+<span class="nc" id="L76">    labelScore.setText(s&quot;$ScoreText: ${0}&quot;)</span>
+<span class="nc" id="L77">    initButtons()</span>
+<span class="nc" id="L78">    gameEventHandler = GameEventHandler(root, sendCommandEvent, playerEntity.get).some</span>
+<span class="nc" id="L79">    viewFacade.getStage.setFullScreen(true)</span>
+  }
+  private def initButtons(): Unit = {
+<span class="nc" id="L82">    buttonBack.setGraphic(iconSetter(Material.ARROW_BACK, JavafxEnums.MediumIcon))</span>
+<span class="nc" id="L83">    buttonBack.setOnAction(_ =&gt; dismiss())</span>
+<span class="nc" id="L84">    isPlaying = false</span>
+<span class="nc" id="L85">    buttonStart.setGraphic(PlayIcon)</span>
+<span class="nc bnc" id="L86" title="All 6 branches missed.">    buttonStart.setOnAction(_ =&gt; if (buttonStart.getGraphic == PlayIcon) {</span>
+<span class="nc" id="L87">      buttonStart.setGraphic(PauseIcon)</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      if (!isPlaying) {controller.start(); isPlaying = true } else controller.resume()</span>
+    } else {
+<span class="nc" id="L90">      buttonStart.setGraphic(PlayIcon)</span>
+<span class="nc" id="L91">      controller.pause()</span>
+    })
+  }
+
+  private def dismiss(): Unit = {
+<span class="nc" id="L96">    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))</span>
+<span class="nc" id="L97">    clearScreen()</span>
+<span class="nc" id="L98">    gameEventHandler.foreach(_.dismiss())</span>
+<span class="nc" id="L99">    controller.stop()</span>
+<span class="nc" id="L100">    viewFacade.changeScreen(ChangeScreenEvent.GoBack)</span>
+<span class="nc" id="L101">    viewFacade.getStage.setFullScreen(false)</span>
+<span class="nc" id="L102">    controller.redirectSoundEvent(StopMusic())</span>
+<span class="nc" id="L103">    controller.redirectSoundEvent(PlayMusicEvent(Music.Home))</span>
+<span class="nc" id="L104">    controller.shutdownMultiplayer()</span>
+  }
+<span class="nc" id="L106">  private def clearScreen(): Unit = context.clearRect(0, 0, canvas.getWidth, canvas.getHeight)</span>
+  /** Handle the end message.
+   *
+   * @param data the end data
+   */
+  protected def handleLevelEnd(data: EndData): Unit = {
+    def gameEnd(message: String): Unit = {
+<span class="nc" id="L113">      showSimpleDialog(this.canvasStack, message, controller.score.toString, _ =&gt; dismiss())</span>
+<span class="nc" id="L114">      controller.saveStats()</span>
+<span class="nc" id="L115">      controller.shutdownMultiplayer()</span>
+<span class="nc" id="L116">      controller.score = 0</span>
+    }
+<span class="nc" id="L118">    data match {</span>
+<span class="nc bnc" id="L119" title="All 6 branches missed.">      case EndData(hasWon, BumperCarEntity(_), _) =&gt; gameEnd(if (hasWon) WinMessage else LoseMessage)</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">      case EndData(_, _, score) =&gt; controller.score += score; labelScore.setText(s&quot;$ScoreText: ${controller.score}&quot;)</span>
+    }
+  }
+  /** Handle the life message.
+   *
+   * @param data the life data
+   */
+  protected def handleEntityLife(data: LifeData): Unit =
+<span class="nc bnc" id="L128" title="All 6 branches missed.">    if (data.entity == playerEntity.get) lifeBar.setProgress(data.life / PlayerLife.toDouble)</span>
+  /** Handle the draw message.
+   *
+   * @param players the players present in the game
+   * @param entities the other entities
+   */
+  protected def handleDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit = {
+<span class="nc" id="L135">    clearScreen()</span>
+<span class="nc" id="L136">    entities.foreach(e =&gt; e.entity match {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      case RedPupaEntity(_) =&gt; Drawables.RedPupaDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">      case BlackPupaEntity(_) =&gt; Drawables.BlackPupaDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">      case BluePupaEntity(_) =&gt; Drawables.BluePupaDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">      case PolarEntity(_) =&gt; Drawables.PolarDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">      case WeightPowerUpEntity(_) =&gt; Drawables.PowerUpWeightDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      case JumpPowerUpEntity(_) =&gt; Drawables.PowerUpJumpDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">      case SpeedPowerUpEntity(_) =&gt; Drawables.PowerUpSpeedDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">      case NabiconEntity(_) =&gt; Drawables.NabiconDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">      case BeeconEntity(_) =&gt; Drawables.BeeconDrawable.draw(e, context)</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">      case BigBossEntity(_) =&gt; Drawables.BigBossDrawable.draw(e, context)</span>
+<span class="nc" id="L147">      case _ =&gt;</span>
+    })
+<span class="nc bnc" id="L149" title="All 6 branches missed.">    val playerPart = players.partition(_.get.entity == playerEntity.get)</span>
+<span class="nc" id="L150">    playerPart._1.foreach(_ foreach (Drawables.PlayerDrawable.draw(_, context)))</span>
+<span class="nc" id="L151">    playerPart._2.foreach(_ foreach (Drawables.PlayerMPDrawable.draw(_, context)))</span>
+  }
+<span class="nc bnc" id="L153" title="All 4 branches missed.">  private object MagicValues {</span>
+<span class="nc" id="L154">    val WinMessage = &quot;You Win!&quot;</span>
+<span class="nc" id="L155">    val LoseMessage = &quot;Game Over!&quot;</span>
+<span class="nc" id="L156">    val ScoreText = &quot;Score&quot;</span>
+  }
+<span class="nc" id="L158">}</span>
 
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

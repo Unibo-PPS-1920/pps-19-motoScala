@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>package.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.systems.collision</a> &gt; <span class="el_source">package.scala</span></div><h1>package.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.systems
+
+import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
+import it.unibo.pps1920.motoscala.ecs.util.Side.Center
+import it.unibo.pps1920.motoscala.ecs.util.{Alignment, Side, Vector2}
+
+import scala.math.signum
+<span class="nc" id="L8">package object collision {</span>
+  /**
+   * Calculates mono-dimensional elastic collision between two elements.
+   *
+   * @param vel1  first element velocity
+   * @param vel2  second element velocity
+   * @param mass1 first element mass
+   * @param mass2 second element mass
+   * @return computed new scalar velocity
+   */
+  private[collision] def elasticCollision1D(vel1: Double, vel2: Double, mass1: Double, mass2: Double): Double = {
+<span class="nc" id="L19">    var newVel = (vel1 * (mass1 - mass2) + 2 * mass2 * vel2) / (mass1 + mass2)</span>
+<span class="nc" id="L20">    val newVelSign = signum(newVel)</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    if (newVel.toInt == 0) newVel = 1.0 * newVelSign</span>
+<span class="nc" id="L22">    newVel</span>
+  }
+  /**
+   * Detects collision between two circles.
+   *
+   * @param cPos1    first circle position
+   * @param cPos2    second circle position
+   * @param cRadius1 first circle radius
+   * @param cRadius2 second circle radius
+   * @return Boolean true if circles are intersected
+   *         false otherwise
+   */
+  private[collision] def areCirclesTouching(cPos1: Vector2, cPos2: Vector2, cRadius1: Float, cRadius2: Float): Boolean =
+<span class="nc bnc" id="L35" title="All 2 branches missed.">    (cPos1 dist cPos2) &lt;= (cRadius1 + cRadius2)</span>
+  /**
+   * Determines which side of a rectangle a point is on.
+   *
+   * @param refTopLeft     coordinates of the rectangle top left corner
+   * @param refBottomRight coordinates of the rectangle bottom right corner
+   * @param point          the point to compare
+   * @return horizontal and vertical [[Alignment]] of the point compared to the rectangle
+   */
+  private[collision] def getRecSide(refTopLeft: Vector2, refBottomRight: Vector2, point: Vector2): Alignment = {
+<span class="nc" id="L45">    val alignment = Alignment(Center, Center)</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    if (point.x &lt; refTopLeft.x) alignment.horizontalSide = Side.Left</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">    else if (point.x &gt; refBottomRight.x) alignment.horizontalSide = Side.Right</span>
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (point.y &lt; refTopLeft.y) alignment.verticalSide = Side.Top</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    else if (point.y &gt; refBottomRight.y) alignment.verticalSide = Side.Bottom</span>
+<span class="nc" id="L51">    alignment</span>
+  }
+  /**
+   * Checks the collision between a circle and a static rectangle and calculates the direction inversion vector that
+   * must be applied to the speed of the circle.
+   *
+   * @param circle       the circle to be tested
+   * @param circlePos    the position of the circle to be tested
+   * @param rectangle    the rectangle to be tested
+   * @param rectanglePos the position of the rectangle to be tested
+   * @return the direction inversion [[Vector2]]
+   */
+  private[collision] def getDirInversion(circle: Circle, circlePos: Vector2, rectangle: Rectangle,
+                                         rectanglePos: Vector2): Vector2 = {
+<span class="nc" id="L65">    val topLeft = rectanglePos sub Vector2(rectangle.dimX / 2, rectangle.dimY / 2)</span>
+<span class="nc" id="L66">    val bottomRight = rectanglePos add Vector2(rectangle.dimX / 2, rectangle.dimY / 2)</span>
+
+<span class="nc" id="L68">    val testEdge = Vector2(circlePos.x, circlePos.y)</span>
+<span class="nc" id="L69">    val invVec = Vector2(1, 1)</span>
+
+<span class="nc" id="L71">    val alignment = collision.getRecSide(topLeft, bottomRight, circlePos)</span>
+<span class="nc" id="L72">    alignment.horizontalSide match {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      case Side.Left =&gt; testEdge.x = topLeft.x; invVec.x = -1</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      case Side.Right =&gt; testEdge.x = bottomRight.x; invVec.x = -1</span>
+<span class="nc" id="L75">      case _ =&gt;</span>
+    }
+
+<span class="nc" id="L78">    alignment.verticalSide match {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">      case Side.Top =&gt; testEdge.y = topLeft.y; invVec.y = -1</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">      case Side.Bottom =&gt; testEdge.y = bottomRight.y; invVec.y = -1</span>
+<span class="nc" id="L81">      case _ =&gt;</span>
+    }
+
+    //check distance from closest edge
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    if ((circlePos dist testEdge) &lt;= circle.radius) {</span>
+<span class="nc" id="L86">      invVec</span>
+    } //collide: direction inverted
+<span class="nc" id="L88">    else Vector2(1, 1) //do not collide: same direction</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

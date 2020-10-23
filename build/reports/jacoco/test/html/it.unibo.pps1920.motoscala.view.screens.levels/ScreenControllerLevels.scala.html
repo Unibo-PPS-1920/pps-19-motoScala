@@ -4,20 +4,21 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
-import javafx.application.Platform
 
+/** Screen controller for levels FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L13">protected[view] final class ScreenControllerLevels(</span>
+<span class="nc" id="L14">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L15">  protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {</span>
 
-<span class="nc" id="L10">final class ScreenControllerLevels(protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L11">                                   protected override val controller: ObservableUI) extends AbstractScreenControllerLevels(viewFacade, controller) {</span>
-<span class="nc" id="L12">  logger info &quot;Level Screen&quot;</span>
+<span class="nc" id="L17">  override def whenDisplayed(): Unit = controller.loadAllLevels()</span>
 
-  override def whenDisplayed(): Unit = {
-<span class="nc" id="L15">    controller.loadAllLevels()</span>
-  }
-
-<span class="nc" id="L18">  override def notify(ev: ViewEvent): Unit = ev match {</span>
-<span class="nc bnc" id="L19" title="All 2 branches missed.">    case LevelDataEvent(levels) =&gt; Platform.runLater(() =&gt; populateLevels(levels))</span>
-<span class="nc" id="L20">    case _ =&gt;</span>
+<span class="nc" id="L19">  override def notify(ev: ViewEvent): Unit = ev match {</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">    case LevelDataEvent(levels) =&gt; populateLevels(levels)</span>
+<span class="nc" id="L21">    case _ =&gt;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

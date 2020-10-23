@@ -2,25 +2,31 @@
 
 import scala.reflect.ClassTag
 
+/** A Mediator handles communication between different [[EventSubject]] redirecting messages according to the type of subjects */
 trait Mediator extends EventSubject
-<span class="fc" id="L6">object Mediator {</span>
+<span class="fc" id="L7">object Mediator {</span>
   import Types._
-<span class="fc" id="L8">  private class MediatorImpl extends Mediator {</span>
-<span class="fc" id="L9">    private var observers: Map[Observer, EventType] = Map()</span>
+<span class="fc" id="L9">  private class MediatorImpl extends Mediator {</span>
+<span class="fc" id="L10">    private var observers: Map[Observer, EventType] = Map()</span>
 
-<span class="fc" id="L11">    override def publishEvent[T: ClassTag](ev: T): Unit = observers</span>
-<span class="fc" id="L12">      .filter(o =&gt; o._2.isAssignableFrom(implicitly[ClassTag[T]].runtimeClass))</span>
-<span class="fc" id="L13">      .map(_._1.asInstanceOf[EventObserver[T]])</span>
-<span class="fc" id="L14">      .foreach(_.notify(ev))</span>
+<span class="fc" id="L12">    override def publishEvent[T: ClassTag](ev: T): Unit = observers</span>
+<span class="fc" id="L13">      .filter(o =&gt; o._2.isAssignableFrom(implicitly[ClassTag[T]].runtimeClass))</span>
+<span class="fc" id="L14">      .map(_._1.asInstanceOf[EventObserver[T]])</span>
+<span class="fc" id="L15">      .foreach(_.notify(ev))</span>
+
     override def subscribe[T: ClassTag](observer: EventObserver[T]*): Unit =
-<span class="fc" id="L16">      observers = observers ++ observer.map(o =&gt; o -&gt; implicitly[ClassTag[T]].runtimeClass).toSet</span>
-<span class="fc" id="L17">    override def unsubscribe[T](observer: EventObserver[T]*): Unit = observers = observers -- observer</span>
+<span class="fc" id="L18">      observers = observers ++ observer.map(o =&gt; o -&gt; implicitly[ClassTag[T]].runtimeClass).toSet</span>
+
+<span class="fc" id="L20">    override def unsubscribe[T](observer: EventObserver[T]*): Unit = observers = observers -- observer</span>
   }
-<span class="nc" id="L19">  object Types {</span>
+
+<span class="nc" id="L23">  private object Types {</span>
     type EventType = Class[_]
     type Observer = EventObserver[_]
   }
-<span class="pc" id="L23">  def apply(): Mediator = new MediatorImpl()</span>
+
+  /** Factory for [[Mediator]] instances */
+<span class="pc" id="L29">  def apply(): Mediator = new MediatorImpl()</span>
 }
 
 

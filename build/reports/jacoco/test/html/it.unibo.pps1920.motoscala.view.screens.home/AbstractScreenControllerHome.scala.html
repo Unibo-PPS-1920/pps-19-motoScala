@@ -1,116 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractScreenControllerHome.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.view.screens.home</a> &gt; <span class="el_source">AbstractScreenControllerHome.scala</span></div><h1>AbstractScreenControllerHome.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.view.screens.home
 
 import it.unibo.pps1920.motoscala.controller.ObservableUI
-import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
-import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
+import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.addButtonMusic
 import javafx.fxml.FXML
-import javafx.scene.CacheHint
 import javafx.scene.control.Button
 import javafx.scene.image.ImageView
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane, Pane}
 import javafx.scene.shape.Line
-import scalafx.animation.TranslateTransition
+import javafx.scene.{CacheHint, Node}
+import scalafx.animation.{Timeline, TranslateTransition}
 import scalafx.scene.shape.Rectangle
 import scalafx.util.Duration
 
-<span class="nc" id="L19">abstract class AbstractScreenControllerHome(protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L20">                                            protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
-<span class="nc" id="L21">  @FXML protected var root: BorderPane = _</span>
-<span class="nc" id="L22">  @FXML protected var mainAnchorPane: AnchorPane = _</span>
-<span class="nc" id="L23">  @FXML protected var mainGridPane: GridPane = _</span>
-<span class="nc" id="L24">  @FXML protected var title: ImageView = _</span>
-<span class="nc" id="L25">  @FXML protected var textPlay: Button = _</span>
-<span class="nc" id="L26">  @FXML protected var textPlayMultiplayer: Button = _</span>
-<span class="nc" id="L27">  @FXML protected var textSettings: Button = _</span>
-<span class="nc" id="L28">  @FXML protected var textStats: Button = _</span>
-<span class="nc" id="L29">  @FXML protected var textExit: Button = _</span>
+/** Abstract ScreenController dedicated to show main menu.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L24">protected[home] abstract class AbstractScreenControllerHome(</span>
+<span class="nc" id="L25">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L26">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
+
+<span class="nc" id="L28">  @FXML protected final var root: BorderPane = _</span>
+<span class="nc" id="L29">  @FXML protected final var mainAnchorPane: AnchorPane = _</span>
+<span class="nc" id="L30">  @FXML protected final var mainGridPane: GridPane = _</span>
+<span class="nc" id="L31">  @FXML protected final var title: ImageView = _</span>
+<span class="nc" id="L32">  @FXML protected final var textPlay: Button = _</span>
+<span class="nc" id="L33">  @FXML protected final var textPlayMultiplayer: Button = _</span>
+<span class="nc" id="L34">  @FXML protected final var textSettings: Button = _</span>
+<span class="nc" id="L35">  @FXML protected final var textStats: Button = _</span>
+<span class="nc" id="L36">  @FXML protected final var textExit: Button = _</span>
 
   @FXML override def initialize(): Unit = {
-<span class="nc" id="L32">    assertNodeInjected()</span>
-<span class="nc" id="L33">    this.initializeGrid(this.root)</span>
-<span class="nc" id="L34">    this.initializeBackground(this.root)</span>
-<span class="nc" id="L35">    this.initializeButtons()</span>
-  }
-  private def assertNodeInjected(): Unit = {
-<span class="nc bnc" id="L38" title="All 2 branches missed.">    assert(root != null, &quot;fx:id=\&quot;root\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">    assert(mainAnchorPane != null, &quot;fx:id=\&quot;mainAnchorPane\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">    assert(mainGridPane != null, &quot;fx:id=\&quot;mainGridPane\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">    assert(textPlay != null, &quot;fx:id=\&quot;textPlay\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">    assert(textPlayMultiplayer != null, &quot;fx:id=\&quot;textPlayMultiplayer\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">    assert(textSettings != null, &quot;fx:id=\&quot;textSettings\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">    assert(textStats != null, &quot;fx:id=\&quot;textStats\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">    assert(textExit != null, &quot;fx:id=\&quot;textExit\&quot; was not injected: check your FXML file 'Home.fxml'.&quot;)</span>
+<span class="nc" id="L39">    assertNodeInjected(root, mainAnchorPane, mainGridPane, title, textPlay, textPlayMultiplayer, textSettings, textStats, textExit)</span>
+<span class="nc" id="L40">    initializeGrid(root)</span>
+<span class="nc" id="L41">    initializeBackground(root)</span>
+<span class="nc" id="L42">    initializeButtons()</span>
   }
 
-<span class="nc" id="L48">  override def whenDisplayed(): Unit = {}</span>
 
   private def initializeButtons(): Unit = {
-    def buttonClicked(screenEvent: ScreenEvent): Unit = {
-<span class="nc" id="L52">      controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
-<span class="nc" id="L53">      viewFacade.changeScreen(screenEvent)</span>
-    }
 
-<span class="nc" id="L56">    this.textPlay.setOnAction(_ =&gt; buttonClicked(ScreenEvent.GotoLevels))</span>
-<span class="nc" id="L57">    this.textPlayMultiplayer.setOnAction(_ =&gt; buttonClicked(ScreenEvent.GotoLobby))</span>
-<span class="nc" id="L58">    this.textSettings.setOnAction(_ =&gt; buttonClicked(ScreenEvent.GotoSettings))</span>
-<span class="nc" id="L59">    this.textStats.setOnAction(_ =&gt; buttonClicked(ScreenEvent.GotoStats))</span>
-<span class="nc" id="L60">    this.textExit.setOnAction(_ =&gt; System.exit(0))</span>
+<span class="nc" id="L48">    addButtonMusic(textPlay, textPlayMultiplayer, textSettings, textStats, textExit)(controller)</span>
+
+<span class="nc" id="L50">    textPlay.setOnAction(_ =&gt; viewFacade.changeScreen(ChangeScreenEvent.GotoLevels))</span>
+<span class="nc" id="L51">    textPlayMultiplayer.setOnAction(_ =&gt; viewFacade.changeScreen(ChangeScreenEvent.GotoSelection))</span>
+<span class="nc" id="L52">    textSettings.setOnAction(_ =&gt; viewFacade.changeScreen(ChangeScreenEvent.GotoSettings))</span>
+<span class="nc" id="L53">    textStats.setOnAction(_ =&gt; viewFacade.changeScreen(ChangeScreenEvent.GotoStats))</span>
+<span class="nc" id="L54">    textExit.setOnAction(_ =&gt; System.exit(0))</span>
   }
 
   private def initializeBackground(pane: Pane): Unit = {
     //Background setup
-<span class="nc" id="L65">    val background: Rectangle = new Rectangle()</span>
-<span class="nc" id="L66">    background.width = ViewConstants.Window.ScreenWidth</span>
-<span class="nc" id="L67">    background.height = ViewConstants.Window.ScreenHeight</span>
-<span class="nc" id="L68">    background.setCache(true)</span>
-<span class="nc" id="L69">    background.setCacheHint(CacheHint.SPEED)</span>
-<span class="nc" id="L70">    background.setId(Constant.CSS_BACKGROUND_ID)</span>
-<span class="nc" id="L71">    pane.getChildren.add(0, background)</span>
+<span class="nc" id="L59">    val background: Rectangle = new Rectangle()</span>
+<span class="nc" id="L60">    background.width = ViewConstants.Window.ScreenWidth</span>
+<span class="nc" id="L61">    background.height = ViewConstants.Window.ScreenHeight</span>
+<span class="nc" id="L62">    setCache(background)</span>
+<span class="nc" id="L63">    background.setId(MagicValues.CSSBackgroundID)</span>
+<span class="nc" id="L64">    pane.getChildren.add(0, background)</span>
   }
-  private def initializeGrid(pane: Pane): Unit = {
-    //Vertical line setup
-<span class="nc" id="L75">    Constant.X_LINE_NUMBER._1 to Constant.X_LINE_NUMBER._2 foreach (multiplayer =&gt; {</span>
-      import scalafx.animation.Timeline
-<span class="nc" id="L77">      val xLine = new Line(0, Constant.X_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH, Constant</span>
-<span class="nc" id="L78">        .X_LINE_PORTION * multiplayer)</span>
-<span class="nc" id="L79">      xLine.setCache(true)</span>
-<span class="nc" id="L80">      xLine.setCacheHint(CacheHint.SPEED)</span>
-<span class="nc" id="L81">      xLine.setId(Constant.CSS_LINE_ID)</span>
-<span class="nc" id="L82">      val translate: TranslateTransition = new TranslateTransition</span>
-<span class="nc" id="L83">      translate.setDuration(Duration.apply(Constant.ANIMATION_DURATION * 2))</span>
-<span class="nc" id="L84">      translate.setToY((ViewConstants.Window.ScreenHeight + Constant.Y_LINE_PORTION * multiplayer) / 2)</span>
-<span class="nc" id="L85">      translate.setCycleCount(Timeline.Indefinite)</span>
-<span class="nc" id="L86">      translate.setNode(xLine)</span>
-<span class="nc" id="L87">      translate.setAutoReverse(true)</span>
-<span class="nc" id="L88">      translate.play()</span>
-<span class="nc" id="L89">      this.root.getChildren.add(0, xLine)</span>
-    })
 
+  def setCache(node: Node): Unit = {
+<span class="nc" id="L68">    node.setCache(true)</span>
+<span class="nc" id="L69">    node.setCacheHint(CacheHint.SPEED)</span>
+  }
+
+  private def initializeGrid(pane: Pane): Unit = {
+
+    def addAnimation(node: Line, mul: Int): Unit = {
+<span class="nc" id="L75">      val translate: TranslateTransition = new TranslateTransition</span>
+<span class="nc" id="L76">      translate.setDuration(Duration.apply(MagicValues.AnimationDuration * 2))</span>
+<span class="nc" id="L77">      translate.setToY((ViewConstants.Window.ScreenHeight + MagicValues.YLinePortion * mul) / 2)</span>
+<span class="nc" id="L78">      translate.setCycleCount(Timeline.Indefinite)</span>
+<span class="nc" id="L79">      translate.setNode(node)</span>
+<span class="nc" id="L80">      translate.setAutoReverse(true)</span>
+<span class="nc" id="L81">      translate.play()</span>
+    }
+    //Vertical line setup
+<span class="nc" id="L84">    MagicValues.LineNumberX.leftBound to MagicValues.LineNumberX.rightBound foreach (multiplier =&gt; {</span>
+<span class="nc" id="L85">      val xLine = new Line(0, MagicValues.XlinePortion * multiplier, MagicValues.PixelLineLength, MagicValues</span>
+<span class="nc" id="L86">        .XlinePortion * multiplier)</span>
+<span class="nc" id="L87">      xLine.setId(MagicValues.CSSLineID)</span>
+<span class="nc" id="L88">      setCache(xLine)</span>
+<span class="nc" id="L89">      addAnimation(xLine, multiplier)</span>
+<span class="nc" id="L90">      root.getChildren.add(0, xLine)</span>
+    })
 
     //Horizontal line setup
-<span class="nc" id="L94">    Constant.Y_LINE_NUMBER._1 to Constant.Y_LINE_NUMBER._2 foreach (multiplayer =&gt; {</span>
-<span class="nc" id="L95">      val yLine = new Line(Constant.Y_LINE_PORTION * multiplayer, -Constant.PIXEL_LINE_LENGTH, Constant</span>
-<span class="nc" id="L96">        .Y_LINE_PORTION * multiplayer, Constant.PIXEL_LINE_LENGTH)</span>
-<span class="nc" id="L97">      yLine.setCache(true)</span>
-<span class="nc" id="L98">      yLine.setCacheHint(CacheHint.SPEED)</span>
-<span class="nc" id="L99">      yLine.setId(Constant.CSS_LINE_ID)</span>
-<span class="nc" id="L100">      pane.getChildren.add(0, yLine)</span>
+<span class="nc" id="L94">    MagicValues.LineNumberY.leftBound to MagicValues.LineNumberY.rightBound foreach (multiplier =&gt; {</span>
+<span class="nc" id="L95">      val yLine = new Line(MagicValues.YLinePortion * multiplier, -MagicValues.PixelLineLength, MagicValues</span>
+<span class="nc" id="L96">        .YLinePortion * multiplier, MagicValues.PixelLineLength)</span>
+<span class="nc" id="L97">      yLine.setId(MagicValues.CSSLineID)</span>
+<span class="nc" id="L98">      setCache(yLine)</span>
+<span class="nc" id="L99">      pane.getChildren.add(0, yLine)</span>
     })
   }
+<span class="nc" id="L102">  override def whenDisplayed(): Unit = {}</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">  private[this] final object MagicValues {</span>
+    final val AnimationDuration = 5000
+    final val PixelLineLength = 5000
+    final val ScreenLineDivider = 10
+<span class="nc" id="L107">    final val XlinePortion = ViewConstants.Window.ScreenHeight / ScreenLineDivider</span>
+<span class="nc" id="L108">    final val YLinePortion = ViewConstants.Window.ScreenWidth / ScreenLineDivider</span>
+    final val CSSLineID = &quot;Line&quot;
+    final val CSSBackgroundID = &quot;Background&quot;
+    sealed trait LineNumber {
+      def leftBound: Int
+      def rightBound: Int
+    }
+<span class="nc bnc" id="L115" title="All 4 branches missed.">    case object LineNumberX extends LineNumber {</span>
+<span class="nc" id="L116">      val leftBound: Int = -2</span>
+<span class="nc" id="L117">      val rightBound: Int = 10</span>
+    }
 
-<span class="nc bnc" id="L104" title="All 4 branches missed.">  private[this] final object Constant {</span>
-    final val ANIMATION_DURATION = 5000
-    final val PIXEL_LINE_LENGTH = 5000
-    final val SCREEN_LINE_DIVIDER = 10
-<span class="nc" id="L108">    final val X_LINE_NUMBER = (-2, 10)</span>
-<span class="nc" id="L109">    final val Y_LINE_NUMBER = (1, 10)</span>
-<span class="nc" id="L110">    final val X_LINE_PORTION = ViewConstants.Window.ScreenHeight / SCREEN_LINE_DIVIDER</span>
-<span class="nc" id="L111">    final val Y_LINE_PORTION = ViewConstants.Window.ScreenWidth / SCREEN_LINE_DIVIDER</span>
-    final val CSS_LINE_ID = &quot;Line&quot;
-    final val CSS_BACKGROUND_ID = &quot;Background&quot;
+<span class="nc bnc" id="L120" title="All 4 branches missed.">    case object LineNumberY extends LineNumber {</span>
+<span class="nc" id="L121">      val leftBound: Int = 1</span>
+<span class="nc" id="L122">      val rightBound: Int = 10</span>
+    }
+
   }
-<span class="nc" id="L115">}</span>
+<span class="nc" id="L126">}</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

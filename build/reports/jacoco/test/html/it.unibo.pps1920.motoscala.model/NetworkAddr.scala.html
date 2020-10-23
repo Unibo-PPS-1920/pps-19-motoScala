@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NetworkAddr.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.model</a> &gt; <span class="el_source">NetworkAddr.scala</span></div><h1>NetworkAddr.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.model
+
+import scala.util.matching.Regex
+
+<span class="nc" id="L5">object NetworkAddr {</span>
+<span class="nc" id="L6">  private val IPV4Address: Regex = raw&quot;(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})&quot;.r</span>
+
+<span class="nc" id="L8">  def getLocalIPAddress: String = java.net.InetAddress.getLocalHost.getHostAddress</span>
+
+  /** Validates a IPV4 address.
+   *
+   * @param address The address
+   * @return True, if the address is valid; otherwise false
+   */
+<span class="nc" id="L15">  def validateIPV4Address(address: String): Boolean = address match {</span>
+<span class="nc bnc" id="L16" title="All 8 branches missed.">    case IPV4Address(first, second, third, fourth) =&gt;</span>
+<span class="nc" id="L17">      List(first, second, third, fourth) map validateIPV4Block forall identity</span>
+<span class="nc" id="L18">    case _ =&gt; false</span>
+  }
+
+  /** Validates a IPV4 address block, without broadcast.
+   *
+   * @param block The block
+   * @return True, if the block is valid; otherwise false
+   */
+<span class="nc bnc" id="L26" title="All 2 branches missed.">  private def validateIPV4Block(block: String): Boolean = block.nonEmpty &amp;&amp; block</span>
+<span class="nc bnc" id="L27" title="All 4 branches missed.">    .forall(_.isDigit) &amp;&amp; (0 to 254 contains block.toInt)</span>
+
+  /** Validates a network port, well-known network port are included.
+   *
+   * @param port The port
+   * @return True, if the port is valid; otherwise false
+   */
+<span class="nc" id="L34">  def validatePort(port: Int): Boolean = 0 to 65535 contains port</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

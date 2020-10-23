@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Difficulties.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.model</a> &gt; <span class="el_source">Difficulties.scala</span></div><h1>Difficulties.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.model
+
+/** Provide a default [[Difficult]] Instance */
+<span class="nc" id="L4">object Difficulties extends Enumeration {</span>
+<span class="nc" id="L5">  val EASY: Difficult = Difficult(&quot;Easy&quot;, 1)</span>
+<span class="nc" id="L6">  val MEDIUM: Difficult = Difficult(&quot;Medium&quot;, 2)</span>
+<span class="nc" id="L7">  val HARD: Difficult = Difficult(&quot;Hard&quot;, 3)</span>
+
+<span class="nc" id="L9">  val difficultiesList: List[Difficult] =</span>
+<span class="nc" id="L10">    List(</span>
+<span class="nc" id="L11">      EASY,</span>
+<span class="nc" id="L12">      MEDIUM,</span>
+<span class="nc" id="L13">      HARD</span>
+      )
+  /** A [[Difficult]] represents the difficult on the game, it contains name and one incremental value.
+   *
+   * @param name the difficult name
+   * @param number the difficult index
+   */
+<span class="nc bnc" id="L20" title="All 8 branches missed.">  protected case class Difficult(name: String, number: Int) extends super.Val()</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

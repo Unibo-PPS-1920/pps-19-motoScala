@@ -5,41 +5,54 @@ import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
 import it.unibo.pps1920.motoscala.model.Level.LevelData
 import it.unibo.pps1920.motoscala.view.ViewFacade
-import it.unibo.pps1920.motoscala.view.screens.{ScreenController, ScreenEvent}
+import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
+import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewUtils
 import javafx.fxml.FXML
 import javafx.scene.layout.{AnchorPane, BorderPane, GridPane}
 
-<span class="nc" id="L13">abstract class AbstractScreenControllerLevels(protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L14">                                              protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
-<span class="nc" id="L15">  @FXML protected var root: BorderPane = _</span>
-<span class="nc" id="L16">  @FXML protected var mainAnchorPane: AnchorPane = _</span>
-<span class="nc" id="L17">  @FXML protected var grid: GridPane = _</span>
+/** ScreenController dedicated to Levels Screen.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L19">protected[levels] abstract class AbstractScreenControllerLevels(</span>
+<span class="nc" id="L20">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L21">  protected override val controller: ObservableUI) extends ScreenController(viewFacade, controller) {</span>
 
-  @FXML override def initialize(): Unit = {
-<span class="nc" id="L20">    assertNodeInjected()</span>
-<span class="nc" id="L21">    initBackButton()</span>
+<span class="nc" id="L23">  @FXML protected final var root: BorderPane = _</span>
+<span class="nc" id="L24">  @FXML protected final var mainAnchorPane: AnchorPane = _</span>
+<span class="nc" id="L25">  @FXML protected final var grid: GridPane = _</span>
+
+  import MagicValues._
+<span class="nc bnc" id="L28" title="All 4 branches missed.">  private object MagicValues {</span>
+<span class="nc" id="L29">    val LevelText = &quot;Level&quot;</span>
   }
 
-  private def assertNodeInjected(): Unit = {
-<span class="nc bnc" id="L25" title="All 2 branches missed.">    assert(root != null, &quot;fx:id=\&quot;root\&quot; was not injected: check your FXML file 'Levels.fxml'.&quot;)</span>
-<span class="nc bnc" id="L26" title="All 2 branches missed.">    assert(mainAnchorPane != null, &quot;fx:id=\&quot;mainAnchorPane\&quot; was not injected: check your FXML file 'Levels.fxml'.&quot;)</span>
-<span class="nc bnc" id="L27" title="All 2 branches missed.">    assert(grid != null, &quot;fx:id=\&quot;grid\&quot; was not injected: check your FXML file 'Levels.fxml'.&quot;)</span>
+<span class="nc" id="L32">  @FXML override def initialize(): Unit = {</span>
+<span class="nc" id="L33">    assertNodeInjected(root, mainAnchorPane, grid)</span>
+<span class="nc" id="L34">    initBackButton()</span>
   }
 
   private def selectLevel(level: Int): Unit = {
-<span class="nc" id="L31">    controller.redirectSoundEvent(PlaySoundEffect(Clips.Button))</span>
-<span class="nc" id="L32">    controller.setupGame(level)</span>
-<span class="nc" id="L33">    viewFacade.changeScreen(ScreenEvent.GoNext)</span>
+<span class="nc" id="L38">    controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonClick))</span>
+<span class="nc" id="L39">    controller.setupGame(level)</span>
+<span class="nc" id="L40">    viewFacade.changeScreen(ChangeScreenEvent.GoNext)</span>
   }
 
+  /** Create the level buttons.
+   *
+   * @param levels the level data
+   */
   protected def populateLevels(levels: Seq[LevelData]): Unit = {
-<span class="nc" id="L37">    grid.getChildren.clear()</span>
-<span class="nc" id="L38">    levels.map(_.index).sorted.foreach(i =&gt; {</span>
-<span class="nc" id="L39">      val button = ViewUtils.buttonFactory(bText = s&quot;Level $i&quot;, _ =&gt; selectLevel(i))</span>
-<span class="nc" id="L40">      grid.addRow(i, button)</span>
+<span class="nc" id="L48">    grid.getChildren.clear()</span>
+<span class="nc" id="L49">    levels.map(_.index).sorted.foreach(i =&gt; {</span>
+<span class="nc" id="L50">      val button = ViewUtils.buttonFactory(bText = s&quot;$LevelText $i&quot;,</span>
+<span class="nc" id="L51">                                           _ =&gt; selectLevel(i),</span>
+<span class="nc" id="L52">                                           _ =&gt; controller.redirectSoundEvent(PlaySoundEffect(Clips.ButtonHover)))</span>
+<span class="nc" id="L53">      grid.addRow(i, button)</span>
     })
-<span class="nc" id="L42">    grid.addRow(levels.size, buttonBack)</span>
+<span class="nc" id="L55">    grid.addRow(levels.size + 1, buttonBack)</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Vector2.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.util</a> &gt; <span class="el_source">Vector2.scala</span></div><h1>Vector2.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.util
 
-import scala.math.{pow, sqrt}
 
+import scala.math.{pow, sqrt}
 /**
  * 2d vector
  */
@@ -9,30 +9,118 @@ import scala.math.{pow, sqrt}
 
   var x: Double
   var y: Double
+  /**
+   * Sums two vectors
+   *
+   * @param vector2 vector to be summed
+   * @return sum vector
+   */
+<span class="fc" id="L18">  def add(vector2: Vector2): Vector2 = Vector2(x + vector2.x, y + vector2.y)</span>
+  /**
+   * Sums a scalar to a vector
+   *
+   * @param scalar scalar to be summed
+   * @return resulting vector
+   */
+<span class="fc" id="L25">  def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)</span>
+  /**
+   * Computes the distance between two vectors
+   *
+   * @param vector2 other vector
+   * @return distance
+   */
+<span class="fc" id="L32">  def dist(vector2: Vector2): Double = sqrt(pow(x - vector2.x, 2) + pow(y - vector2.y, 2))</span>
+  /**
+   * Subtracts two vectors
+   *
+   * @param vector2 vector to be subtracted
+   * @return resulting vector
+   */
+<span class="nc" id="L39">  def sub(vector2: Vector2): Vector2 = Vector2(x - vector2.x, y - vector2.y)</span>
+  /**
+   * Outputs the unit vector of a given vector
+   *
+   * @return unit vector
+   */
+<span class="fc bfc" id="L45" title="All 4 branches covered.">  def clip(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)</span>
+  /**
+   * Multiplies two vectors with eachother
+   *
+   * @param vector2 other vector
+   * @return resulting vector
+   */
+<span class="fc" id="L52">  def mul(vector2: Vector2): Vector2 = Vector2(x * vector2.x, y * vector2.y)</span>
+  /**
+   * Divides two vectors with eachother
+   *
+   * @param vector2 other vector
+   * @return resulting vector
+   */
+<span class="fc" id="L59">  def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)</span>
+  /**
+   * Dot product between two vectors
+   *
+   * @param vector2 other vector
+   * @return dot product
+   */
+<span class="nc" id="L66">  def dot(vector2: Vector2): Double = x * vector2.x + y * vector2.y</span>
+  /**
+   * Dot product between a vector and a scalar
+   *
+   * @param scalar scalar
+   * @return dot product
+   */
+<span class="fc" id="L73">  def dot(scalar: Double): Vector2 = Vector2(scalar * x, scalar * y)</span>
+  /**
+   * Absolute value of a vector
+   *
+   * @return absolute vector
+   */
+<span class="nc" id="L79">  def abs(): Vector2 = Vector2(x.abs, y.abs)</span>
+  /**
+   * Negative of a vector
+   *
+   * @return inverted vector
+   */
+<span class="nc" id="L85">  def neg(): Vector2 = Vector2(-x, -y)</span>
+  /**
+   * Absolute sum between two vectors
+   *
+   * @param vector2 other vector
+   * @return absolute sum vector
+   */
+<span class="nc" id="L92">  def sumAbs(vector2: Vector2): Vector2 = Vector2(x.abs + vector2.x.abs, y.abs + vector2.y.abs) mul clip()</span>
 
-<span class="fc" id="L13">  def add(vector2: Vector2): Vector2 = Vector2(x + vector2.x, y + vector2.y)</span>
-
-<span class="fc" id="L15">  def add(scalar: Double): Vector2 = Vector2(x + scalar, y + scalar)</span>
-
-<span class="fc" id="L17">  def dist(vector2: Vector2): Double = sqrt(pow(x - vector2.x, 2) + pow(y - vector2.y, 2))</span>
-<span class="nc" id="L18">  def sub(vector2: Vector2): Vector2 = Vector2(x - vector2.x, y - vector2.y)</span>
-
-<span class="fc bfc" id="L20" title="All 4 branches covered.">  def unit(): Vector2 = Vector2(if (x != 0) x / x.abs else x, if (y != 0) y / y.abs else y)</span>
-
-<span class="fc" id="L22">  def mul(scalar: Double): Vector2 = Vector2(x * scalar, y * scalar)</span>
-
-<span class="fc" id="L24">  def div(vector2: Vector2): Vector2 = Vector2(x / vector2.x, y / vector2.y)</span>
-
-<span class="nc" id="L26">  def dot(v1: Vector2, v2: Vector2): Double = v1.x * v2.x + v1.y * v2.y</span>
+  /**
+   * Computes the magnitude of a vector
+   *
+   * @return the magnitude
+   */
+<span class="nc" id="L99">  def magnitude(): Double = sqrt(x * x + y * y)</span>
+  /**
+   * Computes if vector is zero
+   *
+   * @return true if both components are zero, false otherwise
+   */
+<span class="nc bnc" id="L105" title="All 4 branches missed.">  def isZero: Boolean = x == 0 &amp;&amp; y == 0</span>
+  /**
+   * Computes the unit vector
+   *
+   * @return the unit vector
+   */
+  def unitVector(): Vector2 = {
+<span class="nc" id="L112">    val mag = magnitude()</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    if (mag != 0) Vector2(x / mag, y / mag) else Vector2(0, 0)</span>
+  }
 }
 
-<span class="fc" id="L29">object Vector2 {</span>
+<span class="fc" id="L117">object Vector2 {</span>
 
-<span class="nc" id="L31">  implicit def tuple2ToVector2(tuple2: (Double, Double)): Vector2 = Vector2(tuple2._1, tuple2._2)</span>
+<span class="fc" id="L119">  implicit def tuple2ToVector2(tuple2: (Double, Double)): Vector2 = Vector2(tuple2._1, tuple2._2)</span>
+<span class="fc" id="L120">  implicit def tuple2IntToVector2(tuple2: (Int, Int)): Vector2 = Vector2(tuple2._1, tuple2._2)</span>
 
-<span class="fc" id="L33">  def apply(x: Double, y: Double): Vector2 = Vector2Impl(x, y)</span>
-
-<span class="pc bpc" id="L35" title="11 of 22 branches missed.">  private case class Vector2Impl(override var x: Double, override var y: Double) extends Vector2 {</span>
+<span class="fc" id="L122">  def apply(x: Double, y: Double): Vector2 = Vector2Impl(x, y)</span>
+<span class="pc bpc" id="L123" title="11 of 22 branches missed.">  private case class Vector2Impl(override var x: Double, override var y: Double) extends Vector2 {</span>
   }
 
 }

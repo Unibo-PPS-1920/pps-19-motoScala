@@ -6,7 +6,8 @@ import it.unibo.pps1920.motoscala.ecs.util.Vector2
 /**
  * Component for velocity
  *
- * @param vel the velocity of the entity
+ * @param currentVel the velocity of the entity
  */
-<span class="pc bnc" id="L11" title="All 28 branches missed.">final case class VelocityComponent(var vel: Vector2, var defVel: Vector2 = Vector2(20,20)) extends Component</span>
+<span class="pc bnc" id="L11" title="All 36 branches missed.">final case class VelocityComponent(var currentVel: Vector2 = (0, 0), var defVel: Vector2 = (0, 0),</span>
+<span class="pc" id="L12">                                   var inputVel: Vector2 = (0, 0)) extends Component</span>
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

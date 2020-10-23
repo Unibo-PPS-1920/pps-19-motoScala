@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollisionsSystem.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.systems.collision</a> &gt; <span class="el_source">CollisionsSystem.scala</span></div><h1>CollisionsSystem.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.systems.collision
+
+import it.unibo.pps1920.motoscala.controller.EngineController
+import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
+import it.unibo.pps1920.motoscala.controller.mediation.Event.EntityLifeEvent
+import it.unibo.pps1920.motoscala.controller.mediation.EventData.LifeData
+import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
+import it.unibo.pps1920.motoscala.ecs.components._
+import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
+import it.unibo.pps1920.motoscala.ecs.entities._
+import it.unibo.pps1920.motoscala.ecs.systems.collision
+import it.unibo.pps1920.motoscala.ecs.util.Vector2
+import it.unibo.pps1920.motoscala.ecs.{AbstractSystem, Entity, System}
+import monix.eval.Task
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.Observable
+
+
+<span class="fc" id="L20">object CollisionsSystem {</span>
+
+  def apply(coordinator: Coordinator, controller: EngineController,
+<span class="fc" id="L23">            fps: Int): System = new CollisionsSystemImpl(coordinator, controller, fps)</span>
+
+<span class="fc" id="L25">  private class CollisionsSystemImpl(coordinator: Coordinator, controller: EngineController, fps: Int)</span>
+<span class="fc" id="L26">    extends AbstractSystem(ECSSignature(classOf[PositionComponent],</span>
+<span class="fc" id="L27">                                        classOf[ShapeComponent],</span>
+<span class="fc" id="L28">                                        classOf[VelocityComponent],</span>
+<span class="fc" id="L29">                                        classOf[CollisionComponent])) {</span>
+<span class="pc" id="L30">    private val CollisionDuration = fps / 6</span>
+
+    override def update(): Unit = {
+<span class="fc" id="L33">      var entitiesToCheck = entitiesRef()</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">      entitiesRef().filterNot(e =&gt; e.getClass.equals(classOf[JumpPowerUpEntity]) || e.getClass</span>
+<span class="pc bpc" id="L35" title="2 of 4 branches missed.">        .equals(classOf[SpeedPowerUpEntity]) || e.getClass.equals(classOf[WeightPowerUpEntity]) || e.getClass</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        .equals(classOf[PowerUpEntity])).foreach(e1 =&gt; {</span>
+
+<span class="fc" id="L38">        entitiesToCheck -= e1</span>
+<span class="fc" id="L39">        val colComp1 = coordinator.getEntityComponent[CollisionComponent](e1)</span>
+<span class="fc" id="L40">        val velComp1 = coordinator.getEntityComponent[VelocityComponent](e1)</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (colComp1.isColliding) collisionStep(colComp1)</span>
+<span class="fc" id="L42">        else velComp1.currentVel = velComp1.inputVel</span>
+<span class="pc" id="L43">        Observable.fromIterable(entitiesToCheck).mapParallelOrdered(4)(e =&gt; Task(e)).foreach(e2 =&gt; {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">          if (!jumping(e1, e2)) {</span>
+<span class="nc" id="L45">            val colComp2 = coordinator.getEntityComponent[CollisionComponent](e2)</span>
+<span class="nc" id="L46">            val velComp2 = coordinator.getEntityComponent[VelocityComponent](e2)</span>
+<span class="nc" id="L47">            val shapeComp1 = coordinator.getEntityComponent[ShapeComponent](e1)</span>
+<span class="nc" id="L48">            val shapeComp2 = coordinator.getEntityComponent[ShapeComponent](e2)</span>
+<span class="nc" id="L49">            val posComp1 = coordinator.getEntityComponent[PositionComponent](e1)</span>
+<span class="nc" id="L50">            val posComp2 = coordinator.getEntityComponent[PositionComponent](e2)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            if (!alreadyColliding(e1, e2, colComp1, colComp2)) {</span>
+<span class="nc" id="L52">              (e1, e2) match {</span>
+<span class="nc bnc" id="L53" title="All 6 branches missed.">                case (bumperCar: BumperCarEntity, powerUp: PowerUpEntity) =&gt;</span>
+
+<span class="nc" id="L55">                  if (collision.areCirclesTouching(posComp1.pos,</span>
+<span class="nc" id="L56">                                                   posComp2.pos,</span>
+<span class="nc" id="L57">                                                   shapeComp1.shape.asInstanceOf[Circle].radius,</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                                                   shapeComp2.shape.asInstanceOf[Circle].radius)) {</span>
+<span class="nc" id="L59">                    entitiesToCheck -= powerUp</span>
+<span class="nc" id="L60">                    acquirePowerUp(bumperCar, powerUp, colComp2, shapeComp2, posComp2, velComp2)</span>
+                  }
+<span class="nc bnc" id="L62" title="All 6 branches missed.">                case (powerUp: PowerUpEntity, bumperCar: BumperCarEntity) =&gt;</span>
+<span class="nc" id="L63">                  if (collision.areCirclesTouching(posComp2.pos,</span>
+<span class="nc" id="L64">                                                   posComp1.pos,</span>
+<span class="nc" id="L65">                                                   shapeComp2.shape.asInstanceOf[Circle].radius,</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                                                   shapeComp1.shape.asInstanceOf[Circle].radius)) {</span>
+<span class="nc" id="L67">                    acquirePowerUp(bumperCar, powerUp, colComp1, shapeComp1, posComp1, velComp1)</span>
+                  }
+                case _ =&gt;
+<span class="nc" id="L70">                  checkCollision(e1, e2, shapeComp1.shape, shapeComp2.shape, colComp1, colComp2, posComp1</span>
+<span class="nc" id="L71">                                 , posComp2, velComp1, velComp2)</span>
+              }
+            }
+          }
+        })
+      })
+    }
+
+
+    private def acquirePowerUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity,
+                               powUpColl: CollisionComponent, powUpShape: ShapeComponent,
+                               powUpPos: PositionComponent, powUpVel: VelocityComponent
+                              ): Unit = {
+<span class="nc" id="L84">      addBumperToPowUp(bumperCar, powerUp)</span>
+<span class="nc" id="L85">      coordinator.removeEntityComponent(powerUp, powUpColl)</span>
+<span class="nc" id="L86">        .removeEntityComponent(powerUp, powUpShape)</span>
+<span class="nc" id="L87">        .removeEntityComponent(powerUp, powUpPos)</span>
+<span class="nc" id="L88">        .removeEntityComponent(powerUp, powUpVel)</span>
+
+    }
+    private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
+<span class="nc" id="L92">      coordinator.getEntityComponent[PowerUpComponent](powerUp).entity = Some(bumperCar)</span>
+    private def jumping(e1: Entity, e2: Entity): Boolean = {
+<span class="nc bnc" id="L94" title="All 4 branches missed.">      ((e1.isInstanceOf[BumperCarEntity] &amp;&amp; coordinator.getEntityComponent[JumpComponent](e1).isActive)</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        || (e2.isInstanceOf[BumperCarEntity] &amp;&amp; coordinator.getEntityComponent[JumpComponent](e2).isActive))</span>
+    }
+    private def alreadyColliding(e1: Entity, e2: Entity, colComp1: CollisionComponent,
+                                 colComp2: CollisionComponent): Boolean = (
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      colComp1.isColliding</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        &amp;&amp; colComp2.isColliding</span>
+<span class="nc bnc" id="L101" title="All 12 branches missed.">        &amp;&amp; (colComp1.collEntity == e2 &amp;&amp; colComp2.collEntity == e1))</span>
+    private def checkCollision(e1: Entity,
+                               e2: Entity,
+                               shape1: Shape,
+                               shape2: Shape,
+                               colComp1: CollisionComponent,
+                               colComp2: CollisionComponent,
+                               posComp1: PositionComponent,
+                               posComp2: PositionComponent,
+                               velComp1: VelocityComponent,
+                               velComp2: VelocityComponent): Unit = {
+
+      def circleRect(circle: Circle,
+                     rec: Rectangle,
+                     circleEnt: Entity,
+                     rectEnt: Entity,
+                     circleCol: CollisionComponent,
+                     recCol: CollisionComponent,
+                     circlePos: PositionComponent,
+                     recPos: PositionComponent,
+                     circleVel: VelocityComponent,
+                     recVel: VelocityComponent): Unit = {
+<span class="nc" id="L123">        val inv = collision.getDirInversion(circle, circlePos.pos, rec, recPos.pos)</span>
+<span class="nc bnc" id="L124" title="All 6 branches missed.">        if (!(inv == Vector2(1, 1))) {</span>
+<span class="nc" id="L125">          playSound(Clips.CollisionSoft)</span>
+<span class="nc" id="L126">          startCollision(circleCol, recCol, circleEnt, rectEnt, CollisionDuration / 2)</span>
+<span class="nc" id="L127">          checkLifePoint(circleEnt, rectEnt, circleCol, recCol, circlePos, recPos, circleVel, recVel)</span>
+<span class="nc" id="L128">          circleVel.currentVel = circleVel.currentVel mul inv</span>
+        }
+
+      }
+<span class="nc" id="L132">      (shape1, shape2) match {</span>
+<span class="nc bnc" id="L133" title="All 6 branches missed.">        case (Circle(radius1), Circle(radius2)) =&gt;</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">          if (collision.areCirclesTouching(posComp1.pos, posComp2.pos, radius1, radius2)) {</span>
+<span class="nc bnc" id="L135" title="All 4 branches missed.">            if (!(velComp2.currentVel.isZero &amp;&amp; velComp1.currentVel.isZero)) {</span>
+<span class="nc" id="L136">              colComp1.collEntity = e2</span>
+<span class="nc" id="L137">              colComp2.collEntity = e1</span>
+<span class="nc" id="L138">              collide(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)</span>
+<span class="nc" id="L139">              checkLifePoint(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)</span>
+<span class="nc" id="L140">              collisionStep(colComp1)</span>
+<span class="nc" id="L141">              collisionStep(colComp2)</span>
+            }
+          }
+<span class="nc bnc" id="L144" title="All 6 branches missed.">        case (circle: Circle, rectangle: Rectangle) =&gt;</span>
+<span class="nc" id="L145">          circleRect(circle, rectangle, e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)</span>
+
+<span class="nc bnc" id="L147" title="All 6 branches missed.">        case (rectangle: Rectangle, circle: Circle) =&gt;</span>
+<span class="nc" id="L148">          circleRect(circle, rectangle, e2, e1, colComp2, colComp1, posComp2, posComp1, velComp2, velComp1)</span>
+<span class="nc" id="L149">        case _ =&gt; logger warn s&quot;unexpected shape collision: $shape1 and $shape1&quot;</span>
+      }
+    }
+    private def collide(e1: Entity,
+                        e2: Entity,
+                        colComp1: CollisionComponent,
+                        colComp2: CollisionComponent,
+                        posComp1: PositionComponent,
+                        posComp2: PositionComponent,
+                        velComp1: VelocityComponent,
+                        velComp2: VelocityComponent): Unit = {
+<span class="nc" id="L160">      playSound(Clips.Collision)</span>
+<span class="nc" id="L161">      startCollision(colComp1, colComp2, e1, e2, CollisionDuration)</span>
+      /* COLLISION CORE */
+<span class="nc bnc" id="L163" title="All 4 branches missed.">      if (colComp1.mass != 0 &amp;&amp; colComp2.mass != 0) {</span>
+        // Compute unit normal and unit tangent vectors
+<span class="nc" id="L165">        val normalVector = posComp2.pos sub posComp1.pos</span>
+<span class="nc" id="L166">        val unitNormalVector = normalVector.unitVector()</span>
+<span class="nc" id="L167">        val unitTangentVector = Vector2(-unitNormalVector.y, unitNormalVector.x)</span>
+        // Compute scalar projections of velocities onto unitNormalVector and unitTangentVector
+<span class="nc" id="L169">        val normProjection1 = unitNormalVector dot velComp1.currentVel</span>
+<span class="nc" id="L170">        val tangProjection1 = unitTangentVector dot velComp1.currentVel</span>
+<span class="nc" id="L171">        val normProjection2 = unitNormalVector dot velComp2.currentVel</span>
+<span class="nc" id="L172">        val tangProjection2 = unitTangentVector dot velComp2.currentVel</span>
+        // Compute new normal velocities using one-dimensional elastic collision equations in the normal direction
+<span class="nc" id="L174">        val newNormProjection1 = collision.elasticCollision1D(normProjection1, normProjection2, colComp1</span>
+<span class="nc" id="L175">          .mass + 1, colComp2.mass)</span>
+<span class="nc" id="L176">        val newNormProjection2 = collision.elasticCollision1D(normProjection2, normProjection1, colComp2</span>
+<span class="nc" id="L177">          .mass, colComp1.mass + 1)</span>
+        // Compute new normal and tangential velocity vectors
+<span class="nc" id="L179">        val newNorVec1 = unitNormalVector.dot(newNormProjection1)</span>
+<span class="nc" id="L180">        val newTanVec1 = unitTangentVector.dot(tangProjection1)</span>
+<span class="nc" id="L181">        val newNorVec2 = unitNormalVector.dot(newNormProjection2)</span>
+<span class="nc" id="L182">        val newTanVec2 = unitTangentVector.dot(tangProjection2)</span>
+        // Set new velocities in x and y coordinates
+<span class="nc" id="L184">        velComp1.currentVel = newNorVec1 add newTanVec1</span>
+<span class="nc" id="L185">        velComp2.currentVel = newNorVec2 add newTanVec2</span>
+      }
+    }
+    private def playSound(clip: Clips): Unit =
+<span class="nc" id="L189">      controller.redirectSoundEvent(PlaySoundEffect(clip))</span>
+    private def startCollision(colComp1: CollisionComponent,
+                               colComp2: CollisionComponent,
+                               e1: Entity,
+                               e2: Entity,
+                               duration: Int): Unit = {
+<span class="nc" id="L195">      colComp1.isColliding = true</span>
+<span class="nc" id="L196">      colComp2.isColliding = true</span>
+<span class="nc" id="L197">      colComp1.collEntity = e2</span>
+<span class="nc" id="L198">      colComp2.collEntity = e1</span>
+<span class="nc" id="L199">      colComp1.duration = duration</span>
+<span class="nc" id="L200">      colComp2.duration = duration</span>
+    }
+    private def checkLifePoint(e1: Entity, e2: Entity,
+                               colComp1: CollisionComponent,
+                               colComp2: CollisionComponent,
+                               posComp1: PositionComponent,
+                               posComp2: PositionComponent,
+                               velComp1: VelocityComponent,
+                               velComp2: VelocityComponent): Unit = {
+      def addDamage(userEntity: Entity, c1: CollisionComponent, c2: CollisionComponent): Unit = {
+<span class="nc" id="L210">        c1.life -= c2.damage</span>
+<span class="nc" id="L211">        c2.life -= c1.damage</span>
+<span class="nc" id="L212">        controller.mediator.publishEvent(EntityLifeEvent(LifeData(userEntity, c1.life)))</span>
+      }
+
+<span class="nc bnc" id="L215" title="All 4 branches missed.">      (e1, e2) match {</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        case (_: BumperCarEntity, _) =&gt; addDamage(e1, colComp1, colComp2)</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        case (_, _: BumperCarEntity) =&gt; addDamage(e2, colComp2, colComp1)</span>
+<span class="nc" id="L218">        case _ =&gt;</span>
+      }
+    }
+    private def collisionStep(collisionComp: CollisionComponent): Unit = {
+<span class="nc" id="L222">      collisionComp.duration -= 1</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">      if (collisionComp.duration &lt;= 0) collisionComp.isColliding = false</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

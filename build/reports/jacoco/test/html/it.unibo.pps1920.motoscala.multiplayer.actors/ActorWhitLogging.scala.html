@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActorWhitLogging.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.multiplayer.actors</a> &gt; <span class="el_source">ActorWhitLogging.scala</span></div><h1>ActorWhitLogging.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.multiplayer.actors
+
+import akka.actor.{Actor, ActorLogging}
+
+/** Represent one actor whit hidden logging feature,
+ * Akka logging and internal logging provided in clean way via implicit.
+ */
+<span class="nc" id="L8">protected[multiplayer] abstract class ActorWhitLogging extends Actor with ActorLogging {</span>
+  /** The logger used, need to be initialize to the concrete subclass */
+  protected val logger: org.slf4j.Logger
+  /** This implicit provide a clean way to avoid providing all the changeBehaviour, whit one context to do become */
+<span class="nc" id="L12">  protected implicit val getContext: akka.actor.ActorContext = this.context</span>
+  /** Extends the partial function Actor Behaviour whit another exhaustive Behaviour that log all strange message encountered.
+   *
+   * @param behaviour The partial function behaviour to be extended
+   * @param context The implicit context provider
+   */
+  protected def changeBehaviourWhitLogging(behaviour: Actor.Receive)
+                                          (implicit context: akka.actor.ActorContext): Unit = {
+<span class="nc" id="L20">    context.become(behaviour orElse addCustomBehaviour().fold(unexpectedBehaviour)(_ orElse unexpectedBehaviour))</span>
+  }
+<span class="nc bnc" id="L22" title="All 2 branches missed.">  private def unexpectedBehaviour: Actor.Receive = {case msg =&gt; unexpectedMessageHandler(msg)}</span>
+<span class="nc" id="L23">  private def unexpectedMessageHandler(msg: Any): Unit = logger warn s&quot;Received unexpected message $msg&quot;</span>
+  /** Extends the partial function Actor Behaviour whit another custom Behaviour.
+   *
+   * @return The behaviour to add, None otherwise
+   */
+  protected def addCustomBehaviour(): Option[Actor.Receive] =
+<span class="nc" id="L29">    None</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

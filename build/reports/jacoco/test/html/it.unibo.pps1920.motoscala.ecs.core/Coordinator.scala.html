@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Coordinator.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.ecs.core</a> &gt; <span class="el_source">Coordinator.scala</span></div><h1>Coordinator.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.ecs.core
+
+import it.unibo.pps1920.motoscala.ecs.core.Coordinator.ComponentType
+import it.unibo.pps1920.motoscala.ecs.{Component, Entity, System}
+
+import scala.reflect.ClassTag
+
+/** A coordinator coordinate managers.
+ * &lt;p&gt;
+ * It Controls all logic and ensure safety in interactions between managers
+ * */
+trait Coordinator {
+
+  /** Add the entity to the manager.
+   *
+   * @param entity the entity
+   */
+  def addEntity(entity: Entity): Coordinator
+
+  /** Remove the entity to the manager.
+   *
+   * @param entity the entity
+   */
+  def removeEntity(entity: Entity): Coordinator
+
+  /** Check if an entity is present a.k.a alive in ECS.
+   *
+   * @param entity the entity
+   */
+  def isEntityAlive(entity: Entity): Boolean
+
+  /** Register a component to the manager so that it can be bound to entities.
+   * &lt;p&gt;
+   * An unregistered component, if used, will produce an IllegalArgumentException.
+   *
+   * @param compType the component type
+   */
+  def registerComponentType(compType: ComponentType): Coordinator
+
+  /** Bind the component to the entity.
+   * &lt;p&gt;
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param component the component to bind
+   * @return the signature
+   */
+  def addEntityComponent(entity: Entity, component: Component): Coordinator
+
+  /** Bind the components to the entity.
+   * &lt;p&gt;
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param components the components to bind
+   * @return the signature
+   */
+  def addEntityComponents(entity: Entity, components: Component*): Coordinator
+
+  /** Unbind the component from the entity.
+   * &lt;p&gt;
+   * This will update che effective Signature of the component removing it.
+   *
+   * @param entity the entity
+   * @param component the component to unbind
+   * @return the signature
+   */
+  def removeEntityComponent(entity: Entity, component: Component): Coordinator
+
+  /** Get the component that is bound to the given entity.
+   * &lt;p&gt;
+   *
+   * @tparam T the component type
+   * @param entity the entity bound to component
+   * @return the casted component
+   */
+  def getEntityComponent[T: ClassTag](entity: Entity): T
+
+  /** Register the system to the manager
+   *
+   * @param system the system
+   */
+  def registerSystem(system: System): Coordinator
+
+  /**
+   * Update all systems
+   */
+  def updateSystems(): Unit
+}
+
+<span class="fc" id="L91">object Coordinator {</span>
+<span class="fc" id="L92">  private class CoordinatorImpl() extends Coordinator {</span>
+<span class="fc" id="L93">    private val componentManager = ComponentManager()</span>
+<span class="fc" id="L94">    private val systemManager = SystemManager()</span>
+<span class="fc" id="L95">    private val entityManager = EntityManager()</span>
+
+    override def addEntity(entity: Entity): Coordinator = {
+<span class="fc" id="L98">      entityManager addEntity entity</span>
+<span class="fc" id="L99">      this</span>
+    }
+
+    override def removeEntity(entity: Entity): Coordinator = {
+<span class="fc" id="L103">      entityManager removeEntity entity</span>
+<span class="fc" id="L104">      systemManager entityDestroyed entity</span>
+<span class="fc" id="L105">      componentManager entityDestroyed entity</span>
+<span class="fc" id="L106">      this</span>
+    }
+
+<span class="fc" id="L109">    override def isEntityAlive(entity: Entity): Boolean = entityManager.entities.contains(entity)</span>
+    override def registerComponentType(compType: ComponentType): Coordinator = {
+<span class="fc" id="L111">      componentManager.registerComponentType(compType)</span>
+<span class="fc" id="L112">      this</span>
+    }
+
+    override def addEntityComponent(entity: Entity, component: Component): Coordinator = {
+<span class="fc" id="L116">      this.synchronized(systemManager.entitySignatureChanged(entity, componentManager</span>
+<span class="fc" id="L117">        .bindComponentToEntity(entity, component)))</span>
+<span class="fc" id="L118">      this</span>
+    }
+
+    override def addEntityComponents(entity: Entity, components: Component*): Coordinator = {
+<span class="nc" id="L122">      components.foreach(this.addEntityComponent(entity, _))</span>
+<span class="nc" id="L123">      this</span>
+    }
+
+    override def removeEntityComponent(entity: Entity, component: Component): Coordinator = {
+<span class="nc" id="L127">      this.synchronized(systemManager.entitySignatureChanged(entity, componentManager</span>
+<span class="nc" id="L128">        .unbindComponentFromEntity(entity, component)))</span>
+<span class="nc" id="L129">      this</span>
+    }
+
+    override def getEntityComponent[T: ClassTag](entity: Entity): T =
+<span class="fc" id="L133">      this.synchronized(componentManager.getEntityComponent[T](entity))</span>
+
+    override def registerSystem(system: System): Coordinator = {
+<span class="fc" id="L136">      this.synchronized {</span>
+<span class="fc" id="L137">        system.signature.signatureSet.foreach(e =&gt; require(componentManager.checkRegisteredComponent(e)))</span>
+<span class="fc" id="L138">        systemManager.registerSystem(system)</span>
+      }
+<span class="fc" id="L140">      this</span>
+    }
+
+<span class="fc" id="L143">    override def updateSystems(): Unit = this.synchronized(systemManager.updateAll())</span>
+  }
+  type ComponentType = Class[_]
+
+  /** Factory for [[Coordinator]] instances */
+<span class="fc" id="L148">  def apply(): Coordinator = new CoordinatorImpl()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

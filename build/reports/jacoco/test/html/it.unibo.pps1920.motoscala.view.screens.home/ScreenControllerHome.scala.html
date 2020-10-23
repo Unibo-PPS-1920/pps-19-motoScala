@@ -4,17 +4,17 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 
+/** Screen controller for home FXML.
+ *
+ * @param viewFacade the view facade
+ * @param controller the controller
+ */
+<span class="nc" id="L12">protected[view] final class ScreenControllerHome(</span>
+<span class="nc" id="L13">  protected override val viewFacade: ViewFacade,</span>
+<span class="nc" id="L14">  protected override val controller: ObservableUI) extends AbstractScreenControllerHome(viewFacade, controller) {</span>
 
-<span class="nc" id="L8">final class ScreenControllerHome(protected override val viewFacade: ViewFacade,</span>
-<span class="nc" id="L9">                                 protected override val controller: ObservableUI) extends AbstractScreenControllerHome(viewFacade, controller) {</span>
-<span class="nc" id="L10">  logger info &quot;Home Screen&quot;</span>
-
-<span class="nc" id="L12">  override def notify(ev: ViewEvent): Unit = ev match {</span>
-<span class="nc bnc" id="L13" title="All 2 branches missed.">    case event: ViewEvent.HomeEvent =&gt; logger info &quot;Home message&quot;</span>
-<span class="nc bnc" id="L14" title="All 2 branches missed.">    case event: ViewEvent.GameEvent =&gt; ???</span>
-<span class="nc bnc" id="L15" title="All 2 branches missed.">    case event: ViewEvent.SettingsEvent =&gt; ???</span>
-<span class="nc bnc" id="L16" title="All 2 branches missed.">    case event: ViewEvent.StatsEvent =&gt; ???</span>
-<span class="nc" id="L17">    case _ =&gt; ???</span>
+<span class="nc" id="L16">  override def notify(ev: ViewEvent): Unit = ev match {</span>
+<span class="nc" id="L17">    case _ =&gt;</span>
   }
 
 

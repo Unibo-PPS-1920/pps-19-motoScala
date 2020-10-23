@@ -1,70 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Controller.scala</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pps-19-motoScala</a> &gt; <a href="index.source.html" class="el_package">it.unibo.pps1920.motoscala.controller</a> &gt; <span class="el_source">Controller.scala</span></div><h1>Controller.scala</h1><pre class="source lang-java linenums">package it.unibo.pps1920.motoscala.controller
 
 import java.util.UUID
-import java.util.UUID.randomUUID
 
+import akka.actor.{ActorRef, ActorSystem, ExtendedActorSystem}
+import com.typesafe.config.ConfigFactory
 import it.unibo.pps1920.motoscala
+import it.unibo.pps1920.motoscala.controller.Controller.Constants.maxPlayers
+import it.unibo.pps1920.motoscala.controller.MagicValues.AkkaValues._
+import it.unibo.pps1920.motoscala.controller.MagicValues.Messages.{KickedText, KickedTitle}
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.{SetVolumeEffect, SetVolumeMusic}
 import it.unibo.pps1920.motoscala.controller.managers.audio.{MediaEvent, SoundAgent}
+import it.unibo.pps1920.motoscala.controller.managers.file.DataManager
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
-import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
+import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
 import it.unibo.pps1920.motoscala.engine.Engine
-import it.unibo.pps1920.motoscala.model.Level
-import it.unibo.pps1920.motoscala.model.Level.{Coordinate, LevelData}
-import it.unibo.pps1920.motoscala.view.ObserverUI
-import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
-import it.unibo.pps1920.motoscala.view.utilities.ViewConstants
+import it.unibo.pps1920.motoscala.model.Difficulties.difficultiesList
+import it.unibo.pps1920.motoscala.model.Level.LevelData
+import it.unibo.pps1920.motoscala.model.MatchSetup.MultiPlayerSetup
+import it.unibo.pps1920.motoscala.model.Scores.ScoresData
+import it.unibo.pps1920.motoscala.model.Settings.SettingsData
+import it.unibo.pps1920.motoscala.model.{Level, NetworkAddr}
+import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
+import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
+import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
+import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
+import it.unibo.pps1920.motoscala.view.events.ViewEvent
+import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, _}
+import it.unibo.pps1920.motoscala.view.{ObserverUI, showSimplePopup}
+import javafx.application.Platform
 import org.slf4j.LoggerFactory
 
-trait Controller extends ActorController with SoundController with ObservableUI {
+import scala.collection.immutable.HashMap
+
+trait Controller extends ActorController with SoundController with EngineController with ObservableUI {
 }
+<span class="nc" id="L37">object Controller {</span>
 
-<span class="nc" id="L21">object Controller {</span>
-<span class="nc" id="L22">  def apply(): Controller = new ControllerImpl()</span>
-<span class="nc" id="L23">  private class ControllerImpl private[Controller]() extends Controller {</span>
-<span class="nc" id="L24">    private val logger = LoggerFactory getLogger classOf[ControllerImpl]</span>
-<span class="nc" id="L25">    private val mediator = Mediator()</span>
-<span class="nc" id="L26">    private val myUuid: UUID = randomUUID()</span>
-<span class="nc" id="L27">    private var engine: Option[Engine] = None</span>
-<span class="nc" id="L28">    private var observers: Set[ObserverUI] = Set()</span>
-<span class="nc" id="L29">    private var levels: List[LevelData] = List()</span>
-<span class="nc" id="L30">    private var soundAgent: SoundAgent = SoundAgent()</span>
-<span class="nc" id="L31">    this.soundAgent.start()</span>
+<span class="nc" id="L39">  def apply(): Controller = new ControllerImpl()</span>
+<span class="nc" id="L40">  private class ControllerImpl private[Controller](</span>
+<span class="nc" id="L41">    override val mediator: Mediator = Mediator()) extends Controller {</span>
 
-<span class="nc" id="L33">    override def redirectSoundEvent(me: MediaEvent): Unit = this.soundAgent.enqueueEvent(me)</span>
-<span class="nc" id="L34">    override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs</span>
-<span class="nc" id="L35">    override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs</span>
-    override def setupGame(level: Level): Unit = {
-<span class="nc" id="L37">      logger info s&quot;level selected: $level&quot;</span>
-<span class="nc" id="L38">      engine = Option(motoscala.engine.GameEngine(mediator, myUuid))</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">      engine.get.init(levels.filter(data =&gt; data.index == level).head)</span>
+<span class="nc" id="L43">    private val logger = LoggerFactory getLogger classOf[ControllerImpl]</span>
+<span class="nc" id="L44">    private val dataManager: DataManager = new DataManager()</span>
+<span class="nc" id="L45">    private val soundAgent: SoundAgent = SoundAgent()</span>
+<span class="nc" id="L46">    override var score: Int = 0</span>
+<span class="nc" id="L47">    private var config: com.typesafe.config.Config = _ //ConfigFactory.load(SystemConfiguration)</span>
+<span class="nc" id="L48">    private var akkaSystem: Option[ActorSystem] = None //ActorSystem(SystemName, config)</span>
+<span class="nc" id="L49">    private var engine: Option[Engine] = None</span>
+<span class="nc" id="L50">    private var observers: Set[ObserverUI] = Set()</span>
+<span class="nc" id="L51">    private var levels: List[LevelData] = List()</span>
+<span class="nc" id="L52">    private var clientActor: Option[ActorRef] = None</span>
+<span class="nc" id="L53">    private var serverActor: Option[ActorRef] = None</span>
+<span class="nc" id="L54">    private var matchSetupMp: Option[MultiPlayerSetup] = None</span>
+<span class="nc" id="L55">    private var multiplayerStatus: Boolean = false</span>
+<span class="nc" id="L56">    private var actualSettings: SettingsData = loadSettings()</span>
+
+<span class="nc" id="L58">    soundAgent.start()</span>
+<span class="nc" id="L59">    dataManager.initAppDirectory()</span>
+
+<span class="nc" id="L61">    setAudioVolume(actualSettings.musicVolume, actualSettings.effectVolume)</span>
+
+<span class="nc" id="L63">    override def attachUI(obs: ObserverUI*): Unit = observers = observers ++ obs</span>
+<span class="nc" id="L64">    override def detachUI(obs: ObserverUI*): Unit = observers = observers -- obs</span>
+    override def start(): Unit = {
+<span class="nc" id="L66">      score = 0</span>
+<span class="nc" id="L67">      engine.get.start()</span>
     }
-
-<span class="nc" id="L42">    override def start(): Unit = engine.get.start()</span>
-<span class="nc" id="L43">    override def getMediator: Mediator = mediator</span>
-    override def loadAllLevels(): Unit = {
-<span class="nc" id="L45">      levels = List(LevelData(0, Coordinate(ViewConstants.Canvas.CanvasWidth, ViewConstants.Canvas.CanvasHeight),</span>
-<span class="nc" id="L46">                              List(Level.Player(Coordinate(500, 500), Circle(25), Coordinate(0, 0), Coordinate(10, 10)),</span>
-                                   Level
-<span class="nc" id="L48">                                     .RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),</span>
-                                   Level
-<span class="nc" id="L50">                                     .RedPupa(Coordinate(600, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),</span>
-                                   Level
-<span class="nc" id="L52">                                     .RedPupa(Coordinate(600, 300), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),</span>
-                                   Level
-<span class="nc" id="L54">                                     .RedPupa(Coordinate(300, 100), Circle(25), Coordinate(0, 0), Coordinate(5, 5)),</span>
-                                   Level
-<span class="nc" id="L56">                                     .RedPupa(Coordinate(600, 500), Circle(25), Coordinate(0, 0), Coordinate(5, 5))</span>
-                                   )))
-<span class="nc" id="L58">      observers.foreach(o =&gt; o.notify(LevelDataEvent(levels)))</span>
-    }
-<span class="nc" id="L60">    override def pause(): Unit = engine.get.pause()</span>
-<span class="nc" id="L61">    override def resume(): Unit = engine.get.resume()</span>
+<span class="nc" id="L69">    override def pause(): Unit = engine.get.pause()</span>
+<span class="nc" id="L70">    override def resume(): Unit = engine.get.resume()</span>
     override def stop(): Unit = {
-<span class="nc" id="L63">      engine.get.stop()</span>
-<span class="nc" id="L64">      engine = None</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      if (engine.isDefined) {</span>
+<span class="nc" id="L73">        engine.get.stop()</span>
+<span class="nc" id="L74">        engine = None</span>
+      }
     }
-  }
-}
+    override def redirectSoundEvent(me: MediaEvent): Unit = {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">      if (serverActor.isDefined) {</span>
+<span class="nc" id="L79">        serverActor.get ! PlayMediaMessage(me)</span>
+      }
+<span class="nc" id="L81">      soundAgent.enqueueEvent(me)</span>
+    }
+<span class="nc" id="L83">    override def loadSetting(): Unit = notifyUI(SettingsDataEvent(actualSettings))</span>
 
+    override def lobbyInfoChanged(
+<span class="nc" id="L86">      level: Option[Int] = None, difficult: Option[Int] = None,</span>
+<span class="nc" id="L87">      isStatusChanged: Boolean = false): Unit = {</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">      if (isStatusChanged) multiplayerStatus = !multiplayerStatus</span>
+
+<span class="nc bnc" id="L90" title="All 4 branches missed.">      if (serverActor.isDefined &amp;&amp; matchSetupMp.isDefined) {</span>
+<span class="nc" id="L91">        difficult.foreach(matchSetupMp.get.difficulty = _)</span>
+<span class="nc" id="L92">        level.foreach(matchSetupMp.get.level = _)</span>
+
+<span class="nc" id="L94">        matchSetupMp.get.setPlayerStatus(serverActor.get, multiplayerStatus)</span>
+<span class="nc" id="L95">        serverActor.get.tell(</span>
+<span class="nc" id="L96">          LobbyDataActorMessage(</span>
+<span class="nc" id="L97">            LobbyData(</span>
+<span class="nc" id="L98">              difficulty = Some(matchSetupMp.get.difficulty), level = Some(matchSetupMp.get.level), readyPlayers = this</span>
+<span class="nc" id="L99">                .matchSetupMp.get.getPlayerStatus)), serverActor.get)</span>
+<span class="nc" id="L100">        notifyUI(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus)))</span>
+      } else
+<span class="nc" id="L102">        clientActor.get ! ReadyActorMessage(multiplayerStatus)</span>
+    }
+    override def kickSomeone(name: String): Unit = {
+<span class="nc" id="L105">      serverActor.get ! KickActorMessage(matchSetupMp.get.removePlayer(name))</span>
+<span class="nc" id="L106">      notifyUI(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus)))</span>
+    }
+    /*Used by Client Actor*/
+<span class="nc" id="L109">    override def gameStart(): Unit = notifyUI(LoadLevelEvent())</span>
+    override def getLobbyData: DataType.LobbyData =
+<span class="nc" id="L111">      LobbyData(Some(matchSetupMp.get.difficulty),</span>
+<span class="nc" id="L112">                Some(matchSetupMp.get.level), matchSetupMp.get.getPlayerStatus)</span>
+    override def tryJoinLobby(ip: String, port: String): Unit = {
+<span class="nc" id="L114">      shutdownMultiplayer()</span>
+<span class="nc" id="L115">      val config = ConfigFactory.load(SystemConfiguration)</span>
+<span class="nc" id="L116">      akkaSystem = Some(ActorSystem(SystemName, config))</span>
+<span class="nc" id="L117">      clientActor = Some(akkaSystem.get.actorOf(ClientActor.props(this), ClientActorName))</span>
+<span class="nc" id="L118">      clientActor.get ! TryJoin(s&quot;$ActorSelectionProtocol$ip:$port$ActorSelectionPath&quot;, actualSettings.name)</span>
+    }
+    override def becomeHost(): Unit = {
+<span class="nc" id="L121">      shutdownMultiplayer()</span>
+<span class="nc" id="L122">      loadAllLevels()</span>
+<span class="nc" id="L123">      config = ConfigFactory</span>
+<span class="nc" id="L124">        .parseString(s&quot;&quot;&quot;${AkkaCanonicalName}=${NetworkAddr.getLocalIPAddress}&quot;&quot;&quot;)</span>
+<span class="nc" id="L125">        .withFallback(ConfigFactory.load(SystemConfiguration))</span>
+<span class="nc" id="L126">      akkaSystem = Some(ActorSystem(SystemName, config))</span>
+
+<span class="nc" id="L128">      serverActor = Some(akkaSystem.get.actorOf(ServerActor.props(this), ServerActorName))</span>
+<span class="nc" id="L129">      matchSetupMp = Some(MultiPlayerSetup(numPlayers = maxPlayers))</span>
+<span class="nc" id="L130">      matchSetupMp.get.tryAddPlayer(serverActor.get, actualSettings.name)</span>
+<span class="nc" id="L131">      notifyUI(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, akkaSystem.get.asInstanceOf[ExtendedActorSystem].provider</span>
+<span class="nc" id="L132">        .getDefaultAddress.port.get.toString, actualSettings.name, levels.map(_.index), difficultiesList</span>
+<span class="nc" id="L133">                                 .map(_.number)))</span>
+    }
+    override def loadAllLevels(): Unit = {
+<span class="nc" id="L136">      levels = dataManager.loadLvl()</span>
+<span class="nc" id="L137">      notifyUI(LevelDataEvent(levels))</span>
+    }
+    override def shutdownMultiplayer(): Unit = {
+
+<span class="nc" id="L141">      multiplayerStatus = false</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (serverActor.isDefined) akkaSystem.get.stop(serverActor.get)</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">      if (clientActor.isDefined) akkaSystem.get.stop(clientActor.get)</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">      if (akkaSystem.isDefined) akkaSystem.get.terminate()</span>
+<span class="nc" id="L145">      matchSetupMp = None</span>
+<span class="nc" id="L146">      serverActor = None</span>
+<span class="nc" id="L147">      clientActor = None</span>
+<span class="nc" id="L148">      akkaSystem = None</span>
+    }
+    override def joinResult(result: Boolean): Unit = {
+<span class="nc bnc" id="L151" title="All 2 branches missed.">      if (!result) shutdownMultiplayer()</span>
+<span class="nc" id="L152">      notifyUI(JoinResultEvent(result))</span>
+    }
+<span class="nc" id="L154">    override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup =&gt; T): T = strategy.apply(matchSetupMp.get)</span>
+<span class="nc" id="L155">    override def sendToViewStrategy(strategy: ObserverUI =&gt; Unit): Unit = observers</span>
+<span class="nc" id="L156">      .foreach(obs =&gt; Platform.runLater(() =&gt; strategy(obs)))</span>
+    override def gotKicked(): Unit = {
+<span class="nc" id="L158">      notifyUI(LeaveLobbyEvent())</span>
+<span class="nc" id="L159">      showSimplePopup(KickedTitle, KickedText)</span>
+<span class="nc" id="L160">      shutdownMultiplayer()</span>
+    }
+    override def leaveLobby(): Unit = {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      if (serverActor.isDefined)</span>
+<span class="nc" id="L164">        serverActor.get ! CloseLobbyActorMessage()</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">      else if (clientActor.isDefined)</span>
+<span class="nc" id="L166">        clientActor.get ! LeaveEvent(clientActor.get)</span>
+    }
+    override def startMultiplayerGame(): Unit = {
+<span class="nc" id="L169">      serverActor.get ! GameStartActorMessage()</span>
+<span class="nc" id="L170">      setupGame(matchSetupMp.get.level)</span>
+    }
+    override def setupGame(level: Level): Unit = {
+<span class="nc" id="L173">      logger info s&quot;level selected: $level&quot;</span>
+
+      //Get selected level
+<span class="nc bnc" id="L176" title="All 2 branches missed.">      val lvl = levels.filter(_.index == level).head</span>
+
+<span class="nc" id="L178">      var playerNum = 1</span>
+      //Get the correct number of bumbper car
+<span class="nc bnc" id="L180" title="All 2 branches missed.">      val players = if (serverActor.isDefined) {</span>
+<span class="nc" id="L181">        playerNum = matchSetupMp.get.numReadyPlayers()</span>
+<span class="nc" id="L182">        (0 to playerNum).map(_ =&gt; BumperCarEntity(UUID.randomUUID())).toList</span>
+      } else
+<span class="nc" id="L184">        List(BumperCarEntity(UUID.randomUUID()))</span>
+      //Get the be removed from level
+<span class="nc" id="L186">      val entitiesToRemove = lvl.entities.filter(_.isInstanceOf[Level.Player]).slice(playerNum, maxPlayers)</span>
+<span class="nc" id="L187">      lvl.entities = lvl.entities.filterNot(entitiesToRemove.contains(_))</span>
+
+      //Create one instance of engine
+<span class="nc bnc" id="L190" title="All 2 branches missed.">      engine = Option(motoscala.engine.GameEngine(this, players, if (matchSetupMp.isDefined) matchSetupMp.get</span>
+<span class="nc" id="L191">        .difficulty else actualSettings.diff))</span>
+
+      //Start engine
+<span class="nc" id="L194">      engine.get.init(lvl)</span>
+
+
+<span class="nc" id="L197">      var setups: List[LevelSetupData] = List()</span>
+      //Prepare all data for level to sent
+<span class="nc" id="L199">      players.slice(1, players.size)</span>
+<span class="nc" id="L200">        .foreach(player =&gt; setups = setups :+ LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player))</span>
+      //Send to sel
+<span class="nc" id="L202">      notifyUI(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = serverActor</span>
+<span class="nc" id="L203">        .isEmpty, isHosting = serverActor.isDefined, players.head)))</span>
+
+      //Send to clients if present
+<span class="nc bnc" id="L206" title="All 2 branches missed.">      if (serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)</span>
+    }
+    override def saveStats(): Unit = {
+<span class="nc bnc" id="L209" title="All 4 branches missed.">      if (serverActor.isEmpty &amp;&amp; clientActor.isEmpty) {</span>
+<span class="nc" id="L210">        var loadedStats = dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (loadedStats.getOrElse(actualSettings.name, 0) &lt; score)</span>
+<span class="nc" id="L212">          loadedStats = loadedStats.updated(actualSettings.name, score)</span>
+<span class="nc" id="L213">        dataManager.saveScore(ScoresData(loadedStats))</span>
+      }
+    }
+<span class="nc" id="L216">    override def loadStats(): Unit = notifyUI(ScoreDataEvent(dataManager.loadScore()</span>
+<span class="nc" id="L217">                                                               .getOrElse(ScoresData(HashMap()))))</span>
+    private def notifyUI(ev: ViewEvent): Unit = {
+<span class="nc" id="L219">      observers.foreach(obs =&gt; {</span>
+<span class="nc" id="L220">        Platform.runLater(() =&gt; obs.notify(ev))</span>
+      })
+    }
+    override def saveSettings(newSettings: SettingsData): Unit = {
+<span class="nc" id="L224">      actualSettings = newSettings</span>
+<span class="nc" id="L225">      dataManager.saveSettings(actualSettings)</span>
+<span class="nc" id="L226">      setAudioVolume(actualSettings.musicVolume, actualSettings.effectVolume)</span>
+    }
+    private def setAudioVolume(musicVolume: Double, effect: Double): Unit = {
+<span class="nc" id="L229">      soundAgent.enqueueEvent(SetVolumeMusic(musicVolume))</span>
+<span class="nc" id="L230">      soundAgent.enqueueEvent(SetVolumeEffect(effect))</span>
+    }
+<span class="nc" id="L232">    private def loadSettings(): SettingsData = dataManager.loadSettings().getOrElse(SettingsData())</span>
+  }
+<span class="nc" id="L234">  object Constants {</span>
+    final val maxPlayers = 4
+  }
+<span class="nc" id="L237">}</span>
+
+<span class="nc" id="L239">private object MagicValues {</span>
+<span class="nc" id="L240">  object AkkaValues {</span>
+
+    final val SystemConfiguration = &quot;application&quot;
+    final val SystemName = &quot;MotoSystem&quot;
+    final val ClientActorName = &quot;Client&quot;
+    final val ServerActorName = &quot;Server&quot;
+    final val ActorSelectionPath = &quot;/user/Server*&quot;
+<span class="nc" id="L247">    final val ActorSelectionProtocol = s&quot;akka://$SystemName@&quot;</span>
+    final val AkkaDivider = &quot;:&quot;
+    final val AkkaCanonicalName = &quot;akka.remote.artery.canonical.hostname&quot;
+
+  }
+
+<span class="nc" id="L253">  object Messages {</span>
+
+    final val KickedTitle = &quot;Sorry, i hate you&quot;
+    final val KickedText = &quot;You have been kicked&quot;
+  }
+<span class="nc" id="L258">}</span>
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

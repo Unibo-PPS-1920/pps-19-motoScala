@@ -2,30 +2,15 @@
 
 import alice.tuprolog._
 
-
-<span class="fc" id="L6">object Scala2P {</span>
-<span class="fc" id="L7">  def extractTerm(t: Term, i: Integer): Term = t.asInstanceOf[Struct].getArg(i).getTerm</span>
-
-<span class="fc" id="L9">  implicit def stringToTerm(s: String): Term = Term.createTerm(s)</span>
-<span class="fc" id="L10">  implicit def seqToTerm[T](s: Seq[T]): Term = s.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)</span>
-
-<span class="fc" id="L12">  implicit def termToDouble(t: Term): (scala.Double) = t.toString.toDouble</span>
-
-<span class="nc" id="L14">  def mkPrologEngine(theory: Theory): Term =&gt; LazyList[Term] = {</span>
-<span class="nc" id="L15">    goal =&gt;</span>
-<span class="nc" id="L16">      new Iterable[Term] {</span>
-<span class="nc" id="L17">        val engine = new Prolog</span>
-<span class="nc" id="L18">        engine.setTheory(theory)</span>
-
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        override def iterator: Iterator[Term] = new Iterator[Term] {</span>
-<span class="nc" id="L21">          var solution: SolveInfo = engine.solve(goal)</span>
-
-<span class="nc bnc" id="L23" title="All 4 branches missed.">          override def hasNext: Boolean = solution.isSuccess || solution.hasOpenAlternatives</span>
-<span class="nc" id="L24">          override def next(): Term = try {solution.getSolution } finally {</span>
-<span class="nc bnc" id="L25" title="All 2 branches missed.">            if (solution.hasOpenAlternatives) {solution = engine.solveNext }</span>
-          }
-        }
-<span class="nc" id="L28">      }.to(LazyList)</span>
-  }
+/**
+ * Utilities for 2p usage in scala
+ */
+<span class="fc" id="L8">object Scala2P {</span>
+<span class="fc" id="L9">  def extractTerm(t: Term, i: scala.Int): Term = t.asInstanceOf[Struct].getArg(i).getTerm</span>
+<span class="fc" id="L10">  implicit def intToTerm(i: scala.Int): Term = Term.createTerm(i.toString)</span>
+<span class="fc" id="L11">  implicit def stringToTerm(s: String): Term = Term.createTerm(s)</span>
+<span class="fc" id="L12">  implicit def setToTerm[T](s: Set[T]): Term = s.mkString(&quot;[&quot;, &quot;,&quot;, &quot;]&quot;)</span>
+<span class="fc" id="L13">  implicit def tuple2Term(tuple2: (scala.Double, scala.Double)): Term = Term.createTerm(tuple2.toString())</span>
+<span class="fc" id="L14">  implicit def termToDouble(t: Term): scala.Double = t.toString.toDouble</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
