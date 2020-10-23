@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane fx:id="root" minHeight="800.0" minWidth="700.0" nodeOrientation="LEFT_TO_RIGHT" stylesheets="@style/Home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="root" minHeight="800.0" minWidth="700.0" nodeOrientation="LEFT_TO_RIGHT" stylesheets="@style/Home.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <center>
         <AnchorPane fx:id="mainAnchorPane" maxHeight="450.0" maxWidth="450.0" BorderPane.alignment="TOP_CENTER">
             <children>
@@ -48,7 +48,7 @@
             <Insets />
          </BorderPane.margin>
          <center>
-              <ImageView fitHeight="200.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
+              <ImageView fx:id="title" fitHeight="200.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true">
                   <image>
                       <Image url="@../images/Logo.png" />
                   </image>

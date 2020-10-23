@@ -1,33 +1,16 @@
 ---
 index: 3
 mapSize:
-  x: 800
+  x: 1000
   y: 800
 entities: !<scala.collection.immutable.$colon$colon>
-  - !<it.unibo.pps1920.motoscala.model.Level$Player>
-    position:
-      x: 300
-      y: 200
-    shape:
-      radius: 25.0
-    velocity:
-      x: 15
-      y: 15
-  - !<it.unibo.pps1920.motoscala.model.Level$Player>
-    position:
-      x: 400
-      y: 200
-    shape:
-      radius: 25.0
-    velocity:
-      x: 15
-      y: 15
+  #Player
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 500
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 15
       y: 15
@@ -36,43 +19,32 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 600
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 15
       y: 15
-  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
-      x: 250
-      y: 300
+      x: 700
+      y: 200
     shape:
-      dimX: 100.0
-      dimY: 100.0
+      radius: 30.0
     velocity:
-      x: 0
-      y: 0
-  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
+      x: 15
+      y: 15
+  - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 400
-      y: 400
+      y: 200
     shape:
-      dimX: 25.0
-      dimY: 25.0
+      radius: 30.0
     velocity:
-      x: 0
-      y: 0
+      x: 15
+      y: 15
+  #Nabicon
   - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
     position:
-      x: 250
-      y: 500
-    shape:
-      dimX: 100.0
-      dimY: 100.0
-    velocity:
-      x: 0
-      y: 0
-  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
-    position:
-      x: 550
+      x: 350
       y: 300
     shape:
       dimX: 100.0
@@ -82,7 +54,17 @@ entities: !<scala.collection.immutable.$colon$colon>
       y: 0
   - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
     position:
-      x: 550
+      x: 500
+      y: 400
+    shape:
+      dimX: 50.0
+      dimY: 50.0
+    velocity:
+      x: 0
+      y: 0
+  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
+    position:
+      x: 350
       y: 500
     shape:
       dimX: 100.0
@@ -90,30 +72,54 @@ entities: !<scala.collection.immutable.$colon$colon>
     velocity:
       x: 0
       y: 0
+  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
+    position:
+      x: 650
+      y: 300
+    shape:
+      dimX: 100.0
+      dimY: 100.0
+    velocity:
+      x: 0
+      y: 0
+  - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
+    position:
+      x: 650
+      y: 500
+    shape:
+      dimX: 100.0
+      dimY: 100.0
+    velocity:
+      x: 0
+      y: 0
+  #Beecon
   - !<it.unibo.pps1920.motoscala.model.Level$Beecon>
     position:
       x: 25
       y: 25
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
   - !<it.unibo.pps1920.motoscala.model.Level$Beecon>
     position:
-      x: 775
+      x: 975
       y: 775
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
   - !<it.unibo.pps1920.motoscala.model.Level$Beecon>
     position:
-      x: 775
+      x: 975
       y: 25
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
@@ -122,34 +128,50 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 25
       y: 775
     shape:
-      radius: 25.0
+      dimX: 45.0
+      dimY: 45.0
     velocity:
       x: 15
       y: 15
+  #Black Pupa
   - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
     position:
       x: 500
       y: 700
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 5
       y: 5
+  #Blue Pupa
   - !<it.unibo.pps1920.motoscala.model.Level$BluePupa>
     position:
-      x: 600
+      x: 100
       y: 700
     shape:
-      radius: 25.0
-    velocity:
-      x: 1
-      y: 1
-  - !<it.unibo.pps1920.motoscala.model.Level$RedPupa>
-    position:
-      x: 700
-      y: 700
-    shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 10
       y: 10
+  - !<it.unibo.pps1920.motoscala.model.Level$BluePupa>
+    position:
+      x: 900
+      y: 700
+    shape:
+      radius: 30.0
+    velocity:
+      x: 10
+      y: 10
+  #Power Up
+  - !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
+    position:
+      x: 50
+      y: 400
+    shape:
+      radius: 30.0
+  - !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
+    position:
+      x: 950
+      y: 400
+    shape:
+      radius: 30.0

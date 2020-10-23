@@ -10,7 +10,7 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent.SettingsDataEvent
  * @param viewFacade the view facade
  * @param controller the controller
  */
-final class ScreenControllerSettings(
+protected[view] final class ScreenControllerSettings(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends AbstractScreenControllerSettings(viewFacade, controller) {
 

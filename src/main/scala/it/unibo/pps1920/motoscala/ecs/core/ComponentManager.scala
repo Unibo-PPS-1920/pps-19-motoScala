@@ -21,6 +21,14 @@ protected[core] trait ComponentManager {
    */
   def registerComponentType(compType: ComponentType): Unit
 
+  /** Checks if a component is registered to the manager.
+   * <p>
+   * An unregistered component, if used, will produce an IllegalArgumentException.
+   *
+   * @param compType the component type
+   */
+  def checkRegisteredComponent(compType: ComponentType): Boolean
+
   /** Bind the component to the entity.
    * <p>
    * This will update che effective Signature of the component removing it.
@@ -76,8 +84,8 @@ protected[core] object ComponentManager {
     import ImplicitConversions._
     import MagicValues._
 
-    private def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
     override def registerComponentType(compType: ComponentType): Unit = registered = registered + compType
+    override def checkRegisteredComponent(compType: ComponentType): Boolean = registered contains compType
 
     override def bindComponentToEntity(entity: Entity, component: Component): ECSSignature = {
       require(checkRegisteredComponent(component), RequireMessage)

@@ -9,11 +9,9 @@ import it.unibo.pps1920.motoscala.view.events.ViewEvent
  * @param viewFacade the view facade
  * @param controller the controller
  */
-final class ScreenControllerModeSelection(
+protected[view] final class ScreenControllerModeSelection(
   protected override val viewFacade: ViewFacade,
   protected override val controller: ObservableUI) extends AbstractScreenControllerModeSelection(viewFacade, controller) {
-
-  override def whenDisplayed(): Unit = {}
 
   override def notify(ev: ViewEvent): Unit = ev match {
     case ViewEvent.JoinResultEvent(res) => displayResult(res)

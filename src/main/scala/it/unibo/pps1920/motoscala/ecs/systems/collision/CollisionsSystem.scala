@@ -110,35 +110,43 @@ object CollisionsSystem {
                                posComp2: PositionComponent,
                                velComp1: VelocityComponent,
                                velComp2: VelocityComponent): Unit = {
+
+      def circleRect(circle: Circle,
+                     rec: Rectangle,
+                     circleEnt: Entity,
+                     rectEnt: Entity,
+                     circleCol: CollisionComponent,
+                     recCol: CollisionComponent,
+                     circlePos: PositionComponent,
+                     recPos: PositionComponent,
+                     circleVel: VelocityComponent,
+                     recVel: VelocityComponent): Unit = {
+        val inv = collision.getDirInversion(circle, circlePos.pos, rec, recPos.pos)
+        if (!(inv == Vector2(1, 1))) {
+          playSound(Clips.CollisionSoft)
+          startCollision(circleCol, recCol, circleEnt, rectEnt, CollisionDuration / 2)
+          checkLifePoint(circleEnt, rectEnt, circleCol, recCol, circlePos, recPos, circleVel, recVel)
+          circleVel.currentVel = circleVel.currentVel mul inv
+        }
+
+      }
       (shape1, shape2) match {
         case (Circle(radius1), Circle(radius2)) =>
           if (collision.areCirclesTouching(posComp1.pos, posComp2.pos, radius1, radius2)) {
             if (!(velComp2.currentVel.isZero && velComp1.currentVel.isZero)) {
               colComp1.collEntity = e2
               colComp2.collEntity = e1
-              collide(colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
+              collide(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
               checkLifePoint(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
               collisionStep(colComp1)
               collisionStep(colComp2)
             }
           }
         case (circle: Circle, rectangle: Rectangle) =>
-          val inv = collision.getDirInversion(circle, posComp1.pos, rectangle, posComp2.pos)
-          if (inv != Vector2(1, 1)) {
-            playSound(Clips.CollisionSoft)
-            startCollision(colComp1, CollisionDuration / 2)
-            checkLifePoint(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
-          }
-          velComp1.currentVel = velComp1.currentVel mul inv
+          circleRect(circle, rectangle, e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
 
         case (rectangle: Rectangle, circle: Circle) =>
-          val inv = collision.getDirInversion(circle, posComp2.pos, rectangle, posComp1.pos)
-          if (!(inv == Vector2(1, 1))) {
-            startCollision(colComp2, CollisionDuration / 2)
-            checkLifePoint(e1, e2, colComp1, colComp2, posComp1, posComp2, velComp1, velComp2)
-            playSound(Clips.CollisionSoft)
-          }
-          velComp2.currentVel = velComp2.currentVel mul inv
+          circleRect(circle, rectangle, e2, e1, colComp2, colComp1, posComp2, posComp1, velComp2, velComp1)
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
@@ -146,15 +154,16 @@ object CollisionsSystem {
     private def playSound(clip: Clips): Unit =
       controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(clip)))
 
-    private def collide(colComp1: CollisionComponent,
+    private def collide(e1: Entity,
+                        e2: Entity,
+                        colComp1: CollisionComponent,
                         colComp2: CollisionComponent,
                         posComp1: PositionComponent,
                         posComp2: PositionComponent,
                         velComp1: VelocityComponent,
                         velComp2: VelocityComponent): Unit = {
       playSound(Clips.Collision)
-      startCollision(colComp1, CollisionDuration)
-      startCollision(colComp2, CollisionDuration)
+      startCollision(colComp1, colComp2, e1, e2, CollisionDuration)
       /* COLLISION CORE */
       if (colComp1.mass != 0 && colComp2.mass != 0) {
         // Compute unit normal and unit tangent vectors
@@ -198,15 +207,21 @@ object CollisionsSystem {
       (e1, e2) match {
         case (_: BumperCarEntity, _) => addDamage(e1, colComp1, colComp2)
         case (_, _: BumperCarEntity) => addDamage(e2, colComp2, colComp1)
-        case (_: NabiconEntity, _: BumperCarEntity) => addDamage(e1, colComp1, colComp2)
-        case (_: NabiconEntity, _: BumperCarEntity) => addDamage(e2, colComp2, colComp1)
         case _ =>
       }
     }
 
-    private def startCollision(colComp: CollisionComponent, duration: Int): Unit = {
-      colComp.isColliding = true
-      colComp.duration = duration
+    private def startCollision(colComp1: CollisionComponent,
+                               colComp2: CollisionComponent,
+                               e1: Entity,
+                               e2: Entity,
+                               duration: Int): Unit = {
+      colComp1.isColliding = true
+      colComp2.isColliding = true
+      colComp1.collEntity = e2
+      colComp2.collEntity = e1
+      colComp1.duration = duration
+      colComp2.duration = duration
     }
 
     private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
@@ -219,5 +234,3 @@ object CollisionsSystem {
   }
 
 }
-
-

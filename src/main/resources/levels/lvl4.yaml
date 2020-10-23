@@ -1,5 +1,5 @@
 ---
-index: 2
+index: 4
 mapSize:
   x: 800
   y: 800
@@ -129,48 +129,27 @@ entities: !<scala.collection.immutable.$colon$colon>
     velocity:
       x: 10
       y: 10
-  #Black Pupa
-  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
+  #Big Boss
+  - !<it.unibo.pps1920.motoscala.model.Level$BigBoss>
     position:
-      x: 760
-      y: 400
+      x: 500
+      y: 200
     shape:
-      radius: 30.0
+      radius: 50.0
     velocity:
-      x: 0
-      y: 10
-  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
-    position:
-      x: 40
-      y: 400
-    shape:
-      radius: 30.0
-    velocity:
-      x: 0
-      y: 10
-  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
-    position:
-      x: 400
-      y: 740
-    shape:
-      radius: 30.0
-    velocity:
-      x: 10
-      y: 0
-  - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
-    position:
-      x: 400
-      y: 40
-    shape:
-      radius: 30.0
-    velocity:
-      x: 10
-      y: 0
+      x: 2
+      y: 2
   #Power Up
   - !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
     position:
       x: 100
-      y: 600
+      y: 500
+    shape:
+      radius: 30.0
+  - !<it.unibo.pps1920.motoscala.model.Level$JumpPowerUp>
+    position:
+      x: 900
+      y: 500
     shape:
       radius: 30.0
   - !<it.unibo.pps1920.motoscala.model.Level$SpeedBoostPowerUp>
@@ -182,6 +161,7 @@ entities: !<scala.collection.immutable.$colon$colon>
   - !<it.unibo.pps1920.motoscala.model.Level$WeightBoostPowerUp>
     position:
       x: 400
-      y: 600
+      y: 750
     shape:
       radius: 30.0
+

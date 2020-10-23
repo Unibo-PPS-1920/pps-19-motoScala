@@ -1,4 +1,4 @@
-package it.unibo.pps1920.motoscala.view.drawable
+package it.unibo.pps1920.motoscala.view.drawables
 
 import javafx.scene.image.Image
 

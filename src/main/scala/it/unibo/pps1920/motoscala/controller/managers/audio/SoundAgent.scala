@@ -37,11 +37,13 @@ private final class ConcreteSoundAgent extends SoundAgent {
   override def run(): Unit = {
     while (true) {
       Try(blockingQueue.take()) match {
-        case Success(ev) => ev.handle(this)
+        case Success(ev) => processEvent(ev)
         case Failure(exception) => logger warn exception.getMessage
       }
     }
   }
+
+  def processEvent(ev: MediaEvent): Unit = ev.handle(this)
 
   override def playMusic(media: Music): Unit = {
     if (!medias.contains(media)) {
