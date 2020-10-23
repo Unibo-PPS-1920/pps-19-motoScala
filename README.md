@@ -7,3 +7,6 @@
 ## Suggested JDK
   - **liberica@11 full** 
   - **openjdk@11 + openjfx**
+  
+## Report
+Check latest **release** [here](https://github.com/Unibo-PPS-1920/pps-19-motoScala/releases/download/1.0.0/MotoScala-Report.pdf).
