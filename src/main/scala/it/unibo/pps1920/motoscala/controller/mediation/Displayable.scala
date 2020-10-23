@@ -23,10 +23,10 @@ trait Displayable extends EventObserver[DisplayableEvent] {
    * @param data the data containing end level information
    */
   def notifyLevelEnd(data: EndData): Unit
-  /**
-   * Execute the command with a custom execution thread.
+
+  /** Execute the command with a custom execution thread.
    *
-   * @param runnable the runnable strategy
+   * @param runnable the runnable
    */
   def execute(runnable: Runnable): Unit
 
