@@ -5,5 +5,5 @@
 [![Build Status](https://travis-ci.com/Unibo-PPS-1920/pps-19-motoScala.svg?branch=develop)](https://travis-ci.com/Unibo-PPS-1920/pps-19-motoScala)
 
 ## Suggested JDK
-  - **liberica@11:** full jdk with JavaFx
+  - **liberica@11 full** 
   - **openjdk@11 + openjfx**
