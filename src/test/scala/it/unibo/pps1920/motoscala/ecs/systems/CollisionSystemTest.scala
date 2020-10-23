@@ -3,6 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems
 import java.util.UUID
 
 import it.unibo.pps1920.motoscala.controller.EngineController
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Mediator
 import it.unibo.pps1920.motoscala.ecs.System
 import it.unibo.pps1920.motoscala.ecs.components.Shape.Circle
@@ -10,13 +11,13 @@ import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities.{BumperCarEntity, RedPupaEntity}
 import it.unibo.pps1920.motoscala.ecs.systems.CollisionSystemTestClasses.EngineControllerMock
+import it.unibo.pps1920.motoscala.ecs.systems.collision.CollisionsSystem
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
 import org.junit.runner.RunWith
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
-import it.unibo.pps1920.motoscala.ecs.systems.collision.CollisionsSystem
 
 @RunWith(classOf[JUnitRunner])
 class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll {
@@ -84,5 +85,6 @@ class CollisionSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterA
 object CollisionSystemTestClasses {
   final class EngineControllerMock(_mediator: Mediator) extends EngineController {
     override def mediator: Mediator = _mediator
+    override def redirectSoundEvent(me: MediaEvent): Unit = {}
   }
 }

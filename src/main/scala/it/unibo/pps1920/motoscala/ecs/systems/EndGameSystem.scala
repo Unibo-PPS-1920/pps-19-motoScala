@@ -1,9 +1,10 @@
 package it.unibo.pps1920.motoscala.ecs.systems
 
+import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{LevelEndEvent, RedirectSoundEvent}
-import it.unibo.pps1920.motoscala.controller.mediation.{EventData, Mediator}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.LevelEndEvent
+import it.unibo.pps1920.motoscala.controller.mediation.EventData
 import it.unibo.pps1920.motoscala.ecs.components.{CollisionComponent, PositionComponent, ScoreComponent}
 import it.unibo.pps1920.motoscala.ecs.core.{Coordinator, ECSSignature}
 import it.unibo.pps1920.motoscala.ecs.entities.BumperCarEntity
@@ -15,27 +16,28 @@ import it.unibo.pps1920.motoscala.engine.Engine
  * System for handling removal of killed entities and to determine the end of a game
  */
 object EndGameSystem {
-  def apply(coordinator: Coordinator, mediator: Mediator,
+  def apply(coordinator: Coordinator, controller: EngineController,
             canvasSize: Vector2,
-            engine: Engine): System = new EndGameSystemImpl(coordinator, mediator, canvasSize, engine: Engine)
-  private class EndGameSystemImpl(coordinator: Coordinator, mediator: Mediator, canvasSize: Vector2, engine: Engine)
+            engine: Engine): System = new EndGameSystemImpl(coordinator, controller, canvasSize, engine: Engine)
+  private class EndGameSystemImpl(coordinator: Coordinator, controller: EngineController, canvasSize: Vector2,
+                                  engine: Engine)
     extends AbstractSystem(ECSSignature(classOf[PositionComponent], classOf[ScoreComponent], classOf[CollisionComponent])) {
     override def update(): Unit = {
       entitiesRef().filter(e => checkOutside(e) || checkLifePoints(e)).foreach(e => {
         if (e.getClass == classOf[BumperCarEntity]) {
           this.engine.stop()
-          mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.GameOver)))
+          controller.redirectSoundEvent(PlaySoundEffect(Clips.GameOver))
         } else {
-          mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Out)))
+          controller.redirectSoundEvent(PlaySoundEffect(Clips.Out))
         }
-        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e, coordinator
+        this.controller.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = false, e, coordinator
           .getEntityComponent[ScoreComponent](e).score)))
         this.coordinator.removeEntity(e)
       })
       if (entitiesRef().nonEmpty && entitiesRef().forall(_.getClass == classOf[BumperCarEntity])) {
-        mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(Clips.Win)))
+        controller.redirectSoundEvent(PlaySoundEffect(Clips.Win))
         this.engine.stop()
-        this.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
+        this.controller.mediator.publishEvent(LevelEndEvent(EventData.EndData(hasWon = true, entitiesRef().head, 0)))
       }
     }
 

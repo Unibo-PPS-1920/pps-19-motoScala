@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.controller
 import it.unibo.pps1920.motoscala.model.MatchSetup.MultiPlayerSetup
 import it.unibo.pps1920.motoscala.view.ObserverUI
 /** The actor that is used for */
-trait ActorController {
+trait ActorController extends SoundController {
 
 
   import it.unibo.pps1920.motoscala.controller.mediation.Mediator

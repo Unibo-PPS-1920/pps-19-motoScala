@@ -24,8 +24,10 @@ import it.unibo.pps1920.motoscala.multiplayer.actors.{ClientActor, ServerActor}
 import it.unibo.pps1920.motoscala.multiplayer.messages.ActorMessage._
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType
 import it.unibo.pps1920.motoscala.multiplayer.messages.MessageData.LobbyData
+import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.{LevelSetupData, LevelSetupEvent, ScoreDataEvent, SettingsDataEvent, _}
 import it.unibo.pps1920.motoscala.view.{ObserverUI, showSimplePopup}
+import javafx.application.Platform
 import org.slf4j.LoggerFactory
 
 import scala.collection.immutable.HashMap
@@ -73,9 +75,14 @@ object Controller {
         engine = None
       }
     }
-    override def redirectSoundEvent(me: MediaEvent): Unit = soundAgent.enqueueEvent(me)
-    override def loadSetting(): Unit =
-      observers.foreach(_.notify(SettingsDataEvent(actualSettings)))
+    override def redirectSoundEvent(me: MediaEvent): Unit = {
+      if (serverActor.isDefined) {
+        serverActor.get ! PlayMediaMessage(me)
+      }
+      soundAgent.enqueueEvent(me)
+    }
+    override def loadSetting(): Unit = notifyUI(SettingsDataEvent(actualSettings))
+
     override def lobbyInfoChanged(
       level: Option[Int] = None, difficult: Option[Int] = None,
       isStatusChanged: Boolean = false): Unit = {
@@ -91,24 +98,24 @@ object Controller {
             LobbyData(
               difficulty = Some(matchSetupMp.get.difficulty), level = Some(matchSetupMp.get.level), readyPlayers = this
                 .matchSetupMp.get.getPlayerStatus)), serverActor.get)
-
-        observers.foreach(
-          _.notify(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus))))
+        notifyUI(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus)))
       } else
         clientActor.get ! ReadyActorMessage(multiplayerStatus)
     }
-
     override def kickSomeone(name: String): Unit = {
       serverActor.get ! KickActorMessage(matchSetupMp.get.removePlayer(name))
-      observers.foreach(_.notify(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus))))
+      notifyUI(LobbyDataEvent(LobbyData(readyPlayers = matchSetupMp.get.getPlayerStatus)))
     }
     /*Used by Client Actor*/
-    override def gameStart(): Unit = observers.foreach(_.notify(LoadLevelEvent()))
-
+    override def gameStart(): Unit = notifyUI(LoadLevelEvent())
+    private def notifyUI(ev: ViewEvent): Unit = {
+      observers.foreach(obs => {
+        Platform.runLater(() => obs.notify(ev))
+      })
+    }
     override def getLobbyData: DataType.LobbyData =
       LobbyData(Some(matchSetupMp.get.difficulty),
                 Some(matchSetupMp.get.level), matchSetupMp.get.getPlayerStatus)
-
     override def tryJoinLobby(ip: String, port: String): Unit = {
       shutdownMultiplayer()
       clientActor = Some(system.actorOf(ClientActor.props(this), ClientActorName))
@@ -120,14 +127,17 @@ object Controller {
       serverActor = Some(system.actorOf(ServerActor.props(this), ServerActorName))
       matchSetupMp = Some(MultiPlayerSetup(numPlayers = maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, actualSettings.name)
-      observers.foreach(_.notify(
-        SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
-          .getDefaultAddress.port.get.toString, actualSettings.name, levels.map(_.index), difficultiesList
-                          .map(_.number))))
+      notifyUI(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
+        .getDefaultAddress.port.get.toString, actualSettings.name, levels.map(_.index), difficultiesList
+                                 .map(_.number)))
     }
     override def loadAllLevels(): Unit = {
       levels = dataManager.loadLvl()
-      observers.foreach(_.notify(LevelDataEvent(levels)))
+      notifyUI(LevelDataEvent(levels))
+    }
+    override def joinResult(result: Boolean): Unit = {
+      if (!result) shutdownMultiplayer()
+      notifyUI(JoinResultEvent(result))
     }
     override def shutdownMultiplayer(): Unit = {
 
@@ -138,18 +148,13 @@ object Controller {
       serverActor = None
       clientActor = None
     }
-    override def joinResult(result: Boolean): Unit = {
-      if (!result) shutdownMultiplayer()
-      observers.foreach(_.notify(JoinResultEvent(result)))
-    }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = strategy.apply(matchSetupMp.get)
-    override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = observers.foreach(strategy(_))
+    override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = observers
+      .foreach(obs => Platform.runLater(() => strategy(obs)))
     override def gotKicked(): Unit = {
-      observers.foreach(obs => {
-        obs.notify(LeaveLobbyEvent())
-        showSimplePopup(KickedTitle, KickedText)
-        shutdownMultiplayer()
-      })
+      notifyUI(LeaveLobbyEvent())
+      showSimplePopup(KickedTitle, KickedText)
+      shutdownMultiplayer()
     }
     override def leaveLobby(): Unit = {
       if (serverActor.isDefined)
@@ -191,12 +196,12 @@ object Controller {
       players.slice(1, players.size)
         .foreach(player => setups = setups :+ LevelSetupData(lvl, isSinglePlayer = false, isHosting = false, player))
       //Send to sel
-      observers.foreach(_.notify(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = serverActor
-        .isEmpty, isHosting = serverActor.isDefined, players.head))))
+      notifyUI(LevelSetupEvent(LevelSetupData(lvl, isSinglePlayer = serverActor
+        .isEmpty, isHosting = serverActor.isDefined, players.head)))
+
       //Send to clients if present
       if (serverActor.isDefined) serverActor.get ! SetupsForClientsMessage(setups)
     }
-
     override def saveStats(): Unit = {
       if (serverActor.isEmpty && clientActor.isEmpty) {
         var loadedStats = dataManager.loadScore().getOrElse(ScoresData(HashMap())).scoreTable
@@ -205,21 +210,17 @@ object Controller {
         dataManager.saveScore(ScoresData(loadedStats))
       }
     }
-
-    override def loadStats(): Unit =
-      observers.foreach(_.notify(ScoreDataEvent(dataManager.loadScore().getOrElse(ScoresData(HashMap())))))
-
+    override def loadStats(): Unit = notifyUI(ScoreDataEvent(dataManager.loadScore()
+                                                               .getOrElse(ScoresData(HashMap()))))
     override def saveSettings(newSettings: SettingsData): Unit = {
       actualSettings = newSettings
       dataManager.saveSettings(actualSettings)
       setAudioVolume(actualSettings.musicVolume, actualSettings.effectVolume)
     }
-
     private def setAudioVolume(musicVolume: Double, effect: Double): Unit = {
       soundAgent.enqueueEvent(SetVolumeMusic(musicVolume))
       soundAgent.enqueueEvent(SetVolumeEffect(effect))
     }
-
     private def loadSettings(): SettingsData = dataManager.loadSettings().getOrElse(SettingsData())
   }
   object Constants {
