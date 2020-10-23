@@ -43,9 +43,7 @@ private final class ConcreteSoundAgent extends SoundAgent {
     }
   }
 
-  def processEvent(ev: MediaEvent): Unit = {
-    ev.handle(this)
-  }
+  def processEvent(ev: MediaEvent): Unit = ev.handle(this)
 
   override def playMusic(media: Music): Unit = {
     if (!medias.contains(media)) {

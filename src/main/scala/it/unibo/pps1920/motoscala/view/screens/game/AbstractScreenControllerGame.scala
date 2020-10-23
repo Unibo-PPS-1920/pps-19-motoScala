@@ -143,6 +143,7 @@ protected[game] abstract class AbstractScreenControllerGame(
       case SpeedPowerUpEntity(_) => Drawables.PowerUpSpeedDrawable.draw(e, context)
       case NabiconEntity(_) => Drawables.NabiconDrawable.draw(e, context)
       case BeeconEntity(_) => Drawables.BeeconDrawable.draw(e, context)
+      case BigBossEntity(_) => Drawables.BigBossDrawable.draw(e, context)
       case _ =>
     })
     val playerPart = players.partition(_.get.entity == playerEntity.get)

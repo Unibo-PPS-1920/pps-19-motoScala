@@ -13,6 +13,7 @@ private[view] object Drawables {
   val BluePupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BluePupa))
   val RedPupaDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.RedPupa))
   val PolarDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Polar))
+  val BigBossDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.BigBoss))
   val NabiconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Nabicon))
   val BeeconDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.Beecon))
   val PowerUpJumpDrawable: EntityDrawable = new EntityDrawable(ImageLoader.getImage(Textures.PowerUpJump))
