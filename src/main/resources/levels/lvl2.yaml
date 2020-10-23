@@ -4,21 +4,22 @@ mapSize:
   x: 800
   y: 800
 entities: !<scala.collection.immutable.$colon$colon>
+  #Player
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 300
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
-      x: 15
-      y: 15
+      x: 10
+      y: 10
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 400
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 15
       y: 15
@@ -27,7 +28,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 500
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 15
       y: 15
@@ -36,10 +37,11 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 600
       y: 200
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 15
       y: 15
+  #Nabicon
   - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
     position:
       x: 60
@@ -80,12 +82,13 @@ entities: !<scala.collection.immutable.$colon$colon>
     velocity:
       x: 0
       y: 0
+  #Polar
   - !<it.unibo.pps1920.motoscala.model.Level$Polar>
     position:
-      x: 400
+      x: 300
       y: 400
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 3
       y: 3
@@ -94,25 +97,26 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 500
       y: 400
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 3
       y: 3
-  - !<it.unibo.pps1920.motoscala.model.Level$Polar>
+  #Blue Pupa
+  - !<it.unibo.pps1920.motoscala.model.Level$BluePupa>
     position:
-      x: 300
+      x: 400
       y: 400
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
-      x: 3
-      y: 3
+      x: 10
+      y: 10
   - !<it.unibo.pps1920.motoscala.model.Level$BluePupa>
     position:
       x: 400
       y: 500
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 10
       y: 10
@@ -121,16 +125,17 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 400
       y: 300
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 10
       y: 10
+  #Black Pupa
   - !<it.unibo.pps1920.motoscala.model.Level$BlackPupa>
     position:
       x: 760
       y: 400
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 0
       y: 10
@@ -139,7 +144,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 40
       y: 400
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 0
       y: 10
@@ -148,7 +153,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 400
       y: 740
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 10
       y: 0
@@ -157,7 +162,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       x: 400
       y: 40
     shape:
-      radius: 25.0
+      radius: 30.0
     velocity:
       x: 10
       y: 0

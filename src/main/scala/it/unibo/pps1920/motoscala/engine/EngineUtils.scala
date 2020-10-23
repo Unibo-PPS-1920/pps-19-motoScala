@@ -6,7 +6,7 @@ import it.unibo.pps1920.motoscala.ecs.components._
 import it.unibo.pps1920.motoscala.ecs.core.Coordinator
 import it.unibo.pps1920.motoscala.ecs.entities._
 import it.unibo.pps1920.motoscala.ecs.util.Vector2
-import it.unibo.pps1920.motoscala.engine.Constants.PlayerLife
+import it.unibo.pps1920.motoscala.engine.Constants.{DefaultDamage, PlayerLife}
 import it.unibo.pps1920.motoscala.engine.Life._
 import it.unibo.pps1920.motoscala.engine.Masses._
 import it.unibo.pps1920.motoscala.engine.Scores._
@@ -46,7 +46,7 @@ protected[engine] object EngineUtils {
           .addEntityComponents(black, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BlackPupaLife * difficult, mass = BaseEnemyMass),
+                               CollisionComponent(BlackPupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),
                                AIComponent(Foolishness.BlackPupa / difficult, Random.shuffle(playerStack)),
                                ScoreComponent(BlackPupaLife * difficult))
       case RedPupa(position, shape, velocity) =>
@@ -55,7 +55,7 @@ protected[engine] object EngineUtils {
           .addEntityComponents(red, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(RedPupaLife * difficult, mass = BaseEnemyMass),
+                               CollisionComponent(RedPupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),
                                AIComponent(Foolishness.RedPupa / difficult, Random.shuffle(playerStack)),
                                ScoreComponent(RedPupaScore * difficult))
       case BluePupa(position, shape, velocity) =>
@@ -64,7 +64,7 @@ protected[engine] object EngineUtils {
           .addEntityComponents(blue, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BluePupaLife * difficult, mass = BaseEnemyMass),
+                               CollisionComponent(BluePupaLife, damage = DefaultDamage * difficult, mass = BaseEnemyMass),
                                AIComponent(Foolishness.BluePupa / difficult, Random.shuffle(playerStack)),
                                ScoreComponent(BluePupaLife * difficult))
       case Polar(position, shape, velocity) =>
@@ -73,7 +73,7 @@ protected[engine] object EngineUtils {
           .addEntityComponents(polar, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(PolaLifer * difficult, mass = BaseEnemyMass),
+                               CollisionComponent(PolaLifer, damage = DefaultDamage * difficult, mass = BaseEnemyMass),
                                AIComponent(Foolishness.Polar / difficult, mutable.Stack(playerStack.head)),
                                ScoreComponent(PolaScore * difficult))
       case BigBoss(position, shape, velocity) =>
@@ -82,7 +82,7 @@ protected[engine] object EngineUtils {
           .addEntityComponents(bigBoss, ShapeComponent(shape),
                                PositionComponent((position.x, position.y)),
                                VelocityComponent(defVel = (velocity.x, velocity.y)),
-                               CollisionComponent(BigBossLife * difficult, mass = BigBossMass),
+                               CollisionComponent(BigBossLife, damage = DefaultDamage * difficult, mass = BigBossMass),
                                AIComponent(Foolishness.BigBoss / difficult, mutable.Stack(playerStack.head)),
                                ScoreComponent(BigBosScore * difficult))
       case Nabicon(position, shape, velocity) =>
@@ -171,9 +171,9 @@ private object Life {
   val NabiconLife: Int = 100
   val BeeconLife: Int = 100
   val PolaLifer: Int = 100
-  val BlackPupaLife: Int = 120
-  val RedPupaLife: Int = 100
-  val BluePupaLife: Int = 150
+  val BlackPupaLife: Int = 150
+  val RedPupaLife: Int = 200
+  val BluePupaLife: Int = 250
   val PowerUpLife: Int = 100
   val BigBossLife: Int = 700
 }
