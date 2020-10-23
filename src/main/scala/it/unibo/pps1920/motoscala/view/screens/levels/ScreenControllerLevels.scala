@@ -4,7 +4,6 @@ import it.unibo.pps1920.motoscala.controller.ObservableUI
 import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.events.ViewEvent
 import it.unibo.pps1920.motoscala.view.events.ViewEvent.LevelDataEvent
-import javafx.application.Platform
 
 /** Screen controller for levels FXML.
  *
@@ -18,7 +17,7 @@ protected[view] final class ScreenControllerLevels(
   override def whenDisplayed(): Unit = controller.loadAllLevels()
 
   override def notify(ev: ViewEvent): Unit = ev match {
-    case LevelDataEvent(levels) => Platform.runLater(() => populateLevels(levels))
+    case LevelDataEvent(levels) => populateLevels(levels)
     case _ =>
   }
 }

@@ -6,7 +6,6 @@ import it.unibo.pps1920.motoscala.view.ViewFacade
 import it.unibo.pps1920.motoscala.view.fsm.ChangeScreenEvent
 import it.unibo.pps1920.motoscala.view.screens.ScreenController
 import it.unibo.pps1920.motoscala.view.utilities.ViewUtils.addButtonMusic
-import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.scene.control.{SplitMenuButton, _}
@@ -61,43 +60,28 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     })
     buttonReady.setDisable(false)
   }
-  private def cleanAll(): Unit = {
-    buttonKick.setDisable(true)
-    buttonStart.setDisable(true)
-    buttonKick.setVisible(false)
-    buttonStart.setVisible(false)
-    listPlayer.getItems.clear()
-    ipLabel.setVisible(false)
-    portLabel.setVisible(false)
-    dropMenuDifficult.setDisable(true)
-    dropMenuLevel.setDisable(true)
-    ipLabel.setText("Ip:")
-    portLabel.setText("Port:")
-  }
   private def extendButtonBackBehaviour(): Unit = {
     buttonBack.addEventHandler[ActionEvent](ActionEvent.ACTION, _ => {
       cleanAll()
       controller.leaveLobby()
     })
   }
-  protected def leaveLobby(): Unit = Platform.runLater(() => viewFacade.changeScreen(ChangeScreenEvent.GoBack))
+  protected def leaveLobby(): Unit = viewFacade.changeScreen(ChangeScreenEvent.GoBack)
   protected def updateLobby(lobbyData: LobbyData): Unit = {
-    Platform.runLater(() => {
-      lobbyData.difficulty.foreach(diff => dropMenuDifficult.setText(diff.toString))
-      lobbyData.level.foreach(lvl => dropMenuLevel.setText(lvl.toString))
-      val rpValues = lobbyData.readyPlayers.values
-      if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1)
-        buttonStart.setDisable(false)
-      else buttonStart.setDisable(true)
-      val lisPlayerStatus = listPlayer.getItems
-      lisPlayerStatus.clear()
-      val players: java.util.List[Label] = lobbyData.readyPlayers.values.map(player => {
-        val label = new Label(player.name)
-        if (player.status) label.setTextFill(Color.Green) else label.setTextFill(Color.Red)
-        label
-      }).toList.asJava
-      lisPlayerStatus.addAll(players)
-    })
+    lobbyData.difficulty.foreach(diff => dropMenuDifficult.setText(diff.toString))
+    lobbyData.level.foreach(lvl => dropMenuLevel.setText(lvl.toString))
+    val rpValues = lobbyData.readyPlayers.values
+    if (rpValues.nonEmpty && (rpValues.map(pd => pd.status).count(s => !s) == 0) && rpValues.size > 1)
+      buttonStart.setDisable(false)
+    else buttonStart.setDisable(true)
+    val lisPlayerStatus = listPlayer.getItems
+    lisPlayerStatus.clear()
+    val players: java.util.List[Label] = lobbyData.readyPlayers.values.map(player => {
+      val label = new Label(player.name)
+      if (player.status) label.setTextFill(Color.Green) else label.setTextFill(Color.Red)
+      label
+    }).toList.asJava
+    lisPlayerStatus.addAll(players)
   }
   protected def startMulti(): Unit = viewFacade.changeScreen(ChangeScreenEvent.GotoGame)
   protected def setIpAndPort(ip: String, port: String, name: String, levels: List[Int],
@@ -140,6 +124,19 @@ protected[lobby] abstract class AbstractScreenControllerLobby(
     ipLabel.setVisible(true)
     portLabel.setVisible(true)
 
+  }
+  private def cleanAll(): Unit = {
+    buttonKick.setDisable(true)
+    buttonStart.setDisable(true)
+    buttonKick.setVisible(false)
+    buttonStart.setVisible(false)
+    listPlayer.getItems.clear()
+    ipLabel.setVisible(false)
+    portLabel.setVisible(false)
+    dropMenuDifficult.setDisable(true)
+    dropMenuLevel.setDisable(true)
+    ipLabel.setText("Ip:")
+    portLabel.setText("Port:")
   }
 }
 

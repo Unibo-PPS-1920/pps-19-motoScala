@@ -1,6 +1,7 @@
 package it.unibo.pps1920.motoscala.multiplayer.messages
 
 import akka.actor.ActorRef
+import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent
 import it.unibo.pps1920.motoscala.controller.mediation.Event.{CommandableEvent, DisplayableEvent}
 import it.unibo.pps1920.motoscala.model.MatchSetup.Data.PlayerData
 import it.unibo.pps1920.motoscala.multiplayer.messages.DataType.LobbyData
@@ -34,6 +35,9 @@ object ActorMessage {
   /*in game messages*/
   /** This message means that the game is end. */
   final case class GameEndActorMessage() extends ActorMessage
+  /** This message contains one media to be played. */
+  final case class PlayMediaMessage(md: MediaEvent) extends ActorMessage
+
   /** This message carry the new state of the world, computed by the server,
    * it is used by the view for display the new world to user.
    *

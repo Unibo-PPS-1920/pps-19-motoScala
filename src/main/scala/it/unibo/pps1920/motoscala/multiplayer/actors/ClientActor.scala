@@ -24,9 +24,7 @@ private class ClientActor(
   private val mediator: Mediator = actorController.mediator
   private var serverActor: Option[ActorRef] = None
   private var serverAddress: ActorSelection = _
-
   override def receive: Receive = idleBehaviour
-
   private def idleBehaviour: Receive = {
     case TryJoin(selection, name) =>
       serverAddress = context.system.actorSelection(selection)
@@ -47,7 +45,6 @@ private class ClientActor(
       sendViewMessage(ServerNotFoundMsgTitle, ServerNotFoundMsgText)
       actorController.joinResult(false)
   }
-
   private def initMatchBehaviour: Receive = {
     //Update view lobby data
     case LobbyDataActorMessage(lobbyData) => actorController.sendToViewStrategy(_.notify(LobbyDataEvent(lobbyData)))
@@ -65,13 +62,11 @@ private class ClientActor(
       sendViewMessage(LobbyClosedMsgTitle, LobbyClosedMsgText)
       actorController.shutdownMultiplayer()
   }
-
   private def inGameBehaviour: Receive = {
     case DisplayableActorMessage(event) => mediator.publishEvent(event)
     case LevelSetupMessage(levelSetupData) =>
       actorController.sendToViewStrategy(_.notify(LevelSetupEvent(levelSetupData)))
   }
-
   private def sendViewMessage(title: String, text: String): Unit = showSimplePopup(text, title)
   /**
    * Notify the observer with the event.
@@ -79,7 +74,9 @@ private class ClientActor(
    * @param event the notified event.
    */
   override def notify(event: CommandableEvent): Unit = serverActor.get ! CommandableActorMessage(event)
-
+  override protected def addCustomBehaviour(): Option[Receive] = Some({ case PlayMediaMessage(meEv) => actorController
+    .redirectSoundEvent(meEv)
+  })
   private[this] object MagicValues {
     final val LobbyClosedMsgTitle = "Lobby has been closed"
     final val LobbyClosedMsgText = "Choose another server"
