@@ -18,22 +18,21 @@ trait Displayable extends EventObserver[DisplayableEvent] {
    */
   def notifyEntityLife(data: LifeData): Unit
 
-  /** Notify the observer with data from [[it.unibo.pps1920.motoscala.controller.mediation.Event.RedirectSoundEvent]]
-   *
-   * @param event the sound event
-   */
-  def notifyRedirectSound(event: SoundEvent): Unit
-
   /** Notify the observer with data from [[it.unibo.pps1920.motoscala.controller.mediation.Event.LevelEndEvent]]
    *
    * @param data the data containing end level information
    */
   def notifyLevelEnd(data: EndData): Unit
 
+  /** Execute the command with a custom execution thread.
+   *
+   * @param runnable the runnable
+   */
+  def execute(runnable: Runnable): Unit
+
   override def notify(event: DisplayableEvent): Unit = event match {
-    case DrawEntityEvent(player, entities) => notifyDrawEntities(player, entities)
-    case EntityLifeEvent(data) => notifyEntityLife(data)
-    case RedirectSoundEvent(event) => notifyRedirectSound(event)
-    case LevelEndEvent(data) => notifyLevelEnd(data)
+    case DrawEntityEvent(player, entities) => execute(() => notifyDrawEntities(player, entities))
+    case EntityLifeEvent(data) => execute(() => notifyEntityLife(data))
+    case LevelEndEvent(data) => execute(() => notifyLevelEnd(data))
   }
 }

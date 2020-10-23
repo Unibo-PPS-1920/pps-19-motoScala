@@ -34,8 +34,8 @@ class EndGameSystemTest extends AnyWordSpec with Matchers with BeforeAndAfterAll
     display = new DisplayMock()
     mediator = controller.mediator
     controller.mediator.subscribe(display)
-    endsys = EndGameSystem(coordinator, mediator, Vector2(20, 20), GameEngine(controller, List(BumperCarEntity(UUID
-                                                                                                                 .randomUUID())), 1))
+    endsys = EndGameSystem(coordinator, controller, Vector2(20, 20), GameEngine(controller, List(BumperCarEntity(UUID
+                                                                                                                   .randomUUID())), 1))
     val pos: PositionComponent = PositionComponent(Vector2(1, 2))
     val shape = ShapeComponent(Circle(3))
     val v = VelocityComponent(Vector2(0, -10))
@@ -102,10 +102,11 @@ object EndGameSystemTestClasses {
                                     entities: Set[EntityData]): Unit = {}
     override def notifyLevelEnd(data: EndData): Unit = res.event = data
     override def notifyEntityLife(data: LifeData): Unit = {}
-    override def notifyRedirectSound(event: SoundEvent): Unit = {}
+    override def execute(runnable: Runnable): Unit = runnable.run()
   }
   final class EngineControllerMock(_mediator: Mediator) extends EngineController {
     override def mediator: Mediator = _mediator
+    override def redirectSoundEvent(me: SoundEvent): Unit = {}
   }
 }
 

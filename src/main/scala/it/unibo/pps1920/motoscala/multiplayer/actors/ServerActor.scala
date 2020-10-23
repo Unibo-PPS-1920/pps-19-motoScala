@@ -18,7 +18,6 @@ class ServerActor(
   private val mediator: Mediator = actorController.mediator
   private var clients: Set[ActorRef] = Set()
   override def receive: Receive = idleBehaviour
-
   private def idleBehaviour: Receive = {
     case mess: LobbyDataActorMessage => tellToClients(mess)
 
@@ -45,12 +44,10 @@ class ServerActor(
       changeBehaviourWhitLogging(inGameBehaviour)
       tellToClients(ev)
   }
-
   private def inGameBehaviour: Receive = {
     case CommandableActorMessage(event) => mediator.publishEvent(event)
     case SetupsForClientsMessage(setups) => clients.foreach(_ ! LevelSetupMessage(setups.iterator.next()))
   }
-
   private def handleJoinRequest(name: String): Unit = {
     val err = actorController.sendToLobbyStrategy[Option[ErrorReason]](_.tryAddPlayer(sender(), name))
 
@@ -60,19 +57,18 @@ class ServerActor(
       updateClients()
     }
   }
-
   private def updateClients(): Unit = {
     val lobbyData = actorController.getLobbyData
     actorController.sendToViewStrategy(_.notify(ViewEvent.LobbyDataEvent(lobbyData)))
     tellToClients(LobbyDataActorMessage(lobbyData))
   }
-
   private def tellToClients(mess: ActorMessage): Unit = clients.foreach(_ ! mess)
   /**
    * Notify the observer with the event.
    *
    */
   override def notify(event: DisplayableEvent): Unit = clients.foreach(_ ! DisplayableActorMessage(event))
+  override protected def addCustomBehaviour(): Option[Receive] = Some({ case msg: PlayMediaMessage => tellToClients(msg) })
 }
 
 /** Factory for [[ServerActor]] instances. */

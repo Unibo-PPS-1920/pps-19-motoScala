@@ -3,7 +3,7 @@ package it.unibo.pps1920.motoscala.ecs.systems.collision
 import it.unibo.pps1920.motoscala.controller.EngineController
 import it.unibo.pps1920.motoscala.controller.managers.audio.Clips
 import it.unibo.pps1920.motoscala.controller.managers.audio.MediaEvent.PlaySoundEffect
-import it.unibo.pps1920.motoscala.controller.mediation.Event.{EntityLifeEvent, RedirectSoundEvent}
+import it.unibo.pps1920.motoscala.controller.mediation.Event.EntityLifeEvent
 import it.unibo.pps1920.motoscala.controller.mediation.EventData.LifeData
 import it.unibo.pps1920.motoscala.ecs.components.Shape.{Circle, Rectangle}
 import it.unibo.pps1920.motoscala.ecs.components._
@@ -88,18 +88,17 @@ object CollisionsSystem {
         .removeEntityComponent(powerUp, powUpVel)
 
     }
-
+    private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
+      coordinator.getEntityComponent[PowerUpComponent](powerUp).entity = Some(bumperCar)
     private def jumping(e1: Entity, e2: Entity): Boolean = {
       ((e1.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e1).isActive)
         || (e2.isInstanceOf[BumperCarEntity] && coordinator.getEntityComponent[JumpComponent](e2).isActive))
     }
-
     private def alreadyColliding(e1: Entity, e2: Entity, colComp1: CollisionComponent,
                                  colComp2: CollisionComponent): Boolean = (
       colComp1.isColliding
         && colComp2.isColliding
         && (colComp1.collEntity == e2 && colComp2.collEntity == e1))
-
     private def checkCollision(e1: Entity,
                                e2: Entity,
                                shape1: Shape,
@@ -150,10 +149,6 @@ object CollisionsSystem {
         case _ => logger warn s"unexpected shape collision: $shape1 and $shape1"
       }
     }
-
-    private def playSound(clip: Clips): Unit =
-      controller.mediator.publishEvent(RedirectSoundEvent(PlaySoundEffect(clip)))
-
     private def collide(e1: Entity,
                         e2: Entity,
                         colComp1: CollisionComponent,
@@ -190,7 +185,20 @@ object CollisionsSystem {
         velComp2.currentVel = newNorVec2 add newTanVec2
       }
     }
-
+    private def playSound(clip: Clips): Unit =
+      controller.redirectSoundEvent(PlaySoundEffect(clip))
+    private def startCollision(colComp1: CollisionComponent,
+                               colComp2: CollisionComponent,
+                               e1: Entity,
+                               e2: Entity,
+                               duration: Int): Unit = {
+      colComp1.isColliding = true
+      colComp2.isColliding = true
+      colComp1.collEntity = e2
+      colComp2.collEntity = e1
+      colComp1.duration = duration
+      colComp2.duration = duration
+    }
     private def checkLifePoint(e1: Entity, e2: Entity,
                                colComp1: CollisionComponent,
                                colComp2: CollisionComponent,
@@ -210,23 +218,6 @@ object CollisionsSystem {
         case _ =>
       }
     }
-
-    private def startCollision(colComp1: CollisionComponent,
-                               colComp2: CollisionComponent,
-                               e1: Entity,
-                               e2: Entity,
-                               duration: Int): Unit = {
-      colComp1.isColliding = true
-      colComp2.isColliding = true
-      colComp1.collEntity = e2
-      colComp2.collEntity = e1
-      colComp1.duration = duration
-      colComp2.duration = duration
-    }
-
-    private def addBumperToPowUp(bumperCar: BumperCarEntity, powerUp: PowerUpEntity): Unit =
-      coordinator.getEntityComponent[PowerUpComponent](powerUp).entity = Some(bumperCar)
-
     private def collisionStep(collisionComp: CollisionComponent): Unit = {
       collisionComp.duration -= 1
       if (collisionComp.duration <= 0) collisionComp.isColliding = false

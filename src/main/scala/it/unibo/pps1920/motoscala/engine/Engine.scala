@@ -71,8 +71,8 @@ object GameEngine {
 
       coordinator.registerSystem(DrawSystem(mediator, coordinator, players.map(_.uuid)))
         .registerSystem(AISystem(coordinator, eventQueue, skipFrames = 10))
-        .registerSystem(EndGameSystem(coordinator, mediator, Vector2(level.mapSize.x, level.mapSize.y), this))
-        .registerSystem(PowerUpSystem(coordinator, mediator, Fps))
+        .registerSystem(EndGameSystem(coordinator, controller, Vector2(level.mapSize.x, level.mapSize.y), this))
+        .registerSystem(PowerUpSystem(coordinator, controller, Fps))
         .registerSystem(CollisionsSystem(coordinator, controller, Fps))
         .registerSystem(MovementSystem(coordinator, Fps))
         .registerSystem(InputSystem(coordinator, eventQueue))

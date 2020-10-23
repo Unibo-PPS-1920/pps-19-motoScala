@@ -15,10 +15,16 @@ protected[multiplayer] abstract class ActorWhitLogging extends Actor with ActorL
    * @param behaviour The partial function behaviour to be extended
    * @param context The implicit context provider
    */
-  protected def changeBehaviourWhitLogging(behaviour: Actor.Receive)(implicit context: akka.actor.ActorContext): Unit =
-    context.become(behaviour orElse unexpectedBehaviour)
-
+  protected def changeBehaviourWhitLogging(behaviour: Actor.Receive)
+                                          (implicit context: akka.actor.ActorContext): Unit = {
+    context.become(behaviour orElse addCustomBehaviour().fold(unexpectedBehaviour)(_ orElse unexpectedBehaviour))
+  }
   private def unexpectedBehaviour: Actor.Receive = {case msg => unexpectedMessageHandler(msg)}
-
   private def unexpectedMessageHandler(msg: Any): Unit = logger warn s"Received unexpected message $msg"
+  /** Extends the partial function Actor Behaviour whit another custom Behaviour.
+   *
+   * @return The behaviour to add, None otherwise
+   */
+  protected def addCustomBehaviour(): Option[Actor.Receive] =
+    None
 }

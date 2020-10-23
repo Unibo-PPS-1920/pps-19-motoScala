@@ -15,12 +15,11 @@ object Event {
   type CommandData = EventData.CommandData
   /** Event that represent display actions. It is sent to Server-View and Client-Views from server's Engine */
   sealed trait DisplayableEvent extends Event
-  final case class DrawEntityEvent(players: Set[Option[EntityData]], entity: Set[EntityData]) extends DisplayableEvent
-  final case class EntityLifeEvent(data: LifeData) extends DisplayableEvent
-  final case class RedirectSoundEvent(event: SoundEvent) extends DisplayableEvent
-  final case class LevelEndEvent(data: EndData) extends DisplayableEvent
   /** Event that represent command actions. It is sent to server's Engine from Server-View and Client-Views */
   sealed trait CommandableEvent extends Event
+  final case class DrawEntityEvent(players: Set[Option[EntityData]], entity: Set[EntityData]) extends DisplayableEvent
+  final case class EntityLifeEvent(data: LifeData) extends DisplayableEvent
+  final case class LevelEndEvent(data: EndData) extends DisplayableEvent
   final case class CommandEvent(cmd: Event.CommandData) extends CommandableEvent
 }
 /** Data sent in [[Event]] */
