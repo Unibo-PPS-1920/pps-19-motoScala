@@ -144,12 +144,12 @@ private object Duration {
  */
 private object Scores {
   val PlayerScore: Int = 0
-  val NabiconScore: Int = 700
-  val BeeconScore: Int = 500
+  val NabiconScore: Int = 500
+  val BeeconScore: Int = 700
   val BaseEnemyScore: Int = 300
   val PolaScore: Int = 100
-  val BlackPupaScore: Int = 400
-  val RedPupaScore: Int = 200
+  val BlackPupaScore: Int = 200
+  val RedPupaScore: Int = 300
   val BluePupaScore: Int = 500
   val BigBosScore: Int = 3000
 }
@@ -160,7 +160,7 @@ private object Masses {
   val PowerUpMass: Int = 0
   val PlayerMass: Int = 100
   val BaseEnemyMass: Int = 30
-  val BigBossMass: Int = 250
+  val BigBossMass: Int = 150
   val BeeconMass: Int = Int.MaxValue
   val NabiconMass: Int = Int.MaxValue
 }
@@ -182,8 +182,8 @@ private object Life {
  */
 private object Foolishness {
   val Polar: Int = 30
-  val BlackPupa: Int = 50
-  val RedPupa: Int = 75
-  val BluePupa: Int = 25
+  val BlackPupa: Int = 40
+  val RedPupa: Int = 40
+  val BluePupa: Int = 20
   val BigBoss: Int = 10
 }
