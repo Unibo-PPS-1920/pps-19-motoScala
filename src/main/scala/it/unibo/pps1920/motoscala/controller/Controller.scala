@@ -42,11 +42,10 @@ object Controller {
 
     private val logger = LoggerFactory getLogger classOf[ControllerImpl]
     private val dataManager: DataManager = new DataManager()
-    private val config = ConfigFactory.load(SystemConfiguration)
-    private val system = ActorSystem(SystemName, config)
     private val soundAgent: SoundAgent = SoundAgent()
     override var score: Int = 0
-
+    private var config: com.typesafe.config.Config = _ //ConfigFactory.load(SystemConfiguration)
+    private var akkaSystem: Option[ActorSystem] = None //ActorSystem(SystemName, config)
     private var engine: Option[Engine] = None
     private var observers: Set[ObserverUI] = Set()
     private var levels: List[LevelData] = List()
@@ -108,26 +107,28 @@ object Controller {
     }
     /*Used by Client Actor*/
     override def gameStart(): Unit = notifyUI(LoadLevelEvent())
-    private def notifyUI(ev: ViewEvent): Unit = {
-      observers.foreach(obs => {
-        Platform.runLater(() => obs.notify(ev))
-      })
-    }
     override def getLobbyData: DataType.LobbyData =
       LobbyData(Some(matchSetupMp.get.difficulty),
                 Some(matchSetupMp.get.level), matchSetupMp.get.getPlayerStatus)
     override def tryJoinLobby(ip: String, port: String): Unit = {
       shutdownMultiplayer()
-      clientActor = Some(system.actorOf(ClientActor.props(this), ClientActorName))
+      val config = ConfigFactory.load(SystemConfiguration)
+      akkaSystem = Some(ActorSystem(SystemName, config))
+      clientActor = Some(akkaSystem.get.actorOf(ClientActor.props(this), ClientActorName))
       clientActor.get ! TryJoin(s"$ActorSelectionProtocol$ip:$port$ActorSelectionPath", actualSettings.name)
     }
     override def becomeHost(): Unit = {
       shutdownMultiplayer()
       loadAllLevels()
-      serverActor = Some(system.actorOf(ServerActor.props(this), ServerActorName))
+      config = ConfigFactory
+        .parseString(s"""${AkkaCanonicalName}=${NetworkAddr.getLocalIPAddress}""")
+        .withFallback(ConfigFactory.load(SystemConfiguration))
+      akkaSystem = Some(ActorSystem(SystemName, config))
+
+      serverActor = Some(akkaSystem.get.actorOf(ServerActor.props(this), ServerActorName))
       matchSetupMp = Some(MultiPlayerSetup(numPlayers = maxPlayers))
       matchSetupMp.get.tryAddPlayer(serverActor.get, actualSettings.name)
-      notifyUI(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, system.asInstanceOf[ExtendedActorSystem].provider
+      notifyUI(SetupLobbyEvent(NetworkAddr.getLocalIPAddress, akkaSystem.get.asInstanceOf[ExtendedActorSystem].provider
         .getDefaultAddress.port.get.toString, actualSettings.name, levels.map(_.index), difficultiesList
                                  .map(_.number)))
     }
@@ -135,18 +136,20 @@ object Controller {
       levels = dataManager.loadLvl()
       notifyUI(LevelDataEvent(levels))
     }
-    override def joinResult(result: Boolean): Unit = {
-      if (!result) shutdownMultiplayer()
-      notifyUI(JoinResultEvent(result))
-    }
     override def shutdownMultiplayer(): Unit = {
 
       multiplayerStatus = false
-      if (serverActor.isDefined) system.stop(serverActor.get)
-      if (clientActor.isDefined) system.stop(clientActor.get)
+      if (serverActor.isDefined) akkaSystem.get.stop(serverActor.get)
+      if (clientActor.isDefined) akkaSystem.get.stop(clientActor.get)
+      if (akkaSystem.isDefined) akkaSystem.get.terminate()
       matchSetupMp = None
       serverActor = None
       clientActor = None
+      akkaSystem = None
+    }
+    override def joinResult(result: Boolean): Unit = {
+      if (!result) shutdownMultiplayer()
+      notifyUI(JoinResultEvent(result))
     }
     override def sendToLobbyStrategy[T](strategy: MultiPlayerSetup => T): T = strategy.apply(matchSetupMp.get)
     override def sendToViewStrategy(strategy: ObserverUI => Unit): Unit = observers
@@ -212,6 +215,11 @@ object Controller {
     }
     override def loadStats(): Unit = notifyUI(ScoreDataEvent(dataManager.loadScore()
                                                                .getOrElse(ScoresData(HashMap()))))
+    private def notifyUI(ev: ViewEvent): Unit = {
+      observers.foreach(obs => {
+        Platform.runLater(() => obs.notify(ev))
+      })
+    }
     override def saveSettings(newSettings: SettingsData): Unit = {
       actualSettings = newSettings
       dataManager.saveSettings(actualSettings)
@@ -238,6 +246,8 @@ private object MagicValues {
     final val ActorSelectionPath = "/user/Server*"
     final val ActorSelectionProtocol = s"akka://$SystemName@"
     final val AkkaDivider = ":"
+    final val AkkaCanonicalName = "akka.remote.artery.canonical.hostname"
+
   }
 
   object Messages {
