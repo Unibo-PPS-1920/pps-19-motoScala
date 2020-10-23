@@ -20,11 +20,12 @@ protected[view] final class ScreenControllerGame(protected override val viewFaca
   private val mediator: Mediator = controller.mediator
   mediator.subscribe(this)
   //######################## From Mediator
-  override def notifyDrawEntities(players: Set[Option[EntityData]], entities: Set[EntityData]): Unit =
-    Platform.runLater(() => handleDrawEntities(players, entities))
-  override def notifyEntityLife(data: LifeData): Unit = Platform.runLater(() => handleEntityLife(data))
+  override def notifyDrawEntities(players: Set[Option[EntityData]],
+                                  entities: Set[EntityData]): Unit = handleDrawEntities(players, entities)
+  override def notifyEntityLife(data: LifeData): Unit = handleEntityLife(data)
   override def notifyRedirectSound(event: SoundEvent): Unit = controller.redirectSoundEvent(event)
-  override def notifyLevelEnd(data: EndData): Unit = Platform.runLater(() => handleLevelEnd(data))
+  override def notifyLevelEnd(data: EndData): Unit = handleLevelEnd(data)
+  override def execute(runnable: Runnable): Unit = Platform.runLater(runnable)
   //######################## From ViewFacade
   override def notify(ev: ViewEvent): Unit = ev match {
     case LevelSetupEvent(data) => Platform.runLater(() => handleLevelSetup(data))

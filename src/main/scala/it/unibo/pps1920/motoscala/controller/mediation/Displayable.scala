@@ -29,11 +29,17 @@ trait Displayable extends EventObserver[DisplayableEvent] {
    * @param data the data containing end level information
    */
   def notifyLevelEnd(data: EndData): Unit
+  /**
+   * Execute the command with a custom execution thread.
+   *
+   * @param runnable the runnable strategy
+   */
+  def execute(runnable: Runnable): Unit
 
   override def notify(event: DisplayableEvent): Unit = event match {
-    case DrawEntityEvent(player, entities) => notifyDrawEntities(player, entities)
-    case EntityLifeEvent(data) => notifyEntityLife(data)
-    case RedirectSoundEvent(event) => notifyRedirectSound(event)
-    case LevelEndEvent(data) => notifyLevelEnd(data)
+    case DrawEntityEvent(player, entities) => execute(() => notifyDrawEntities(player, entities))
+    case EntityLifeEvent(data) => execute(() => notifyEntityLife(data))
+    case RedirectSoundEvent(event) => execute(() => notifyRedirectSound(event))
+    case LevelEndEvent(data) => execute(() => notifyLevelEnd(data))
   }
 }
