@@ -31,7 +31,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       radius: 30.0
     velocity:
       x: 10
-      y: 50
+      y: 10
   - !<it.unibo.pps1920.motoscala.model.Level$Player>
     position:
       x: 400
@@ -40,7 +40,7 @@ entities: !<scala.collection.immutable.$colon$colon>
       radius: 30.0
     velocity:
       x: 10
-      y: 50
+      y: 10
   # Nabicon
   - !<it.unibo.pps1920.motoscala.model.Level$Nabicon>
     position:
